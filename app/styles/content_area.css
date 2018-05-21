@@ -1,3 +1,66 @@
 .content-area{
+    height: 600px;
+
     background: lightblue;
+}
+
+.content-area__wrapper {
+    width: 100%;
+}
+
+.content-area__menu {
+    /*padding: 20px;*/
+    background: grey;
+}
+
+.content-area__menu__list {
+    padding: 10px 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.content-area__menu__list__element {
+    width: 80px;
+    height: 20px;
+    padding: 0;
+    margin: 0 10px 0 0;
+
+    text-align: center;
+    background: white;
+}
+
+.content-area__materials {
+    padding: 20px;
+}
+
+.content-area__materials__list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.content-area__materials__list__element {
+    margin: 0 10px 20px 0;
+}
+
+.mv-material {
+    background: lightgray;
+}
+
+.mv-material__content {
+
+}
+
+.mv-material__content--video {
+    width: 192px;
+    height: 108px;
+
+    background: black;
+
+    text-align: center;
+    color: white;
+}
+
+.mv-material__attributes {
+    height: 40px;
+    display: none;
 }

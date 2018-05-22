@@ -9,25 +9,28 @@ version 0.16.0.
 * npm
 * grunt
 * bower
-* compass
 
 ## Installation (First set up)
 
-Check if node, npm and compass (isntall via ruby) are installed.
-Important: Maybe it is needed to add node to the PATH on Windows.
+Check if node and npm are installed.  
+**Important:** Maybe it is needed to add node to the PATH on Windows.
 
-It is recommended to use a UNIX like terminal for the following commands:
-Run 'npm install bower -g' to install bower.
-Run 'npm install grunt-cli -g' to install grunt command line interface.
-Run 'npm install' to install all node modules (grunt etc.)
-Run 'bower install' to install necessary bower modules (angular etc.)
-Run 'grunt serve' to start your browser on 'localhost:9000'.
+**It is recommended to use a UNIX like terminal for the following commands.**  
+
+Run 'npm install bower -g' to install bower.  
+Run 'npm install grunt-cli -g' to install grunt command line interface.  
+Check if bower and grunt are installed with 'bower --version' and 'grunt --version'. Maybe it is needed to restart the terminal.  
+
+cd /path/to/the/repo/  
+Run 'npm install' to install all node modules (grunt etc.).  
+Run 'bower install' to install necessary bower modules (angular etc.)  
+Run 'grunt serve' to start your browser on 'localhost:9000'.  
 
 The app runs on a local server with live reloading when code is edited (except for HTML files)
 
 ## Notes
 
-Each time new modules are isntalled you have to run 'npm install' and 'bower isntall'.
+Each time new modules are installed you have to run 'npm install' and 'bower isntall'.
 
 ## Build & development
 

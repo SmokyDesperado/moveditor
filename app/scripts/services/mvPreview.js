@@ -8,9 +8,8 @@
  * Service in the moveditorApp.
  */
 angular.module('moveditorApp')
-    .service('mvNavService', function () {
-        console.log('service started');
-
+    .service('mvPreviewService', function () {
+        // ToDo: Nhat
         this.doStuff = function (param) {
             console.log('param:', param);
         }

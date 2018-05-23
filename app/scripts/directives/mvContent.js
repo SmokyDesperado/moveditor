@@ -7,7 +7,7 @@
  * # navigator
  */
 angular.module('moveditorApp')
-    .directive('mvContent', [function (mvNavService) {
+    .directive('mvContent', [function () {
         return {
             templateUrl: '/views/directives/mv_content.html',
             replace: true,

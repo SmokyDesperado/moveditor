@@ -47,7 +47,8 @@
 }
 
 .mv-material__content {
-
+    position: absolute;
+    z-index: 999999;
 }
 
 .mv-material__content--video {
@@ -62,5 +63,5 @@
 
 .mv-material__attributes {
     height: 40px;
-    display: none;
+    /*display: none;*/
 }

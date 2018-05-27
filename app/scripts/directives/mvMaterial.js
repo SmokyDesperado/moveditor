@@ -13,39 +13,30 @@ angular.module('moveditorApp')
             replace: true,
             restrict: 'AE',
             link: function($scope, $element, $attrs) {
-                $scope.hammerPanMove = function($event) {
-                    var x = $event.center.x,
-                        y = $event.center.y;
+                var self = this;
 
-                    // console.log('x:', x, '- y:', y, ' || ', $event);
+                $scope.hammerPanMove = function($event) {
+                    var x = $event.center.x - $event.target.offsetWidth/2,
+                        y = $event.center.y - $event.target.offsetHeight;
+
                     $event.target.style['left'] = x + 'px';
                     $event.target.style['top'] = y + 'px';
 
-                    console.log('dx:', $event.deltaX, 'dy', $event.deltaY);
-
-                    console.log('element', $event.target.style, $event.center);
+                    // self.out('pan', $event);
                 };
 
                 $scope.hammerTap = function($event) {
-                    // var x = $event.center.x,
-                    //     y = $event.center.y;
-                    //
-                    // console.log(x, ' || ', y);
-                    // $event.target.style['left'] = x + 'px';
-                    // $event.target.style['top'] = y + 'px';
-                    //
-                    // console.log($event.target.style.left);
+                    self.out('tap', $event);
+                };
 
-                    // console.warn('element', $element[0].children[0]);
-                    console.log('target', $event.target.style, $event.center);
-                    //
-                    // if($event.target === $element[0].children[0]){
-                    //     var element = $element[0].children[0];
-                    //     element.style['background'] = "red";
-                    // }
-                    // else {
-                    //     console.log('nah');
-                    // }
+                this.out = function (type, $event) {
+                    console.log(type);
+
+                    console.log('event', $event);
+                    console.log('dx:', $event.deltaX, 'dy', $event.deltaY);
+                    console.log('mouse pos in element', $event.center);
+                    console.log('style left', $event.target.style.left, '|| top', $event.target.style.top);
+                    console.log('style', $event.target.style);
                 }
             }
         };

@@ -15,26 +15,38 @@ angular.module('moveditorApp')
             link: function($scope, $element, $attrs) {
                 // ToDo: Nhat - add logik and function of directive here
 
-                $scope.object = {
-                    'test': 12,
-                    'stuff': 'bla'
-                };
-
-                $scope.foo = function () {
-                    mvPreviewService.doStuff('service');
-                }
-
-                // ============================================================================
-
                 var urlIndex = 0;
                 var loop = true;
                 // var newVidEvent = true;
                 
                 var stitchingList = [
-                    { url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v', length: 0, offset: 15, end: 17 },
                     { url: 'http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v', length: 0, offset: 17, end: 19 },
+                    { url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v', length: 0, offset: 15, end: 17 },
+                    { url: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3', length: 0, offset: 15, end: 17 },
+                    { url: 'https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0', length: 0, offset: 15, end: 17 },
+                    { url: 'https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4', length: 0, offset: 15, end: 17 },
                     { url: 'https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA', length: 0, offset: 2, end: 4 }
                 ];
+
+                // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
+                //              eingeben und beim ersten redirect load abbrechen.
+                //              link danach 'redirect' durch 'download' ersetzen
+                // dropbox link -> 'www' durch 'dl'
+
+                $scope.object = {
+                    'test': 12,
+                    'stuff': 'bla'
+                };
+
+                $scope.play = function () {
+                    mvPreviewService.play();
+                }
+
+                $scope.stop = function () {
+                    mvPreviewService.play();
+                }
+
+                // ============================================================================
 
                 var player = document.getElementById('preview_player');
                 player.src = stitchingList[urlIndex].url+'#t='+stitchingList[urlIndex].offset+','+stitchingList[urlIndex].end;
@@ -49,7 +61,7 @@ angular.module('moveditorApp')
                 function playNextEvent() {
 
                     // get next video event index
-                    if (urlIndex != stitchingList.length-1) {
+                    if (urlIndex != stitchingList.length-1-3) {
                         urlIndex++;
                     } else {
                         if (loop) {

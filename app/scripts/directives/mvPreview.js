@@ -15,67 +15,109 @@ angular.module('moveditorApp')
             link: function($scope, $element, $attrs) {
                 // ToDo: Nhat - add logik and function of directive here
 
-                var urlIndex = 0;
-                var loop = true;
+                var chunkIndex = 0;
+                var loop = false;
                 // var newVidEvent = true;
-                
-                var stitchingList = [
-                    { url: 'http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v', length: 0, offset: 17, end: 19 },
-                    { url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v', length: 0, offset: 15, end: 17 },
-                    { url: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3', length: 0, offset: 15, end: 17 },
-                    { url: 'https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0', length: 0, offset: 15, end: 17 },
-                    { url: 'https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4', length: 0, offset: 15, end: 17 },
-                    { url: 'https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA', length: 0, offset: 2, end: 4 }
-                ];
 
                 // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
                 //              eingeben und beim ersten redirect load abbrechen.
                 //              link danach 'redirect' durch 'download' ersetzen
                 // dropbox link -> 'www' durch 'dl'
+                var activeVideoList = [
+                    { url: 'http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v' }
+                    , { url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v' }
+                    , { url: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3' }
+                    , { url: 'https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0' }
+                    , { url: 'https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4' }
+                    , { url: 'https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA' }
+                ];
 
-                $scope.object = {
-                    'test': 12,
-                    'stuff': 'bla'
-                };
+                var activeImageList = [
+                    { url: 'https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583' }
+                    , { url: 'https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583' }
+                ];
 
+                var vidImgChunkList = [
+                    { URLIndex: 0, start: 0, offset: 17, end: 19, type: "video" }
+                    , { URLIndex: 1, start: 0, offset: 15, end: 17, type: "video" }
+                    , { URLIndex: 2, start: 0, offset: 15, end: 17, type: "video" }
+                    , { URLIndex: 3, start: 0, offset: 15, end: 17, type: "video" }
+                    , { URLIndex: 4, start: 0, offset: 15, end: 17, type: "video" }
+                    , { URLIndex: 5, start: 0, offset: 2, end: 4, type: "video" }
+                    , { URLIndex: 0, start: 0, offset: 0, end: 3, type: "image" }
+                    , { URLIndex: 1, start: 0, offset: 0, end: 3, type: "image" }
+                ];
+
+                // ============================================================================
+                // preview_player setup
+                // ============================================================================
+                
+                var videoAndImagesContainer = document.getElementById('active_videos_and_images');
+                var time_display = document.getElementById('time_display');
+                mvPreviewService.initPlayer(time_display, activeVideoList, activeImageList, videoAndImagesContainer, vidImgChunkList[0]);
+
+                // ============================================================================
+                // preview_player controls
+                // ============================================================================
+                
                 $scope.play = function () {
                     mvPreviewService.play();
                 }
 
-                $scope.stop = function () {
-                    mvPreviewService.play();
+                $scope.pause = function () {
+                    mvPreviewService.pause();
+                }
+
+                $scope.goToStart = function () {
+                    mvPreviewService.goToStart();
+                }
+
+                $scope.setVolume = function (vol) {
+                    mvPreviewService.setVolume(vol);
+                }
+
+                $scope.setMute = function (mute) {
+                    mvPreviewService.setMute(mute);
+                }
+
+                $scope.jumpToPosition = function (position) {
+                    mvPreviewService.jumpToPosition(position)
                 }
 
                 // ============================================================================
 
-                var player = document.getElementById('preview_player');
-                player.src = stitchingList[urlIndex].url+'#t='+stitchingList[urlIndex].offset+','+stitchingList[urlIndex].end;
+                // var player = document.getElementById('video_0');
+                // var vidURL = activeVideoList[vidImgChunkList[chunkIndex].URLIndex].url;
+                // player.src = vidURL + '#t=' + vidImgChunkList[chunkIndex].offset + ',' + vidImgChunkList[chunkIndex].end;
                 
-                // player.addEventListener('loadedmetadata', function() {
-                //     // this.currentTime = stitchingList[urlIndex].offset;
-                //     console.log(player.duration);
-                // }, false);
+                // // player.addEventListener('loadedmetadata', function() {
+                // //     // this.currentTime = vidImgChunkList[chunkIndex].offset;
+                // //     console.log(player.duration);
+                // // }, false);
 
-                player.addEventListener('ended', playNextEvent, false);
-                //player.addEventListener('pause', playNextEvent, false);
-                function playNextEvent() {
+                // player.addEventListener('ended', playNextEvent, false);
+                // //player.addEventListener('pause', playNextEvent, false);
+                // function playNextEvent() {
 
-                    // get next video event index
-                    if (urlIndex != stitchingList.length-1-3) {
-                        urlIndex++;
-                    } else {
-                        if (loop) {
-                            urlIndex = 0;
-                        } else {
-                            return;
-                        }
-                    }
+                //     // get next video event index
+                //     if (chunkIndex != vidImgChunkList.length-1) {
+                //         chunkIndex++;
+                //     } else {
+                //         if (loop) {
+                //             chunkIndex = 0;
+                //         } else {
+                //             return;
+                //         }
+                //     }
 
-                    // play source only in given interval
-                    player.src = stitchingList[urlIndex].url+'#t='+stitchingList[urlIndex].offset+','+stitchingList[urlIndex].end;
-                    player.load();
-                    player.play();
-                }
+                //     // play source only in given interval
+                //     var vidURL = activeVideoList[vidImgChunkList[chunkIndex].URLIndex].url;
+                //     player.src = vidURL + '#t=' + vidImgChunkList[chunkIndex].offset + ',' + [chunkIndex].end;
+                //     player.load();
+                //     player.play();
+                // }
+
+                // ============================================================================
 
                 // player.onplay = function() {
                 //     if (newVidEvent) {
@@ -124,7 +166,7 @@ angular.module('moveditorApp')
 
                 //add some controls
                 jQuery(function ($) {
-                    $('div.player').each(function () {
+                    $('div.preview_player').each(function () {
                         var player = this;
                         var getSetCurrentTime = createGetSetHandler(
 

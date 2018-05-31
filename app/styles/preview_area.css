@@ -3,24 +3,29 @@
     background: lightcoral;
 }
 
-.player {
+.preview_player {
     margin: auto;
     padding: 10px;
-    width: 75%;
-    /*max-width: 900px;*/
-    min-width: 320px;
+    width: 100%;
 }
 
-.mediaplayer {
+#active_videos_and_images {
     position: relative;
+	background-color: black !important;
     height: 0;
     width: 100%;
     padding-bottom: 56.25%;
-    /* 16/9 */
-	background-color: black !important; /* or whatever you want */
 }
 
-.mediaplayer video {
+#active_videos_and_images video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#active_videos_and_images img {
     position: absolute;
     top: 0;
     left: 0;

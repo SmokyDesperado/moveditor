@@ -7,14 +7,14 @@
  * # navigator
  */
 angular.module('moveditorApp')
-    .directive('mvContent', [function () {
+    .directive('mvTimeline', [function () {
         return {
-            templateUrl: '/views/directives/mv_content.html',
+            templateUrl: '/views/directives/mvTimeline.html',
             replace: true,
             restrict: 'AE',
-            controller: 'MvContentCtrl',
+            controller: 'MvTimelineCtrl',
             bindToController: true,
-            controllerAs:'ContentCtrl',
+            controllerAs:'TimelineCtrl',
             link: function($scope, $element, $attrs, contentCtrl) {
                 $scope.click = function(param) {
                     console.log('clicked with param:', param);

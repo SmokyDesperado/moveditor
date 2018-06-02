@@ -14,4 +14,14 @@ angular.module('moveditorApp')
             'AngularJS',
             'Karma'
         ];
+
+        this.contentList = {};
+        this.timelineChunkList = {};
+
+        this.addContentObjectToList = function () {
+            // add contentObject to list
+        };
+        this.removecontentObjectFromList = function () {
+            // remove contentObject from list, if object not active
+        };
     });

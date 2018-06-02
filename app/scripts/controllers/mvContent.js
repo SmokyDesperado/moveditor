@@ -9,7 +9,8 @@
  */
 angular.module('moveditorApp')
     .controller('MvContentCtrl', [
-        function () {
+        'ContentService',
+        function (ContentService) {
             this.params = {
                 'test': 'test 1'
             };
@@ -26,6 +27,6 @@ angular.module('moveditorApp')
                 }
 
                 return false;
-            }
+            };
         }
     ]);

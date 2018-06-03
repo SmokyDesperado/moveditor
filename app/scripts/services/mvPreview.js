@@ -10,81 +10,28 @@
 angular.module('moveditorApp')
     .service('mvPreviewService', function () {
 
-        var tenMilliseconds = 0, seconds = 0, minutes = 0, hours = 0;
-        var timeOut = null;
+        var self = this;
+
         var timeDisplay = null;
-        var isPlaying = false;
-        var playTimeStart = 0;
-        var timeAtPause = 0;
+        var timeStepLoop = null;
+        var activeVideo = null;
+        
         var currentPlayTime = 0;
-        var timeElapsed = '0.0'; 
-        var timeStepInterval = 100; // in ms
-
-        var isLooped = false;
+        var timeAtStart = 0;
+        var timeAtPause = 0;
+        var jumpToTime = 0;
+        
         var positionA = 0;
-        var positionB = 0;
+        var positionB = 33000;
 
-        this.play = function () {
-            if (!isPlaying) {
-                isPlaying = true;
-                playTimeStart = new Date().getTime();
-                startPlayTime(0);
-            } else {
-                this.pause();
-            }
-        }
+        var isPlaying = false;
+        var loopPlay = false;
 
-        this.pause = function () {
-            isPlaying = false;
-            timeAtPause = currentPlayTime;
-            clearTimeout(timeOut);
-        }
+        var timeStepInterval = 100; // in ms
+        var DEBUG = false;
 
-        this.goToStart = function () {
-            
-            // reset all parameters
-            timeDisplay.textContent = "00:00:00:00";
-            tenMilliseconds = 0;
-            seconds = 0;
-            minutes = 0;
-            hours = 0;
-
-            currentPlayTime = 0;
-            timeElapsed = '0.0';
-            timeAtPause = 0;
-
-            // if player is currently playaing, then start playing again
-            if (isPlaying) {
-                clearTimeout(timeOut);
-                playTimeStart = new Date().getTime();
-                startPlayTime(0);
-            }
-        }
-
-        this.setLoop = function (loop) {
-            isLooped = loop;
-        }
-
-        this.setPositionA = function (position) {
-            positionA = position;
-        }
-
-        this.setPositionB = function (position) {
-            positionB = position;
-        }
-
-        this.setVolume = function (vol) {
-            console.log(vol);
-        }
-
-        this.setMute = function (mute) {
-            console.log(mute);
-        }
-
-        this.jumpToPosition = function (position) {
-            console.log(position);
-        }
-
+        // ====================================================================================================
+        // Preview player logic
         // ====================================================================================================
 
         this.initPlayer = function (timeDisplayElement, activeVideoList, activeImageList, videoAndImagesContainer, firstChunk) {
@@ -116,19 +63,24 @@ angular.module('moveditorApp')
                 videoAndImagesContainer.appendChild(video);
             }
 
-            // create one image element which source will be changed only throughout preview play
+            // create one only image element which source will be changed throughout preview play
             var image = document.createElement("img");
             image.src = activeImageList[0].url;
             image.id = "image_0";
             image.style.zIndex = "-1";
             videoAndImagesContainer.appendChild(image);
 
+            // TODO: create only one audio element which source will be changed only throughout preview play
+            var audio = document.createElement("audio");
+            audio.src = "";
+            audio.id = "audio_0";
+            audio.style.zIndex = "-1";
+            videoAndImagesContainer.appendChild(audio);
+
             // bring first chunk to the front if starts with video or image
-            if (firstChunk.start == 0) {
+            if (firstChunk != null && firstChunk.start == 0) {
                 if (firstChunk.type == "video") {
                     document.getElementById("video_" + firstChunk.URLIndex).style.zIndex = "0";
-                    // this.play();
-                    // document.getElementById("video_" + firstChunk.URLIndex).play();
                 }
                 else if (firstChunk.type == "image") {
                     var firstImage = document.getElementById("image_0");
@@ -137,6 +89,9 @@ angular.module('moveditorApp')
                 }
             }
 
+            // document.getElementById("video_0").ontimeupdate = function () {self.timeStep(false)};
+            // document.getElementById("video_0").play();
+            // self.play();
         }
 
         this.changeActiveVideoOrImage = function (activeVideoList, activeImageList, currentChunk, nextChunk) {
@@ -151,82 +106,177 @@ angular.module('moveditorApp')
             console.log("updateVideoChunkOrder");
         }
 
+        this.playCurrentChunk = function () {
+
+        }
+
+        // ====================================================================================================
+        // Preview player controls
         // ====================================================================================================
 
-        this.getChunkListTimeInSeconds = function (chunkList) {
-            var timeInSeconds = 0;
-            for(var i = 0; i < chunkList.length; i++) {
-                timeInSeconds = timeInSeconds + (chunkList[i].end - chunkList[i].start);
+        this.play = function () {
+            if (!isPlaying) {
+                isPlaying = true;
+                timeAtStart = new Date().getTime() - jumpToTime;
+                self.startPlayTime(0);
+            } else {
+                self.pause();
             }
-            return timeInSeconds;
         }
 
-        // create a stop watch class for current play time
-        this.getCurrentPlayTime = function () {
+        this.pause = function () {
+            isPlaying = false;
+            timeAtPause = currentPlayTime;
+            jumpToTime = 0;
+            clearTimeout(timeStepLoop);
 
+            // TODO: pause current active video element
+            document.getElementById("video_0").pause();
+        }
+
+        this.goToStart = function () {
+
+            // reset all time parameters update time display
+            currentPlayTime = 0;
+            timeAtPause = 0;
+            self.updateTimeDisplay(timeDisplay);
+
+            // TODO: bring first chunk to the front
+            document.getElementById("video_0").currentTime = 0;
+
+            // if player is currently playing, then continue playing again
+            if (isPlaying) {
+                clearTimeout(timeStepLoop);
+                timeAtStart = new Date().getTime();
+                self.startPlayTime(0);
+            }
+        }
+
+        this.setLoopPlay = function (loop) {
+            loopPlay = loop;
+        }
+
+        this.setPositionA = function (position) {
+            positionA = position;
+        }
+
+        this.setPositionB = function (position) {
+            positionB = position;
+        }
+
+        this.setVolume = function (vol) {
+            // TODO: set volume of all active video elements
+            //       what about audios?
+        }
+
+        this.setMute = function (mute) {
+            // TODO: mute all active video elements
+            //       what about audios?
+        }
+
+        this.jumpToPosition = function (newPosition) {
+            
+            currentPlayTime = newPosition;
+            jumpToTime = currentPlayTime;
+            timeAtPause = 0;
+            
+            // update time display
+            self.updateTimeDisplay(timeDisplay);
+            timeAtStart = new Date().getTime() - jumpToTime;
+
+            if (DEBUG) {
+                console.log("======================= JUMP =======================");
+                console.log("NP: " + newPosition + ", CPT: " + currentPlayTime + ", TAS: " + timeAtStart);
+                console.log("======================= JUMP =======================");
+            }
+
+            // TODO: check what video should be active now and calculate its position
+            document.getElementById("video_0").currentTime = newPosition / 1000;
+
+            // if player is currently playing, then continue playing again
+            if (isPlaying) {
+                clearTimeout(timeStepLoop);
+                self.startPlayTime(0);
+            }
         }
 
         // ====================================================================================================
-        // Stopwatch
+        // Preview player time step loop
         // ====================================================================================================
 
         /**
-         * @selfAdjustment use self-adjusting algorithm for more accurate preveiw player time, may use more cpu
+         * @selfAdjustment use self-adjusting algorithm for more accurate preview player time, may use more cpu
          */
-        function timeStep(selfAdjustment, displayTimeStyle, debugTime) {
+        this.timeStep = function (selfAdjustment) {
 
-            // modified timer display from https://jsfiddle.net/Daniel_Hug/pvk6p/
-            currentPlayTime += timeStepInterval;
-            tenMilliseconds += timeStepInterval;
-
-            if (tenMilliseconds >= 1000) {
-                tenMilliseconds = 0;
-                seconds++;
-                if (seconds >= 60) {
-                    seconds = 0;
-                    minutes++;
-                    if (minutes >= 60) {
-                        minutes = 0;
-                        hours++;
-                    }
+            if (currentPlayTime == positionB) {
+                if (loopPlay) {
+                    self.jumpToPosition(positionA);
+                } else {
+                    self.pause();
                 }
+                return;
             }
-            
-            if (displayTimeStyle == 1) {
 
-                // display in h:m:s:ms
-                timeDisplay.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
-                                            (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
-                                            (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
-                                            (tenMilliseconds > 90 ? tenMilliseconds/10 : "00");
-            } else {
+            currentPlayTime += timeStepInterval;
 
-                // display only in seconds
-                timeElapsed = Math.floor(currentPlayTime / 100) / 10;
-                if(Math.round(timeElapsed) == timeElapsed) { timeElapsed += '.0'; }
-                timeDisplay.textContent = timeElapsed + "s";
-            }
+            // update time display
+            self.updateTimeDisplay(timeDisplay);
 
             // self-adjusting algorithm from https://www.sitepoint.com/creating-accurate-timers-in-javascript/
             var diff = 0;
             if (selfAdjustment) {
                 var realTime = new Date().getTime();
-                var diff = ((realTime - playTimeStart) + timeAtPause) - currentPlayTime;
+                var diff = ((realTime - timeAtStart) + timeAtPause) - currentPlayTime;
 
-                if (debugTime) {
-                    console.log("(RT - PTS) + TAP: " + ((realTime - playTimeStart) + timeAtPause) + "ms, currentPlayTime: " + currentPlayTime + ", diff: " + diff + "ms");
-                    console.log("RT - PTS: " + (realTime - playTimeStart) + ", TAP: "+timeAtPause);                    
+                if (DEBUG) {
+                    console.log("(RT - TAS) + TAP: " + ((realTime - timeAtStart) + timeAtPause) + ", CPT: " + currentPlayTime + ", diff: " + diff);
+                    console.log("RT - TAS: " + (realTime - timeAtStart) + ", TAP: " + timeAtPause + ", JTT: " + jumpToTime);
                 }
             }
 
-            // TODO: check chunks to be played
+            // BETA: more self-adjustment based on active video playing time
+            if (1) {
+                diff -= (currentPlayTime - document.getElementById("video_0").currentTime * 1000);
+            }
 
+            // TODO: check whether chunks should start or end and do accordingly 
+            document.getElementById("video_0").play();
+            
             // repeat
-            startPlayTime(diff);
+            self.startPlayTime(diff);
         }
 
-        function startPlayTime(diff) {
-            timeOut = setTimeout(timeStep.bind(null, true, 1, false), timeStepInterval - diff);
+        this.startPlayTime = function (diff) {
+            timeStepLoop = setTimeout(self.timeStep.bind(null, true), timeStepInterval - diff);
+        }
+
+        // ====================================================================================================
+        // Auxiliary functions
+        // ====================================================================================================
+
+        this.getTimeLineLength = function (videoChunkList, audioChunkList) {
+
+            // only need to check end time of last video or audio chunk
+            var endTimeVideo = videoChunkList[videoChunkList.length-1].end; 
+            var endTimeAudio = audioChunkList[audioChunkList.length-1].end;
+            
+            return Math.max(endTimeVideo, endTimeAudio);
+        }
+
+        this.updateTimeDisplay = function (timeDisplay) {
+
+            // display in "h:m:s:ms"
+            var milliseconds = Math.floor((currentPlayTime % 1000));
+            var seconds = Math.floor(currentPlayTime / 1000) % 60;
+            var minutes = Math.floor(Math.floor(currentPlayTime / 1000) / 60) % 60;
+            var hours = Math.floor(Math.floor(currentPlayTime / 1000) / 60 / 60) % 60;
+
+            // modified timer display from https://jsfiddle.net/Daniel_Hug/pvk6p/
+            timeDisplay.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
+                                        (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
+                                        (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
+                                        (milliseconds > 90 ? milliseconds/10 : "00");
         }
 
     });

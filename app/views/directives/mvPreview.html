@@ -57,7 +57,7 @@
 	                    <input id="muted_button" type="checkbox" data-ng-click="setMute($event.target.value)"/>
 	                </td>
 	                <td>
-	                    <input class="position_slider" type="range" value="0" step="0.1" data-ng-click="jumpToPosition($event.target.value)"/>
+	                    <input class="position_slider" type="range" value="0" max="33000" step="100" ng-model="pos" ng-change="jumpToPosition(pos)"/>
 	                </td>
 	                <th>currentTime</th>
 	                <td>

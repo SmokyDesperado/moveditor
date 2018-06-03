@@ -13,7 +13,6 @@ angular.module('moveditorApp')
             replace: true,
             restrict: 'AE',
             link: function($scope, $element, $attrs) {
-                // ToDo: Nhat - add logik and function of directive here
 
                 var chunkIndex = 0;
                 var loop = false;
@@ -80,12 +79,16 @@ angular.module('moveditorApp')
                     mvPreviewService.setMute(mute);
                 }
 
-                $scope.jumpToPosition = function (position) {
-                    mvPreviewService.jumpToPosition(position)
+
+                $scope.pos = 0;
+                $scope.jumpToPosition = function (newPosition) {
+                    mvPreviewService.jumpToPosition(newPosition)
                 }
 
-                // ============================================================================
-
+                // ====================================================================================================
+                // Different approach
+                // ====================================================================================================
+                
                 // var player = document.getElementById('video_0');
                 // var vidURL = activeVideoList[vidImgChunkList[chunkIndex].URLIndex].url;
                 // player.src = vidURL + '#t=' + vidImgChunkList[chunkIndex].offset + ',' + vidImgChunkList[chunkIndex].end;

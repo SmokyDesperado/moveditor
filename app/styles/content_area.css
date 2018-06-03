@@ -50,6 +50,10 @@
     overflow: auto;
 }
 
+.mv-material__content--video.drag--clone {
+    opacity: 0.5;
+}
+
 .mv-material {
     background: lightgray;
 }

@@ -18,23 +18,30 @@ angular.module('moveditorApp')
             link: function($scope, $element, $attrs) {
                 var self = this;
 
+                this.dragClone = null;
+
                 $scope.panStart = function($event) {
                     console.log('pan start', $event);
+                    self.dragClone = angular.copy($event.target);
+                    angular.element(self.dragClone).addClass('drag--clone');
+                    $event.element[0].parentElement.parentElement.parentElement.prepend(self.dragClone);
+                    self.dragClone.style['position'] = 'absolute';
                 };
 
                 $scope.hammerPanMove = function($event) {
                     var x = $event.center.x - $event.target.offsetWidth/2,
                         y = $event.center.y - $event.target.offsetHeight;
 
-                    $event.target.style['left'] = x + 'px';
-                    $event.target.style['top'] = y + 'px';
+                    self.dragClone.style['left'] = x + 'px';
+                    self.dragClone.style['top'] = y + 'px';
 
-                    // self.out('pan', $event);
                     console.log('pan move');
                 };
 
                 $scope.panEnd = function($event) {
-                    console.log('pan end', $event);
+                    angular.element(self.dragClone).remove();
+                    self.dragClone = null;
+                    console.log('pan end');
                 };
 
                 $scope.panDoubletap = function($event) {
@@ -43,7 +50,6 @@ angular.module('moveditorApp')
 
                 $scope.hammerTap = function($event) {
                     console.log('pan tap');
-                    // self.out('tap', $event);
                 };
 
                 this.out = function (type, $event) {

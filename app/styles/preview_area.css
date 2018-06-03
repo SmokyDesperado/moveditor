@@ -1,5 +1,34 @@
 .preview-area{
     height: 600px;
-
     background: lightcoral;
+}
+
+.preview_player {
+    margin: auto;
+    padding: 10px;
+    width: 100%;
+}
+
+#active_videos_and_images {
+    position: relative;
+	background-color: black !important;
+    height: 0;
+    width: 100%;
+    padding-bottom: 56.25%;
+}
+
+#active_videos_and_images video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#active_videos_and_images img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
 }

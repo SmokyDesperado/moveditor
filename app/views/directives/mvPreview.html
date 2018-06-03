@@ -1,6 +1,89 @@
 <div class="preview-area__wrapper">
     <!-- ToDo: Nhat -->
-    <h1 data-ng-click="foo()">Preview content</h1>
+<!--     <h1 data-ng-click="play()">Preview content</h1>
     <div>test: {{ object.test }}</div>
-    <div>bla? <span data-ng-if="object.stuff != 'bla'">yes</span><span data-ng-if="object.stuff == 'bla'">no</span></div>
+    <div>bla? <span data-ng-if="object.stuff != 'bla'">yes</span><span data-ng-if="object.stuff == 'bla'">no</span></div> -->
+
+    <!-- =========================================================================================================================== -->
+
+    <div class="preview_player">
+	    <div id="active_videos_and_images">
+	        <img id="image_0" src="https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583">
+	        <video id="video_0" controls preload>
+	        </video>
+	    </div>
+	    <div class="active_audios">
+	    </div>
+<!-- 	    <hr />
+		    <p><a href="http://afarkas.github.io/webshim/demos/index.html#Media-elements">webshims mediaelement documentation</a></p>
+	    <hr /> -->
+	    <table>
+	        <tbody>
+	            <tr>
+	                <th>currentTime</th>
+	                <th>duration</th>
+	                <th>progress</th>
+	                <th>To Start</th>
+	                <th>Play</th>
+	                <th>Pause</th>
+	                <th>Volume</th>
+	                <th>Mute</th>
+					<th>Position</th>
+	            </tr>
+	            <tr>
+	                <td>
+	                	<span class="current-time"></span>
+	                	<div id="time_display">00:00:00:00</div>
+	                </td>
+	                <td>
+	                	<span class="duration"></span>
+	                </td>
+	                <td>
+	                	<span class="progress">0</span>
+	                </td>
+	                <td>
+	                    <input id="goToStart_button" type="button" value="<<" data-ng-click="goToStart()"/>
+	                </td>
+	                <td>
+	                    <input id="play_button" type="button" value="play" data-ng-click="play()"/>
+	                </td>
+	                <td>
+	                    <input id="pause_button" type="button" value="pause" data-ng-click="pause()"/>
+	                </td>
+	                <td>
+	                    <input id="volume_slider" type="range" value="1" max="1" step="0.01" data-ng-click="setVolume($event.target.value)"/>
+	                </td>
+	                <td>
+	                    <input id="muted_button" type="checkbox" data-ng-click="setMute($event.target.value)"/>
+	                </td>
+	                <td>
+	                    <input class="position_slider" type="range" value="0" max="33000" step="100" ng-model="pos" ng-change="jumpToPosition(pos)"/>
+	                </td>
+	                <th>currentTime</th>
+	                <td>
+	                    <input class="time-slider" type="range" disabled value="0" step="any"/>
+	                </td>
+	            </tr>
+	            <tr>
+	            </tr>
+	            <tr>
+	                <th>loadMediaSrc</th>
+	                <td>
+	                    <select class="load-media">
+	                        <option data-src='[{"src": "http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v", "type": "video/mp4"}, {"src": "http://corrupt-system.de/assets/media/sintel/sintel-trailer.webm", "type": "video/webm"}]'>Sintel Trailer</option>
+	                        <option data-src='[{"src": "http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v", "type": "video/mp4"}, {"src": "http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.ogg", "type": "video/ogg"}]'>BigBugBunny</option>
+	                        <option data-src="https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4">OneDrive</option>
+	                        <option data-src="https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0">DropBox</option>
+	                        <option data-src="https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA">gDrive</option>
+	                        <option data-src="https://www.bensound.com/bensound-music/bensound-betterdays.mp3">MP3</option>
+	                        <option data-src="https://jpgames.de/wp-content/uploads/2018/05/moonlgihter-620x250.jpg?x37583">jpg</option>
+	                    </select>
+	                </td>
+	            </tr>
+	        </tbody>
+	    </table>
+	</div>
+
+    <!-- =========================================================================================================================== -->
+
 </div>

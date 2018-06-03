@@ -12,6 +12,9 @@ angular.module('moveditorApp')
             templateUrl: '/views/directives/mvMaterial.html',
             replace: true,
             restrict: 'AE',
+            scope: {
+                materialObject: '='
+            },
             link: function($scope, $element, $attrs) {
                 var self = this;
 

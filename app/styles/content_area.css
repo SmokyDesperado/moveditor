@@ -54,6 +54,7 @@
 .mv-material__content--video {
     width: 192px;
     height: 108px;
+    margin: 20px;
 
     background: black;
 

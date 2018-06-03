@@ -23,10 +23,24 @@ angular.module('moveditorApp')
                     $event.target.style['top'] = y + 'px';
 
                     // self.out('pan', $event);
+                    console.log('pan move');
+                };
+
+                $scope.panStart = function($event) {
+                    console.log('pan start', $event);
+                };
+
+                $scope.panEnd = function($event) {
+                    console.log('pan end', $event);
+                };
+
+                $scope.panDoubletap = function($event) {
+                    console.log('pan double tap', $event);
                 };
 
                 $scope.hammerTap = function($event) {
-                    self.out('tap', $event);
+                    console.log('pan tap');
+                    // self.out('tap', $event);
                 };
 
                 this.out = function (type, $event) {
@@ -37,7 +51,7 @@ angular.module('moveditorApp')
                     console.log('mouse pos in element', $event.center);
                     console.log('style left', $event.target.style.left, '|| top', $event.target.style.top);
                     console.log('style', $event.target.style);
-                }
+                };
             }
         };
     }]);

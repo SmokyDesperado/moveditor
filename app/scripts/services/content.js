@@ -35,4 +35,12 @@ angular.module('moveditorApp')
                 console.log('element not in content list');
             }
         };
+
+        this.getContentList = function () {
+            return this.contentList;
+        };
+
+        this.getContentUrlList = function () {
+            return this.contentUrlList;
+        };
     }]);

@@ -10,23 +10,46 @@
 angular.module('moveditorApp')
     .controller('MvContentCtrl', [
         'ContentService',
-        function (ContentService) {
-            this.params = {
-                'test': 'test 1'
+        'Content',
+        'MvHelperService',
+        function (ContentService, Content, MvHelperService) {
+
+            this.dummyObjects = {};
+            this.dummyIndex = 0;
+
+            this.contentObjects = '';
+
+            this.init = function () {
+                this.contentObjects = ContentService.getContentList();
+                this.initDummyObject();
+                console.log('content list initialized:', this.contentObjects, this.dummyObjects);
             };
 
-            this.test = 'test 2';
+            this.addContentMaterial = function () {
 
-            this.doStuff = function () {
-                console.log('do stuff');
-            };
+                if(this.dummyIndex < 10) {
+                    ContentService.addContentObjectToList(this.dummyObjects[this.dummyIndex]);
+                    this.dummyIndex++;
 
-            this.hasStuff = function (stuff) {
-                if(stuff) {
-                    return true;
+                    console.log('object added');
                 }
-
-                return false;
+                else {
+                    console.warn('all dummy objects added');
+                }
             };
+
+            this.loadContentMaterial = function () {
+                console.warn('contentObjects:', this.contentObjects);
+            };
+
+            this.initDummyObject = function () {
+                for(var i = 0; i < 10; i++) {
+                    var testName = 'object ' + i;
+                    var testUrl = 'URL - ' + i + ': ' + MvHelperService.generateRandomHash();
+                    this.dummyObjects[i] = Content.create(testName, 'video', i, testUrl);
+                }
+            };
+
+            this.init();
         }
     ]);

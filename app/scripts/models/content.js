@@ -71,6 +71,15 @@ angular.module('moveditorApp')
             // functions
             // =========================================================================================================
 
+            Content.create = function(name, type, length, url) {
+                return new Content(
+                    name,
+                    type,
+                    length,
+                    url
+                );
+            };
+
             Content.prototype.incrementActive = function () {
                 this.active++;
             };

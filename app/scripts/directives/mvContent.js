@@ -16,12 +16,12 @@ angular.module('moveditorApp')
             bindToController: true,
             controllerAs:'ContentCtrl',
             link: function($scope, $element, $attrs, contentCtrl) {
-                $scope.click = function(param) {
-                    console.log('clicked with param:', param);
+                $scope.addContentMaterial = function() {
+                    contentCtrl.addContentMaterial();
                 };
 
-                $scope.doStuff = function() {
-                    contentCtrl.doStuff();
+                $scope.loadContentMaterial = function() {
+                    contentCtrl.loadContentMaterial();
                 };
             }
         };

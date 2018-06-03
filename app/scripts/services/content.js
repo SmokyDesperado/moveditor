@@ -8,14 +8,31 @@
  * Service in the moveditorApp.
  */
 angular.module('moveditorApp')
-    .service('ContentService', function () {
-        this. serviceParam = 0;
+    .service('ContentService', [
+        'MvHelperService',
+        function (MvHelperService) {
+        this.contentList = {};
+        this.contentUrlList = [];
 
-        this.setParam = function (value) {
-            this.param = value;
+        this.addContentObjectToList = function (contentMaterialObject) {
+            if(angular.isUndefined(this.contentUrlList[contentMaterialObject.url])) {
+                var contentIndexHash = MvHelperService.generateRandomHash();
+                this.contentList[contentIndexHash] = contentMaterialObject;
+                this.contentUrlList.push(contentMaterialObject.url);
+            }
+            else {
+                console.log('object already added');
+            }
         };
 
-        this.getParam = function () {
-            return this.param;
+        this.removecontentObjectFromList = function (contetnMaterialIndex) {
+            if(angular.isDefined(this.contentList[contetnMaterialIndex])) {
+                var contentUrlListIndex = this.contentUrlList.indexOf(this.contentList[contetnMaterialIndex].url);
+                this.contentUrlList.splice(contentUrlListIndex, 1);
+                delete this.contentList[contetnMaterialIndex];
+            }
+            else {
+                console.log('element not in content list');
+            }
         };
-    });
+    }]);

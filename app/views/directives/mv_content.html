@@ -5,13 +5,10 @@
             <span class="content-area__menu__list__element" data-ng-click="loadContentMaterial()">load</span>
         </div>
     </div>
-
-    <!--{{ ContentCtrl.contentObjects }}-->
-
     <div class="content-area__materials">
         <div class="content-area__materials__list">
-            <div class="content-area__materials__list__element" data-ng-repeat="material in ContentCtrl.contentObjects">
-                <mv-material material-object="material"></mv-material>
+            <div class="content-area__materials__list__element">
+                <mv-material data-ng-repeat="material in ContentCtrl.contentObjects" material-object="material"></mv-material>
             </div>
         </div>
     </div>

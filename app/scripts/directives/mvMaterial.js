@@ -18,6 +18,10 @@ angular.module('moveditorApp')
             link: function($scope, $element, $attrs) {
                 var self = this;
 
+                $scope.panStart = function($event) {
+                    console.log('pan start', $event);
+                };
+
                 $scope.hammerPanMove = function($event) {
                     var x = $event.center.x - $event.target.offsetWidth/2,
                         y = $event.center.y - $event.target.offsetHeight;
@@ -27,10 +31,6 @@ angular.module('moveditorApp')
 
                     // self.out('pan', $event);
                     console.log('pan move');
-                };
-
-                $scope.panStart = function($event) {
-                    console.log('pan start', $event);
                 };
 
                 $scope.panEnd = function($event) {

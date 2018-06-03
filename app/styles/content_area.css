@@ -6,10 +6,10 @@
 
 .content-area__wrapper {
     width: 100%;
+    height: 100%;
 }
 
 .content-area__menu {
-    /*padding: 20px;*/
     background: grey;
 }
 
@@ -30,16 +30,24 @@
 }
 
 .content-area__materials {
-    padding: 20px;
+    height: calc(100% - 40px);
 }
 
 .content-area__materials__list {
     display: flex;
     flex-wrap: wrap;
+    height: 100%;
 }
 
 .content-area__materials__list__element {
-    margin: 0 10px 20px 0;
+    margin: 0 0 20px 0;
+    height: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+
+    overflow: auto;
 }
 
 .mv-material {
@@ -47,7 +55,7 @@
 }
 
 .mv-material__content {
-    position: absolute;
+    /*position: absolute;*/
     z-index: 999999;
 }
 
@@ -64,5 +72,4 @@
 
 .mv-material__attributes {
     height: 40px;
-    /*display: none;*/
 }

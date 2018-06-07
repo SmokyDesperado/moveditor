@@ -9,9 +9,5 @@
  */
 angular.module('moveditorApp')
     .service('mvNavService', function () {
-        console.log('service started');
-
-        this.doStuff = function (param) {
-            console.log('param:', param);
-        }
+        var self = this;
     });

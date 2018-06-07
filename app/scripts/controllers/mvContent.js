@@ -28,7 +28,7 @@ angular.module('moveditorApp')
 
             this.addContentMaterial = function () {
 
-                if(this.dummyIndex < this.dummyIndexMax) {
+                if (this.dummyIndex < this.dummyIndexMax) {
                     ContentService.addContentObjectToList(this.dummyObjects[this.dummyIndex]);
                     this.dummyIndex++;
 
@@ -44,7 +44,7 @@ angular.module('moveditorApp')
             };
 
             this.initDummyObject = function () {
-                for(var i = 0; i < this.dummyIndexMax; i++) {
+                for (var i = 0; i < this.dummyIndexMax; i++) {
                     var testName = 'object ' + i;
                     var testUrl = 'URL - ' + i + ': ' + MvHelperService.generateRandomHash();
                     this.dummyObjects[i] = Content.create(testName, 'video', i, testUrl);

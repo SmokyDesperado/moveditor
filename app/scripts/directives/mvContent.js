@@ -14,13 +14,13 @@ angular.module('moveditorApp')
             restrict: 'AE',
             controller: 'MvContentCtrl',
             bindToController: true,
-            controllerAs:'ContentCtrl',
-            link: function($scope, $element, $attrs, contentCtrl) {
-                $scope.addContentMaterial = function() {
+            controllerAs: 'ContentCtrl',
+            link: function ($scope, $element, $attrs, contentCtrl) {
+                $scope.addContentMaterial = function () {
                     contentCtrl.addContentMaterial();
                 };
 
-                $scope.loadContentMaterial = function() {
+                $scope.loadContentMaterial = function () {
                     contentCtrl.loadContentMaterial();
                 };
             }

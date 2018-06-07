@@ -8,14 +8,28 @@
  * Service in the moveditorApp.
  */
 angular.module('moveditorApp')
-    .service('TimelineService', function () {
-        this. serviceParam = 0;
+    .service('TimelineService', [
+        'ContentService',
+        function (ContentService) {
 
-        this.setParam = function (value) {
-            this.param = value;
+        var self = this;
+        this.timelineList = [];
+
+        this.addTimelineObjectToList = function (contentListObjectId) {
+            var timelineObject = {
+                objectListId: contentListObjectId,
+                start: 0,
+                offset: 0,
+                end: 0,
+                type: ContentService.contentList[contentListObjectId].type,
+                mute: false
+            };
+
+            self.timelineList.push(timelineObject);
+            console.log('added', ContentService.contentList[contentListObjectId]);
         };
 
-        this.getParam = function () {
-            return this.param;
+        this.getTimelineObjectList = function () {
+            return this.timelineList;
         };
-    });
+    }]);

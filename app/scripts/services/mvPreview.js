@@ -15,12 +15,12 @@ angular.module('moveditorApp')
         var timeDisplay = null;
         var timeStepLoop = null;
         var activeVideo = null;
-        
+
         var currentPlayTime = 0;
         var timeAtStart = 0;
         var timeAtPause = 0;
         var jumpToTime = 0;
-        
+
         var positionA = 0;
         var positionB = 33000;
 
@@ -51,7 +51,7 @@ angular.module('moveditorApp')
 
             // create video elements for every active video in the timeline area
             var vidIndex = 0;
-            for(var i = 0; i < activeVideoList.length; i++) {               
+            for (var i = 0; i < activeVideoList.length; i++) {
                 var video = document.createElement("video");
                 video.src = activeVideoList[vidIndex].url;
                 video.id = "video_" + vidIndex;
@@ -175,11 +175,11 @@ angular.module('moveditorApp')
         }
 
         this.jumpToPosition = function (newPosition) {
-            
+
             currentPlayTime = newPosition;
             jumpToTime = currentPlayTime;
             timeAtPause = 0;
-            
+
             // update time display
             self.updateTimeDisplay(timeDisplay);
             timeAtStart = new Date().getTime() - jumpToTime;
@@ -242,7 +242,7 @@ angular.module('moveditorApp')
 
             // TODO: check whether chunks should start or end and do accordingly 
             document.getElementById("video_0").play();
-            
+
             // repeat
             self.startPlayTime(diff);
         }
@@ -258,9 +258,9 @@ angular.module('moveditorApp')
         this.getTimeLineLength = function (videoChunkList, audioChunkList) {
 
             // only need to check end time of last video or audio chunk
-            var endTimeVideo = videoChunkList[videoChunkList.length-1].end; 
-            var endTimeAudio = audioChunkList[audioChunkList.length-1].end;
-            
+            var endTimeVideo = videoChunkList[videoChunkList.length - 1].end;
+            var endTimeAudio = audioChunkList[audioChunkList.length - 1].end;
+
             return Math.max(endTimeVideo, endTimeAudio);
         }
 
@@ -274,9 +274,9 @@ angular.module('moveditorApp')
 
             // modified timer display from https://jsfiddle.net/Daniel_Hug/pvk6p/
             timeDisplay.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
-                                        (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
-                                        (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
-                                        (milliseconds > 90 ? milliseconds/10 : "00");
+                (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
+                (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
+                (milliseconds > 90 ? milliseconds / 10 : "00");
         }
 
     });

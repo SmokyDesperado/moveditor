@@ -12,7 +12,7 @@ angular.module('moveditorApp')
             templateUrl: '/views/directives/mvNav.html',
             replace: true,
             restrict: 'AE',
-            link: function(scope, element, attrs) {
+            link: function (scope, element, attrs) {
 
             }
         };

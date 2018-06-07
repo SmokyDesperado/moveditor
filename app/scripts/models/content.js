@@ -71,7 +71,7 @@ angular.module('moveditorApp')
             // functions
             // =========================================================================================================
 
-            Content.create = function(name, type, length, url) {
+            Content.create = function (name, type, length, url) {
                 return new Content(
                     name,
                     type,

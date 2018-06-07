@@ -14,13 +14,13 @@ angular.module('moveditorApp')
             restrict: 'AE',
             controller: 'MvTimelineCtrl',
             bindToController: true,
-            controllerAs:'TimelineCtrl',
-            link: function($scope, $element, $attrs, contentCtrl) {
-                $scope.click = function(param) {
+            controllerAs: 'TimelineCtrl',
+            link: function ($scope, $element, $attrs, contentCtrl) {
+                $scope.click = function (param) {
                     console.log('clicked with param:', param);
                 };
 
-                $scope.doStuff = function() {
+                $scope.doStuff = function () {
                     contentCtrl.doStuff();
                 };
             }

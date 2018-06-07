@@ -12,53 +12,24 @@ angular.module('moveditorApp')
             templateUrl: '/views/directives/mvPreview.html',
             replace: true,
             restrict: 'AE',
-            link: function ($scope, $element, $attrs) {
+            link: function($scope, $element, $attrs) {
 
-                var chunkIndex = 0;
-                var loop = false;
+                // var chunkIndex = 0;
+                // var loop = false;
                 // var newVidEvent = true;
-
-                // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
-                //              eingeben und beim ersten redirect load abbrechen.
-                //              link danach 'redirect' durch 'download' ersetzen
-                // dropbox link -> 'www' durch 'dl'
-                var activeVideoList = [
-                    {url: 'http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v'}
-                    , {url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v'}
-                    , {url: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3'}
-                    , {url: 'https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0'}
-                    , {url: 'https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4'}
-                    , {url: 'https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA'}
-                ];
-
-                var activeImageList = [
-                    {url: 'https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583'}
-                    , {url: 'https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583'}
-                ];
-
-                var vidImgChunkList = [
-                    {URLIndex: 0, start: 0, offset: 17, end: 19, type: "video"}
-                    , {URLIndex: 1, start: 0, offset: 15, end: 17, type: "video"}
-                    , {URLIndex: 2, start: 0, offset: 15, end: 17, type: "video"}
-                    , {URLIndex: 3, start: 0, offset: 15, end: 17, type: "video"}
-                    , {URLIndex: 4, start: 0, offset: 15, end: 17, type: "video"}
-                    , {URLIndex: 5, start: 0, offset: 2, end: 4, type: "video"}
-                    , {URLIndex: 0, start: 0, offset: 0, end: 3, type: "image"}
-                    , {URLIndex: 1, start: 0, offset: 0, end: 3, type: "image"}
-                ];
 
                 // ============================================================================
                 // preview_player setup
                 // ============================================================================
-
-                var videoAndImagesContainer = document.getElementById('active_videos_and_images');
+                
+                var activeMediaContainer = document.getElementById('active_media');
                 var time_display = document.getElementById('time_display');
-                mvPreviewService.initPlayer(time_display, activeVideoList, activeImageList, videoAndImagesContainer, vidImgChunkList[0]);
+                mvPreviewService.initPlayer(time_display, activeMediaContainer);
 
                 // ============================================================================
                 // preview_player controls
                 // ============================================================================
-
+                
                 $scope.play = function () {
                     mvPreviewService.play();
                 }
@@ -68,31 +39,44 @@ angular.module('moveditorApp')
                 }
 
                 $scope.goToStart = function () {
-                    mvPreviewService.goToStart();
+                    mvPreviewService.jumpToPosition(0)
                 }
 
+                $scope.vol = 1;
                 $scope.setVolume = function (vol) {
                     mvPreviewService.setVolume(vol);
+                    if (vol > 0) {
+                        mvPreviewService.setMute(false);
+                        $scope.mute = false;
+                    } else {
+                        mvPreviewService.setMute(true);
+                        $scope.mute = true;
+                    }
                 }
 
+                $scope.mute = false;
                 $scope.setMute = function (mute) {
-                    mvPreviewService.setMute(mute);
+                    mvPreviewService.setMute(!mute);
                 }
 
+                $scope.loop = false;
+                $scope.setLoop = function (loop) {
+                    mvPreviewService.setLoopPlay(!loop);
+                }
 
                 $scope.pos = 0;
-                $scope.jumpToPosition = function (newPosition) {
-                    mvPreviewService.jumpToPosition(newPosition)
+                $scope.jumpToPosition = function (pos) {
+                    mvPreviewService.jumpToPosition(pos);
                 }
 
                 // ====================================================================================================
                 // Different approach
                 // ====================================================================================================
-
+                
                 // var player = document.getElementById('video_0');
-                // var vidURL = activeVideoList[vidImgChunkList[chunkIndex].URLIndex].url;
+                // var vidURL = activeVideoList[vidImgChunkList[chunkIndex].contentID].url;
                 // player.src = vidURL + '#t=' + vidImgChunkList[chunkIndex].offset + ',' + vidImgChunkList[chunkIndex].end;
-
+                
                 // // player.addEventListener('loadedmetadata', function() {
                 // //     // this.currentTime = vidImgChunkList[chunkIndex].offset;
                 // //     console.log(player.duration);
@@ -114,7 +98,7 @@ angular.module('moveditorApp')
                 //     }
 
                 //     // play source only in given interval
-                //     var vidURL = activeVideoList[vidImgChunkList[chunkIndex].URLIndex].url;
+                //     var vidURL = activeVideoList[vidImgChunkList[chunkIndex].contentID].url;
                 //     player.src = vidURL + '#t=' + vidImgChunkList[chunkIndex].offset + ',' + [chunkIndex].end;
                 //     player.load();
                 //     player.play();
@@ -157,7 +141,7 @@ angular.module('moveditorApp')
 
                 if (window.webshim) {
                     (function () {
-
+                        
                         webshim.setOptions('mediaelement', {
                             replaceUI: 'auto'
                         });
@@ -172,23 +156,24 @@ angular.module('moveditorApp')
                     $('div.preview_player').each(function () {
                         var player = this;
                         var getSetCurrentTime = createGetSetHandler(
-                            function () {
-                                $('input.time-slider', player).prop('value', $.prop(this, 'currentTime'));
-                            }, function () {
-                                try {
-                                    $('video, audio', player).prop('currentTime', $.prop(this, 'value'));
-                                } catch (er) {
-                                }
-                            });
+
+                        function () {
+                            $('input.time-slider', player).prop('value', $.prop(this, 'currentTime'));
+                        }, function () {
+                            try {
+                                $('video, audio', player).prop('currentTime', $.prop(this, 'value'));
+                            } catch (er) {}
+                        });
 
                         var getSetVolume = createGetSetHandler(
-                            function () {
-                                $('input.volume-slider', player).prop('value', $.prop(this, 'volume'));
 
-                            }, function () {
-                                $('video, audio', player).prop('volume', $.prop(this, 'value'));
-                            });
+                        function () {
+                            $('input.volume-slider', player).prop('value', $.prop(this, 'volume'));
 
+                        }, function () {
+                            $('video, audio', player).prop('volume', $.prop(this, 'value'));
+                        });
+                        
                         $('video, audio', this).bind('durationchange updateMediaState', function () {
                             var duration = $.prop(this, 'duration');
                             if (!duration) {

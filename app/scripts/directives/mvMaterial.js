@@ -46,7 +46,7 @@ angular.module('moveditorApp')
                         angular.element(self.dragClone).remove();
                         self.dragClone = null;
 
-                        DragAndDropService.panMoveEnd();
+                        DragAndDropService.panMoveEnd($event, $scope.contentObjectKey);
                     };
 
                     $scope.panDoubletap = function ($event) {

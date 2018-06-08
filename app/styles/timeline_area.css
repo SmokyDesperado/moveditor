@@ -3,3 +3,9 @@
 
     background: lightgreen;
 }
+
+.dropable {
+    height: 100px;
+    /*min-width: 100%;*/
+    background: black;
+}

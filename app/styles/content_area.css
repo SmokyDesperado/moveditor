@@ -52,6 +52,7 @@
 
 .mv-material__content--video.drag--clone {
     opacity: 0.5;
+    background: red;
 }
 
 .mv-material {

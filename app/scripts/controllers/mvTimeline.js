@@ -9,8 +9,12 @@
  */
 angular.module('moveditorApp')
     .controller('MvTimelineCtrl', [
+        'TimelineService',
         'ContentService',
-        function (ContentService) {
-
+        'DragAndDropService',
+        function (TimelineService, ContentService, DragAndDropService) {
+            this.initTimelineElement = function ($element) {
+                DragAndDropService.setDropableElement($element);
+            };
         }
     ]);

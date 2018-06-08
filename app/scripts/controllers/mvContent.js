@@ -23,7 +23,7 @@ angular.module('moveditorApp')
             this.init = function () {
                 this.contentObjects = ContentService.getContentList();
                 this.initDummyObject();
-                console.log('content list initialized:', this.contentObjects, this.dummyObjects);
+                // console.log('content list initialized:', this.contentObjects, this.dummyObjects);
             };
 
             this.addContentMaterial = function () {
@@ -32,11 +32,11 @@ angular.module('moveditorApp')
                     ContentService.addContentObjectToList(this.dummyObjects[this.dummyIndex]);
                     this.dummyIndex++;
 
-                    console.log('object added');
+                    // console.log('object added');
                 }
-                else {
-                    console.warn('all dummy objects added');
-                }
+                // else {
+                //     console.warn('all dummy objects added');
+                // }
             };
 
             this.loadContentMaterial = function () {

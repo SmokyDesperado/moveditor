@@ -43,4 +43,9 @@ angular.module('moveditorApp')
             this.getContentUrlList = function () {
                 return this.contentUrlList;
             };
+
+            // ToDo: check functionality and correctness
+            this.addMpdForContentObject = function (contetnMaterialIndex, mpd) {
+                this.contentList[contetnMaterialIndex].setMdp(mpd);
+            };
         }]);

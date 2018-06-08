@@ -7,7 +7,9 @@
  * # navigator
  */
 angular.module('moveditorApp')
-    .directive('mvContent', [function () {
+    .directive('mvContent', [
+        'AWSService',
+        function (AWSService) {
         return {
             templateUrl: '/views/directives/mv_content.html',
             replace: true,

@@ -17,6 +17,7 @@ angular.module('moveditorApp')
                 this.length = length;
                 this.url = url;
                 this.active = 0;
+                this.mpd = '';
             }
 
             // =========================================================================================================
@@ -39,8 +40,12 @@ angular.module('moveditorApp')
                 return this.url;
             };
 
-            Content.prototype.getActive = function (active) {
+            Content.prototype.getActive = function () {
                 return this.active;
+            };
+
+            Content.prototype.getMpd = function () {
+                return this.mpd;
             };
 
             // =========================================================================================================
@@ -65,6 +70,10 @@ angular.module('moveditorApp')
 
             Content.prototype.setActive = function (active) {
                 this.active = active;
+            };
+
+            Content.prototype.setMdp = function (mdp) {
+                this.mdp = mdp;
             };
 
             // =========================================================================================================

@@ -18,7 +18,7 @@ angular.module('moveditorApp')
             this.dropableElement = null;
 
             this.init = function () {
-                console.log('drag and drop service');
+                // console.log('drag and drop service');
             };
 
             this.panMoveStarted = function (id) {
@@ -26,7 +26,7 @@ angular.module('moveditorApp')
             };
 
             this.panMove = function () {
-                console.log('pan move');
+                // console.log('pan move');
             };
 
             this.panMoveEnd = function ($event, contentObjectKey) {
@@ -35,7 +35,7 @@ angular.module('moveditorApp')
                     TimelineService.addTimelineObjectToList(contentObjectKey);
                 }
 
-                console.log('timelineList:', TimelineService.timelineList);
+                // console.log('timelineList:', TimelineService.timelineList);
             };
 
             this.setDropableElement = function (elemment) {
@@ -53,7 +53,7 @@ angular.module('moveditorApp')
                 timelineAttributes.height = elemment[0].offsetHeight;
 
                 this.dropableElement = timelineAttributes;
-                console.log(this.dropableElement);
+                // console.log(this.dropableElement);
             };
 
             this.hitTest = function (draggableElement) {

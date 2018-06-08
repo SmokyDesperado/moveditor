@@ -8,7 +8,9 @@
  * Service in the moveditorApp.
  */
 angular.module('moveditorApp')
-    .service('mvPreviewService', function () {
+    .service('mvPreviewService', [
+        'ContentService',
+        function (ContentService) {
 
         var self = this;
 
@@ -421,4 +423,4 @@ angular.module('moveditorApp')
             return currentChunk.offset + (currentPlayTime - currentChunk.start);
         }
 
-    });
+    }]);

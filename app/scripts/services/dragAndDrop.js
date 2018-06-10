@@ -25,17 +25,18 @@ angular.module('moveditorApp')
 
             };
 
-            this.panMove = function () {
-                console.log('pan move');
+            this.panMove = function ($event) {
+
             };
 
             this.panMoveEnd = function ($event, contentObjectKey) {
                 var list = TimelineService.getTimelineObjectList();
                 if(self.hitTest($event.center)) {
+                    TimelineService.setMouseHoverPosX($event.center.x);
                     TimelineService.addTimelineObjectToList(contentObjectKey);
                 }
 
-                console.log('timelineList:', TimelineService.timelineList);
+                // console.log('timelineList:', TimelineService.timelineList);
             };
 
             this.setDropableElement = function (elemment) {

@@ -2,7 +2,7 @@
     <h1>timeline</h1>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-junk__wrap" >
-            <div class="timeline-junk" data-ng-repeat="junks in TimelineCtrl.timelineList" style="left: {{junks.start * 10}}px;">
+            <div class="timeline-junk" data-ng-repeat="junks in TimelineCtrl.timelineList" style="left: {{junks.start}}px; width: {{junks.length}}px;">
                 ID: {{junks.objectListId}}
             </div>
         </div>

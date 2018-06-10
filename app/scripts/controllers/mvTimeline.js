@@ -16,6 +16,7 @@ angular.module('moveditorApp')
             var self = this;
 
             this.timelineList = '';
+            // this.timelineWidth = TimelineService.getTimelineWidth();
 
             this.initTimelineElement = function ($element) {
                 DragAndDropService.setDropableElement($element);
@@ -24,6 +25,7 @@ angular.module('moveditorApp')
             };
 
             this.tap = function ($event) {
+                // TimelineService.setTimelineWidth(1000);
                 console.log('timeline', TimelineService.timelineList);
             };
         }

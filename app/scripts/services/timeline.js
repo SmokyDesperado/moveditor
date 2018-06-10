@@ -18,7 +18,7 @@ angular.module('moveditorApp')
         this.addTimelineObjectToList = function (contentListObjectId) {
             var timelineObject = {
                 objectListId: contentListObjectId,
-                start: 0,
+                start: (this.timelineList.length * 10),
                 offset: 0,
                 end: 0,
                 type: ContentService.contentList[contentListObjectId].type,
@@ -27,6 +27,10 @@ angular.module('moveditorApp')
 
             self.timelineList.push(timelineObject);
             console.log('added', ContentService.contentList[contentListObjectId]);
+        };
+
+        this.getTimelinList = function () {
+            return this.timelineList;
         };
 
         this.getTimelineObjectList = function () {

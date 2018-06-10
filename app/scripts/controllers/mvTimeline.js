@@ -13,8 +13,18 @@ angular.module('moveditorApp')
         'ContentService',
         'DragAndDropService',
         function (TimelineService, ContentService, DragAndDropService) {
+            var self = this;
+
+            this.timelineList = '';
+
             this.initTimelineElement = function ($element) {
                 DragAndDropService.setDropableElement($element);
+                this.timelineList = TimelineService.getTimelinList();
+                console.log(this.timelineList);
+            };
+
+            this.tap = function ($event) {
+                console.log('timeline', TimelineService.timelineList);
             };
         }
     ]);

@@ -39,7 +39,7 @@ angular.module('moveditorApp')
                         self.dragClone.style['left'] = x + 'px';
                         self.dragClone.style['top'] = y + 'px';
 
-                        DragAndDropService.panMove();
+                        DragAndDropService.panMove($event);
                     };
 
                     $scope.panEnd = function ($event) {

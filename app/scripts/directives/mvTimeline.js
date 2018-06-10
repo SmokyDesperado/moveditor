@@ -20,6 +20,10 @@ angular.module('moveditorApp')
                     console.log('clicked with param:', param);
                 };
 
+                $scope.tap = function($event) {
+                    TimelineCtrl.tap($event);
+                };
+
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));
             }
         };

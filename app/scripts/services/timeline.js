@@ -58,10 +58,20 @@ angular.module('moveditorApp')
             };
 
             ContentService.contentList[contentListObjectId].active++;
-            this.calculateJunkPositions(timelineObject);
+            self.calculateJunkPositions(timelineObject);
 
-            self.timelineList.push(timelineObject);
+            self.sortedAddingObjectToTimelineList(timelineObject);
             // console.log('added', ContentService.contentList[contentListObjectId]);
+        };
+
+        this.sortedAddingObjectToTimelineList = function(timelineObject) {
+            var timelineListIndex = 0;
+            for(var i = 0; i < this.timelineList.length; i++) {
+                if(timelineObject.start > this.timelineList[i].start) {
+                    timelineListIndex = this.timelineList.indexOf(this.timelineList[i]) + 1;
+                }
+            }
+            this.timelineList.splice(timelineListIndex, 0, timelineObject);
         };
 
         this.calculateJunkPositions = function (newTimelineObject) {

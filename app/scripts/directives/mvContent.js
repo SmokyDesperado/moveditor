@@ -18,13 +18,21 @@ angular.module('moveditorApp')
             bindToController: true,
             controllerAs: 'ContentCtrl',
             link: function ($scope, $element, $attrs, contentCtrl) {
+
                 $scope.addContentMaterial = function () {
-                    contentCtrl.addContentMaterial();
+                    var inputURLField = document.getElementById("url__input__field");
+                    if(inputURLField.value != "") {
+                        contentCtrl.addContentMaterial(inputURLField.value);
+                        
+                        // reset input field
+                        inputURLField.value = "";
+                    }
                 };
 
                 $scope.loadContentMaterial = function () {
                     contentCtrl.loadContentMaterial();
                 };
+
             }
         };
     }]);

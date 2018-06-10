@@ -14,41 +14,37 @@ angular.module('moveditorApp')
         'MvHelperService',
         function (ContentService, Content, MvHelperService) {
 
-            this.dummyObjects = {};
-            this.dummyIndex = 0;
-            this.dummyIndexMax = 20;
-
             this.contentObjects = '';
 
             this.init = function () {
                 this.contentObjects = ContentService.getContentList();
-                this.initDummyObject();
-                // console.log('content list initialized:', this.contentObjects, this.dummyObjects);
             };
 
-            this.addContentMaterial = function () {
+            this.addContentMaterial = function (MaterialURL) {
 
-                if (this.dummyIndex < this.dummyIndexMax) {
-                    ContentService.addContentObjectToList(this.dummyObjects[this.dummyIndex]);
-                    this.dummyIndex++;
+                // check for valid URL
+                if (MvHelperService.validateURL(MaterialURL)) {
+                    // get media type of provided URL
+                    var type = MvHelperService.getURLMediaType(MaterialURL);
 
-                    // console.log('object added');
+                    if (type != null) {
+                        // TODO: extract length from video or audio URL
+                        var length = 0;
+                        var name = "";
+
+                        // create new content object and add it to the content object list
+                        var newContentObject = Content.create(name, type, length, MaterialURL);
+                        ContentService.addContentObjectToList(newContentObject);
+                    } else {
+                        MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
+                    }
+                } else {
+                    MvHelperService.alert("Provided URL was not valid!");
                 }
-                // else {
-                //     console.warn('all dummy objects added');
-                // }
             };
 
             this.loadContentMaterial = function () {
                 console.warn('contentObjects:', this.contentObjects);
-            };
-
-            this.initDummyObject = function () {
-                for (var i = 0; i < this.dummyIndexMax; i++) {
-                    var testName = 'object ' + i;
-                    var testUrl = 'URL - ' + i + ': ' + MvHelperService.generateRandomHash();
-                    this.dummyObjects[i] = Content.create(testName, 'video', i, testUrl);
-                }
             };
 
             this.init();

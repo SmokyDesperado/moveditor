@@ -9,7 +9,8 @@
 angular.module('moveditorApp')
     .directive('mvMaterial', [
         'DragAndDropService',
-        function (DragAndDropService) {
+        'MvHelperService',
+        function (DragAndDropService, MvHelperService) {
             return {
                 templateUrl: '/views/directives/mvMaterial.html',
                 replace: true,
@@ -22,6 +23,36 @@ angular.module('moveditorApp')
                     var self = this;
 
                     this.dragClone = null;
+
+                    // ##########################################################################################################
+                    // Create thumbnail
+                    // ##########################################################################################################
+                    var container = $element.find('.mv-material__content')[0];
+
+                    if ($scope.materialObject.type == "video") {
+                        var canvas = document.createElement('canvas');
+                        canvas.className = "media-thumbnail";
+                        container.appendChild(canvas);
+
+                        MvHelperService.createVideoThumbnail($scope.materialObject.url, canvas);
+                    }
+
+                    if ($scope.materialObject.type == "image") {
+                        var image = new Image();
+                        image.src = $scope.materialObject.url;
+                        image.className = "media-thumbnail";
+                        container.appendChild(image);
+                    }
+
+                    if ($scope.materialObject.type == "audio") {
+                        var image = new Image();
+
+                        // royalty free image
+                        image.src = "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=beb0f979ed2a7da134fb95a2ae6290c3&auto=format&fit=crop&w=1350&q=80";
+                        image.className = "media-thumbnail";
+                        container.appendChild(image);
+                    }
+                    // ##########################################################################################################
 
                     $scope.panStart = function ($event) {
                         self.dragClone = angular.copy($event.target);

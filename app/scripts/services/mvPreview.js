@@ -101,7 +101,7 @@ angular.module('moveditorApp')
                     var video = document.createElement("video");
                     video.src = contentMedia.url;
                     video.id = "video_" + contentMedia.id;
-                    video.controls = true;
+                    video.controls = false;
                     video.preload = "true";
                     video.style.zIndex = "-1";
                     activeMediaContainer.appendChild(video);

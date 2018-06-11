@@ -26,6 +26,7 @@
     position: absolute;
 
     background: red;
-
+    border-left: solid 5px black;
+    border-right: solid 5px white;
     color: white;
 }

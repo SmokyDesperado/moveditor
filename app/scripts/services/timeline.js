@@ -77,30 +77,63 @@ angular.module('moveditorApp')
         this.calculateJunkPositions = function (newTimelineObject) {
             console.log('object:', newTimelineObject.start, (newTimelineObject.start + newTimelineObject.length));
 
-            var totalEnd = 0;
-            for(var i = 0; i < this.timelineList.length; i++) {
-                console.log('junks:', this.timelineList[i].start, this.timelineList[i].length, this.timelineList[i].start + this.timelineList[i].length);
-                if((newTimelineObject.start > this.timelineList[i].start) && (newTimelineObject.start < (this.timelineList[i].start + this.timelineList[i].length))) {
-                    console.error('collide start');
-
-                    if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
-                        totalEnd = this.timelineList[i].start + this.timelineList[i].length;
+            if(this.timelineList.length > 1) {
+                console.log('if');
+                for(var i = 0; i < (this.timelineList.length - 1); i++) {
+                    if(
+                        (newTimelineObject.start >= this.timelineList[i].start) &&
+                        (newTimelineObject.start <= (this.timelineList[i].start + this.timelineList[i].length))
+                    ) {
+                        newTimelineObject.start = this.timelineList[i].start + this.timelineList[i].length;
                     }
-                    // console.log(newTimelineObject.start, (this.timelineList[i].start +  this.timelineList[i].length));
-                }
 
-                if(((newTimelineObject.start + newTimelineObject.length) > this.timelineList[i].start) && ((newTimelineObject.start + newTimelineObject.length) < (this.timelineList[i].start + this.timelineList[i].length))) {
-                    console.error('collide end');
-
-                    if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
-                        totalEnd = this.timelineList[i].start + this.timelineList[i].length;
+                    if(
+                        ((newTimelineObject.start + newTimelineObject.length) >= this.timelineList[i].start) &&
+                        ((newTimelineObject.start + newTimelineObject.length) <= (this.timelineList[i].start +this.timelineList[i].length))
+                    ) {
+                        newTimelineObject.start = this.timelineList[i].start + this.timelineList[i].length;
                     }
-                    // console.log(newTimelineObject.length, this.timelineList[i].start, this.timelineList[i].length)
+
+                    if(
+                        ((newTimelineObject.start + newTimelineObject.length) >= this.timelineList[i + 1].start) &&
+                        ((newTimelineObject.start + newTimelineObject.length) <= (this.timelineList[i + 1].start + this.timelineList[i + 1].length))
+                    ) {
+                        newTimelineObject.start = this.timelineList[i + 1].start + this.timelineList[i + 1].length;
+                    }
+
+                    if(
+                        (newTimelineObject.start >= this.timelineList[this.timelineList.length - 1].start) &&
+                        (newTimelineObject.start <= (this.timelineList[this.timelineList.length - 1].start + this.timelineList[this.timelineList.length - 1].length))
+                    ) {
+                        newTimelineObject.start = this.timelineList[this.timelineList.length - 1].start + this.timelineList[this.timelineList.length - 1].length;
+                    }
                 }
             }
+            else {
+                var totalEnd = 0;
 
-            if(newTimelineObject.start <= totalEnd) {
-                newTimelineObject.start = totalEnd;
+                for(var i = 0; i < this.timelineList.length; i++) {
+                    console.log('junks:', this.timelineList[i].start, this.timelineList[i].length, this.timelineList[i].start + this.timelineList[i].length);
+                    if((newTimelineObject.start > this.timelineList[i].start) && (newTimelineObject.start < (this.timelineList[i].start + this.timelineList[i].length))) {
+                        console.error('collide start');
+
+                        if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
+                            totalEnd = this.timelineList[i].start + this.timelineList[i].length;
+                        }
+                    }
+
+                    if(((newTimelineObject.start + newTimelineObject.length) > this.timelineList[i].start) && ((newTimelineObject.start + newTimelineObject.length) < (this.timelineList[i].start + this.timelineList[i].length))) {
+                        console.error('collide end');
+
+                        if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
+                            totalEnd = this.timelineList[i].start + this.timelineList[i].length;
+                        }
+                    }
+                }
+
+                if(newTimelineObject.start <= totalEnd) {
+                    newTimelineObject.start = totalEnd;
+                }
             }
         };
 

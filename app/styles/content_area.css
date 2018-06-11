@@ -89,8 +89,9 @@
     width: 192px;
     height: 108px;
     display: inline-block;
-    z-index: -1;
+    z-index: -1000;
 
+    pointer-events: none;
     position: absolute;
     top: 0;
     left: 0;

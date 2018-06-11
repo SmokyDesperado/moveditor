@@ -66,7 +66,7 @@ angular.module('moveditorApp')
                 this.addContentMaterial("http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v");
                 this.addContentMaterial("https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0");
                 this.addContentMaterial("https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4");
-                this.addContentMaterial("https://drive.google.com/uc?export=download&id=1qXlYazitNrc7Up6XceuGPYZKVb6DXG00");
+                this.addContentMaterial("https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA");
                 this.addContentMaterial("https://www.bensound.com/bensound-music/bensound-betterdays.mp3");
                 this.addContentMaterial("https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583");
                 this.addContentMaterial("https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583");

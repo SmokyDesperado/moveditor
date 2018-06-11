@@ -16,6 +16,8 @@ angular.module('moveditorApp')
 
         var timeDisplay = null;
         var activeMediaContainer = null;
+        var positionSlider = null;
+
         var timeStepLoop = null;
         var previousChunkPair = [null, null]; // [video/image, audio]
 
@@ -48,18 +50,18 @@ angular.module('moveditorApp')
             { id: 1, url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v', type: "video", activeElements: 1 },
             { id: 2, url: 'https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0', type: "video", activeElements: 1 },
             { id: 3, url: 'https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4', type: "video", activeElements: 1 },
-            { id: 4, url: 'https://drive.google.com/uc?export=download&id=1qXlYazitNrc7Up6XceuGPYZKVb6DXG00', type: "video", activeElements: 1 },
+            { id: 4, url: 'https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA', type: "video", activeElements: 1 },
             { id: 5, url: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3', type: "audio", activeElements: 0 },
             { id: 6, url: 'https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583', type: "image", activeElements: 1 },
             { id: 7, url: 'https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583', type: "image", activeElements: 1 }
         ];
 
         var videoImageChunkList = [
-            { contentID: 0, start: 0, end: 2000, offset: 5000, mute: false },
+            { contentID: 0, start: 0, end: 2000, offset: 8000, mute: false },
             { contentID: 1, start: 2000, end: 4000, offset: 20000, mute: false },
             { contentID: 2, start: 4000, end: 5000, offset: 3000, mute: false },
             { contentID: 3, start: 6000, end: 8000, offset: 0, mute: false },
-            { contentID: 4, start: 8000, end: 10000, offset: 5000, mute: false },
+            { contentID: 4, start: 8000, end: 10000, offset: 5500, mute: false },
             { contentID: 6, start: 10000, end: 12000, offset: 0, mute: false },
             { contentID: 7, start: 12000, end: 14000, offset: 0, mute: false },
             { contentID: 0, start: 14000, end: 16000, offset: 15000, mute: false }
@@ -72,11 +74,12 @@ angular.module('moveditorApp')
         // Preview player initialization
         // ====================================================================================================
 
-        this.initPlayer = function (timeDisplayElement, activeMediaContainerElement) {
+        this.initPlayer = function (timeDisplayElement, activeMediaContainerElement, positionSliderElement) {
 
             // save timeDisplay and activeMediaContainer element
             timeDisplay = timeDisplayElement;
             activeMediaContainer = activeMediaContainerElement;
+            positionSlider = positionSliderElement;
 
             // delete all video, img and audio elements from activeMediaContainer, just a safety measure
             var videoElements = activeMediaContainer.getElementsByTagName("video");
@@ -100,9 +103,10 @@ angular.module('moveditorApp')
                 if (contentMedia.type == "video" && document.getElementById("video_" + videoImageChunkList[i].contentID) == null) {
                     var video = document.createElement("video");
                     video.src = contentMedia.url;
+                    // video.src = contentMedia.url + "#t=" + videoImageChunkList[i].start + "," + videoImageChunkList[i].end;
                     video.id = "video_" + contentMedia.id;
                     video.controls = false;
-                    video.preload = "true";
+                    video.preload = "auto";
                     video.style.zIndex = "-1";
                     activeMediaContainer.appendChild(video);
                 }
@@ -178,12 +182,13 @@ angular.module('moveditorApp')
             
             // update time parameters
             currentPlayTime = newPosition;
+            positionSlider.value = currentPlayTime;
             jumpToTime = currentPlayTime;
             timeAtStart = new Date().getTime() - jumpToTime;
             timeAtPause = 0;
             
             // update time display
-            self.updateTimeDisplay(timeDisplay);
+            self.updateTimeDisplay(currentPlayTime, timeDisplay);
 
             if (DEBUG_LOGS) {
                 console.log("======================= JUMP =======================");
@@ -257,9 +262,10 @@ angular.module('moveditorApp')
 
             // increment current time
             currentPlayTime += timeStepInterval;
+            positionSlider.value = currentPlayTime;
 
             // update time display
-            self.updateTimeDisplay(timeDisplay);
+            self.updateTimeDisplay(currentPlayTime, timeDisplay);
 
             // self-adjusting algorithm from https://www.sitepoint.com/creating-accurate-timers-in-javascript/
             var diff = 0;
@@ -340,16 +346,16 @@ angular.module('moveditorApp')
         // Helper functions
         // ====================================================================================================
 
-        this.updateTimeDisplay = function (timeDisplay) {
+        this.updateTimeDisplay = function (time, display) {
 
             // display in "h:m:s:ms"
-            var milliseconds = Math.floor((currentPlayTime % 1000));
-            var seconds = Math.floor(currentPlayTime / 1000) % 60;
-            var minutes = Math.floor(Math.floor(currentPlayTime / 1000) / 60) % 60;
-            var hours = Math.floor(Math.floor(currentPlayTime / 1000) / 60 / 60) % 60;
+            var milliseconds = Math.floor((time % 1000));
+            var seconds = Math.floor(time / 1000) % 60;
+            var minutes = Math.floor(Math.floor(time / 1000) / 60) % 60;
+            var hours = Math.floor(Math.floor(time / 1000) / 60 / 60) % 60;
 
             // modified timer display from https://jsfiddle.net/Daniel_Hug/pvk6p/
-            timeDisplay.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
+            display.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
                                         (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
                                         (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
                                         (milliseconds > 90 ? milliseconds/10 : "00");

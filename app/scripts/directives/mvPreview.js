@@ -24,8 +24,9 @@ angular.module('moveditorApp')
                 
                 var activeMediaContainer = document.getElementById('active_media');
                 var time_display = document.getElementById('time_display');
-                mvPreviewService.initPlayer(time_display, activeMediaContainer);
-
+                var position_slider = document.getElementById('position_slider');
+                mvPreviewService.initPlayer(time_display, activeMediaContainer, position_slider);
+                
                 // ============================================================================
                 // preview_player controls
                 // ============================================================================
@@ -44,6 +45,7 @@ angular.module('moveditorApp')
 
                 $scope.vol = 1;
                 $scope.setVolume = function (vol) {
+                    console.log(vol);
                     mvPreviewService.setVolume(vol);
                     if (vol > 0) {
                         mvPreviewService.setMute(false);
@@ -55,13 +57,15 @@ angular.module('moveditorApp')
                 }
 
                 $scope.mute = false;
-                $scope.setMute = function (mute) {
-                    mvPreviewService.setMute(!mute);
+                $scope.setMute = function () {
+                    console.log(!$scope.mute);
+                    mvPreviewService.setMute(!$scope.mute);
                 }
 
                 $scope.loop = false;
-                $scope.setLoop = function (loop) {
-                    mvPreviewService.setLoopPlay(!loop);
+                $scope.setLoop = function () {
+                    console.log(!$scope.loop);
+                    mvPreviewService.setLoopPlay(!$scope.loop);
                 }
 
                 $scope.pos = 0;

@@ -29,6 +29,10 @@
     background: white;
 }
 
+.content-area__menu__list__element#url__input__field {
+    width: 200px;
+}
+
 .content-area__materials {
     height: calc(100% - 40px);
 }
@@ -69,6 +73,8 @@
     height: 108px;
     margin: 20px;
 
+    position: relative;
+
     background: black;
 
     text-align: center;
@@ -77,4 +83,15 @@
 
 .mv-material__attributes {
     height: 40px;
+}
+
+.media-thumbnail {
+    width: 192px;
+    height: 108px;
+    display: inline-block;
+    z-index: -1;
+
+    position: absolute;
+    top: 0;
+    left: 0;
 }

@@ -15,7 +15,7 @@ angular.module('moveditorApp')
             this.contentUrlList = [];
 
             this.addContentObjectToList = function (contentMaterialObject) {
-                if (angular.isUndefined(this.contentUrlList[contentMaterialObject.url])) {
+                if (this.contentUrlList.indexOf(contentMaterialObject.url) == -1) {
                     var contentIndexHash = MvHelperService.generateRandomHash();
                     this.contentList[contentIndexHash] = contentMaterialObject;
                     this.contentUrlList.push(contentMaterialObject.url);

@@ -14,41 +14,62 @@ angular.module('moveditorApp')
         'MvHelperService',
         function (ContentService, Content, MvHelperService) {
 
-            this.dummyObjects = {};
-            this.dummyIndex = 0;
-            this.dummyIndexMax = 20;
-
             this.contentObjects = '';
 
             this.init = function () {
                 this.contentObjects = ContentService.getContentList();
-                this.initDummyObject();
-                // console.log('content list initialized:', this.contentObjects, this.dummyObjects);
             };
 
-            this.addContentMaterial = function () {
+            this.addContentMaterial = function (MaterialURL) {
 
-                if (this.dummyIndex < this.dummyIndexMax) {
-                    ContentService.addContentObjectToList(this.dummyObjects[this.dummyIndex]);
-                    this.dummyIndex++;
+                // check for valid URL
+                if (MvHelperService.validateURL(MaterialURL)) {
+                    // get media type of provided URL
+                    var type = MvHelperService.getURLMediaType(MaterialURL);
 
-                    // console.log('object added');
+                    if (type != null) {
+
+                        // TODO: extract length from video or audio URL
+                        // var tmpPlayer = document.createElement("video");
+                        // tmpPlayer.style.display = "none";
+                        // tmpPlayer.addEventListener("loadedmetadata", function () {
+                        //     console.log("addEventListener");
+                        //     var length = tmpPlayer.duration;
+                        //     var name = "";
+
+                        //     console.log(length);
+
+                        //     // create new content object and add it to the content object list
+                        //     var newContentObject = Content.create(name, type, length, MaterialURL);
+                        //     ContentService.addContentObjectToList(newContentObject);
+                        // });
+                        // tmpPlayer.src = MaterialURL;
+
+                        var length = 0;
+                        var name = "";
+
+                        // create new content object and add it to the content object list
+                        var newContentObject = Content.create(name, type, length, MaterialURL);
+                        ContentService.addContentObjectToList(newContentObject);
+                    } else {
+                        MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
+                    }
+                } else {
+                    MvHelperService.alert("Provided URL was not valid!");
                 }
-                // else {
-                //     console.warn('all dummy objects added');
-                // }
             };
 
             this.loadContentMaterial = function () {
-                console.warn('contentObjects:', this.contentObjects);
-            };
+                // console.warn('contentObjects:', this.contentObjects);
 
-            this.initDummyObject = function () {
-                for (var i = 0; i < this.dummyIndexMax; i++) {
-                    var testName = 'object ' + i;
-                    var testUrl = 'URL - ' + i + ': ' + MvHelperService.generateRandomHash();
-                    this.dummyObjects[i] = Content.create(testName, 'video', i, testUrl);
-                }
+                this.addContentMaterial("http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v");
+                this.addContentMaterial("http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v");
+                this.addContentMaterial("https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0");
+                this.addContentMaterial("https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4");
+                this.addContentMaterial("https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA");
+                this.addContentMaterial("https://www.bensound.com/bensound-music/bensound-betterdays.mp3");
+                this.addContentMaterial("https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583");
+                this.addContentMaterial("https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583");
             };
 
             this.init();

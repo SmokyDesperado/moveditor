@@ -73,6 +73,14 @@ angular.module('moveditorApp')
                     mvPreviewService.jumpToPosition(pos);
                 }
 
+                $scope.setPositionA = function (posA) {
+                    mvPreviewService.setPositionA(posA*1000);
+                }
+
+                $scope.setPositionB = function (posB) {
+                    mvPreviewService.setPositionB(posB*1000);
+                }
+
                 // ====================================================================================================
                 // Different approach
                 // ====================================================================================================

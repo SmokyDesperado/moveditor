@@ -36,6 +36,13 @@ angular.module('moveditorApp')
                 }
             };
 
+            this.setLengthOfContentListObject = function (contetnMaterialIndex, length) {
+                if(angular.isDefined(this.contentList[contetnMaterialIndex])) {
+                    this.contentList[contetnMaterialIndex].length = length;
+                    console.log(this.contentList[contetnMaterialIndex]);
+                }
+            };
+
             this.getContentList = function () {
                 return this.contentList;
             };

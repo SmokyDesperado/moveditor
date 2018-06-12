@@ -99,6 +99,16 @@ angular.module('moveditorApp')
             tmpPlayer.src = URL;
         };
 
+        this.getVideoDuration = function (URL, contentObject, $scope) {
+            var tmpPlayer = document.createElement("video");
+            tmpPlayer.style.display = "none";
+            tmpPlayer.src = URL;
+            tmpPlayer.onloadeddata = function() {
+                contentObject.length = tmpPlayer.duration;
+                $scope.$apply();
+            };
+        };
+
         this.alert = function (alertText) {
             alert(alertText + "\n\n" + "If there seems to be a bug or an unexpected behaviour, please contact the developers of this site.");
         };

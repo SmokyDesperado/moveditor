@@ -10,7 +10,8 @@ angular.module('moveditorApp')
     .directive('mvMaterial', [
         'DragAndDropService',
         'MvHelperService',
-        function (DragAndDropService, MvHelperService) {
+        'ContentService',
+        function (DragAndDropService, MvHelperService, ContentService) {
             return {
                 templateUrl: '/views/directives/mvMaterial.html',
                 replace: true,
@@ -35,6 +36,7 @@ angular.module('moveditorApp')
                         container.appendChild(canvas);
 
                         MvHelperService.createVideoThumbnail($scope.materialObject.url, canvas);
+                        MvHelperService.getVideoDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
                     }
 
                     if ($scope.materialObject.type == "image") {

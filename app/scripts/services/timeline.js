@@ -15,7 +15,7 @@ angular.module('moveditorApp')
         var self = this;
         this.timelineList = [];
         this.mouseHoverPosX = 0;
-        this.timelineWidth = 100;
+        this.timelineWidth = 1920;
 
         this.pixelPerSeconds = 20;
 
@@ -53,7 +53,7 @@ angular.module('moveditorApp')
                 objectListId: contentListObjectId,
                 start: this.getMouseHoverPosX(),
                 offset: 0,
-                end: (this.getMouseHoverPosX() + (ContentService.contentList[contentListObjectId].length * this.pixelPerSeconds)),
+                end: 0,
                 type: ContentService.contentList[contentListObjectId].type,
                 length: (ContentService.contentList[contentListObjectId].length * this.pixelPerSeconds),
                 mute: false
@@ -61,11 +61,19 @@ angular.module('moveditorApp')
 
             ContentService.contentList[contentListObjectId].active++;
             self.calculateJunkPositions(timelineObject);
-
             self.sortedAddingObjectToTimelineList(timelineObject);
-
-            console.log('timelineObject:', timelineObject);
+            self.calculateTimelineWidth(timelineObject);
             // console.log('added', ContentService.contentList[contentListObjectId]);
+        };
+
+        this.calculateTimelineWidth = function (timelineObject) {
+            var timelineWidthDifference = 0;
+            if(timelineObject.end > this.timelineWidth) {
+                timelineWidthDifference = timelineObject.end - this.timelineWidth;
+                console.log('timelineWidth updated');
+            }
+
+            this.timelineWidth = this.timelineWidth + timelineWidthDifference;
         };
 
         this.sortedAddingObjectToTimelineList = function(timelineObject) {
@@ -112,6 +120,8 @@ angular.module('moveditorApp')
                     ) {
                         newTimelineObject.start = this.timelineList[this.timelineList.length - 1].start + this.timelineList[this.timelineList.length - 1].length;
                     }
+
+                    newTimelineObject.end = newTimelineObject.start + newTimelineObject.length;
                 }
             }
             else {
@@ -138,6 +148,7 @@ angular.module('moveditorApp')
 
                 if(newTimelineObject.start <= totalEnd) {
                     newTimelineObject.start = totalEnd;
+                    newTimelineObject.end = newTimelineObject.start + newTimelineObject.length;
                 }
             }
         };

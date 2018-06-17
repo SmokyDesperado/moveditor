@@ -6,12 +6,11 @@
 
 .dropable {
     height: 100px;
-    /*min-width: 100%;*/
+    overflow-x: scroll;
     background: black;
 }
 
 .timeline-junk__wrap {
-    width: 100%;
     height: 80px;
 
     position: relative;

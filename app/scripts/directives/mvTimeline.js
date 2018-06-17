@@ -7,7 +7,7 @@
  * # navigator
  */
 angular.module('moveditorApp')
-    .directive('mvTimeline', [function () {
+    .directive('mvTimeline', ['TimelineService', function (TimelineService) {
         return {
             templateUrl: '/views/directives/mvTimeline.html',
             replace: true,
@@ -16,6 +16,9 @@ angular.module('moveditorApp')
             bindToController: true,
             controllerAs: 'TimelineCtrl',
             link: function ($scope, $element, $attrs, TimelineCtrl) {
+
+                $scope.timelineService = TimelineService;
+
                 $scope.click = function (param) {
                     console.log('clicked with param:', param);
                 };

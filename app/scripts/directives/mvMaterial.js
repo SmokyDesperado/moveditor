@@ -36,7 +36,7 @@ angular.module('moveditorApp')
                         container.appendChild(canvas);
 
                         MvHelperService.createVideoThumbnail($scope.materialObject.url, canvas);
-                        MvHelperService.getVideoDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
+                        MvHelperService.getMediaDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
                     }
 
                     if ($scope.materialObject.type == "image") {
@@ -44,6 +44,7 @@ angular.module('moveditorApp')
                         image.src = $scope.materialObject.url;
                         image.className = "media-thumbnail";
                         container.appendChild(image);
+                        ContentService.contentList[$scope.contentObjectKey].length = 1;
                     }
 
                     if ($scope.materialObject.type == "audio") {
@@ -54,7 +55,9 @@ angular.module('moveditorApp')
                         image.src = source;
                         image.className = "media-thumbnail";
                         container.appendChild(image);
+                        MvHelperService.getMediaDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
                     }
+
                     // ##########################################################################################################
 
                     $scope.panStart = function ($event) {

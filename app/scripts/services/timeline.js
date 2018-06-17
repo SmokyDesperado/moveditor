@@ -17,6 +17,8 @@ angular.module('moveditorApp')
         this.mouseHoverPosX = 0;
         this.timelineWidth = 100;
 
+        this.pixelPerSeconds = 20;
+
 // =====================================================================================================================
 // setter
 // =====================================================================================================================
@@ -51,9 +53,9 @@ angular.module('moveditorApp')
                 objectListId: contentListObjectId,
                 start: this.getMouseHoverPosX(),
                 offset: 0,
-                end: 0,
+                end: (this.getMouseHoverPosX() + (ContentService.contentList[contentListObjectId].length * this.pixelPerSeconds)),
                 type: ContentService.contentList[contentListObjectId].type,
-                length: ((ContentService.contentList[contentListObjectId].length + 10) * 10),
+                length: (ContentService.contentList[contentListObjectId].length * this.pixelPerSeconds),
                 mute: false
             };
 
@@ -61,6 +63,8 @@ angular.module('moveditorApp')
             self.calculateJunkPositions(timelineObject);
 
             self.sortedAddingObjectToTimelineList(timelineObject);
+
+            console.log('timelineObject:', timelineObject);
             // console.log('added', ContentService.contentList[contentListObjectId]);
         };
 
@@ -74,6 +78,7 @@ angular.module('moveditorApp')
             this.timelineList.splice(timelineListIndex, 0, timelineObject);
         };
 
+        // ToDo: still some buggy
         this.calculateJunkPositions = function (newTimelineObject) {
             console.log('object:', newTimelineObject.start, (newTimelineObject.start + newTimelineObject.length));
 

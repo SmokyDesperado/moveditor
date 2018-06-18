@@ -12,13 +12,11 @@ angular.module('moveditorApp')
         'MvHelperService',
         function (MvHelperService) {
             this.contentList = {};
-            this.contentUrlList = [];
 
             this.addContentObjectToList = function (contentMaterialObject) {
-                if (this.contentUrlList.indexOf(contentMaterialObject.url) == -1) {
+                if (!this.existInContentList(contentMaterialObject.url)) {
                     var contentIndexHash = MvHelperService.generateRandomHash();
                     this.contentList[contentIndexHash] = contentMaterialObject;
-                    this.contentUrlList.push(contentMaterialObject.url);
                 }
                 else {
                     console.log('object already added');
@@ -27,8 +25,6 @@ angular.module('moveditorApp')
 
             this.removecontentObjectFromList = function (contetnMaterialIndex) {
                 if (angular.isDefined(this.contentList[contetnMaterialIndex])) {
-                    var contentUrlListIndex = this.contentUrlList.indexOf(this.contentList[contetnMaterialIndex].url);
-                    this.contentUrlList.splice(contentUrlListIndex, 1);
                     delete this.contentList[contetnMaterialIndex];
                 }
                 else {
@@ -43,12 +39,21 @@ angular.module('moveditorApp')
                 }
             };
 
+            this.setContentList = function (list) {
+                this.contentList = list;
+            };
+
             this.getContentList = function () {
                 return this.contentList;
             };
 
-            this.getContentUrlList = function () {
-                return this.contentUrlList;
+            this.existInContentList = function (url) {
+                for (var i in this.contentList) {
+                    if (url == this.contentList[i].getUrl()) {
+                        return true;
+                    }
+                }
+                return false;
             };
 
             // ToDo: check functionality and correctness

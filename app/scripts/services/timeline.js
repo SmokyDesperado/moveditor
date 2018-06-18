@@ -137,8 +137,12 @@ angular.module('moveditorApp')
             }
         };
 
-        this.getTimelinList = function () {
+        this.getTimelineList = function () {
             return this.timelineList;
+        };
+
+        this.setTimelineList = function (list) {
+            this.timelineList = list;
         };
 
         this.getTimelineObjectList = function () {

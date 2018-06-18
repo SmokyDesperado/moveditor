@@ -11,8 +11,9 @@ angular.module('moveditorApp')
     .controller('MvContentCtrl', [
         'ContentService',
         'Content',
+        'TimelineService',
         'MvHelperService',
-        function (ContentService, Content, MvHelperService) {
+        function (ContentService, Content, TimelineService, MvHelperService) {
 
             this.contentObjects = '';
 
@@ -20,7 +21,12 @@ angular.module('moveditorApp')
                 this.contentObjects = ContentService.getContentList();
             };
 
+            // ============================================================================
+            // add content material
+            // ============================================================================
+
             this.addContentMaterial = function (MaterialURL) {
+                console.log("add content material: ", MaterialURL);
 
                 // check for valid URL
                 if (MvHelperService.validateURL(MaterialURL)) {
@@ -28,22 +34,6 @@ angular.module('moveditorApp')
                     var type = MvHelperService.getURLMediaType(MaterialURL);
 
                     if (type != null) {
-
-                        // TODO: extract length from video or audio URL
-                        // var tmpPlayer = document.createElement("video");
-                        // tmpPlayer.style.display = "none";
-                        // tmpPlayer.addEventListener("loadedmetadata", function () {
-                        //     console.log("addEventListener");
-                        //     var length = tmpPlayer.duration;
-                        //     var name = "";
-
-                        //     console.log(length);
-
-                        //     // create new content object and add it to the content object list
-                        //     var newContentObject = Content.create(name, type, length, MaterialURL);
-                        //     ContentService.addContentObjectToList(newContentObject);
-                        // });
-                        // tmpPlayer.src = MaterialURL;
 
                         var length = 0;
                         var name = "";
@@ -59,17 +49,66 @@ angular.module('moveditorApp')
                 }
             };
 
-            this.loadContentMaterial = function () {
-                // console.warn('contentObjects:', this.contentObjects);
+            // ============================================================================
+            // save session, modified from http://simey.me/saving-loading-files-with-javascript/
+            // ============================================================================
 
-                this.addContentMaterial("http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v");
-                this.addContentMaterial("http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v");
-                this.addContentMaterial("https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0");
-                this.addContentMaterial("https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4");
-                this.addContentMaterial("https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA");
-                this.addContentMaterial("https://www.bensound.com/bensound-music/bensound-betterdays.mp3");
-                this.addContentMaterial("https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583");
-                this.addContentMaterial("https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583");
+            this.saveContentMaterial = function () {
+                console.log("save session");
+
+                // object we want to save
+                var objectToSave = {contentArea: this.contentObjects, timelineArea: TimelineService.getTimelineList()};
+                // convert to json string
+                var JSONToSave = JSON.stringify(objectToSave);
+                // create a link DOM fragment
+                var tmpLink = $("<a/>");
+                // encode any special characters in the JSON
+                var text = encodeURIComponent(JSONToSave);
+
+                // <a download="video_stitching_session.txt" href='data:application/octet-stream,...'></a>
+                tmpLink
+                  .attr("download", "video_stitching_session.txt")
+                  .attr("href", "data:application/octet-stream," + text)
+                  .appendTo("body")
+                  .get(0)
+                  .click();
+            };
+
+            // ============================================================================
+            // load session, modified from http://simey.me/saving-loading-files-with-javascript/
+            // ============================================================================
+
+            this.loadContentMaterial = function () {
+                console.log("load session");
+
+                // get the file field
+                var field = document.createElement("input");
+                field.type = "file";
+                field.style.display = "none";
+
+                // when it changes (ie: user selects a file)
+                field.addEventListener("change", function() {
+                    // get the file item from the input field
+                    var file = this.files[0];
+                    // read the file as text so that load event will trigger
+                    reader.readAsText(file);
+                });
+
+                // create a new FileReader object
+                var reader = new FileReader();
+
+                // when the file has finished reading, store it's contents to a variable (async)
+                reader.onload = function(ev) {
+                    var contents = JSON.parse(decodeURIComponent(ev.target.result));
+
+                    // update content and timeline data objects
+                    ContentService.setContentList(contents.contentArea);
+                    this.contentObjects = ContentService.getContentList();
+
+                    TimelineService.setTimelineList(contents.timelineArea);
+                };
+
+                field.click();
             };
 
             this.init();

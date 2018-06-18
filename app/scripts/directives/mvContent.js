@@ -47,6 +47,10 @@ angular.module('moveditorApp')
                     contentCtrl.loadContentMaterial();
                 };
 
+                $scope.saveContentMaterial = function () {
+                    contentCtrl.saveContentMaterial();
+                };
+
             }
         };
     }]);

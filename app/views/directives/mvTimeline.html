@@ -1,10 +1,10 @@
 <div class="timeline-area__wrapper">
     <h1>timeline</h1>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
-        <div class="timeline-junk__wrap" style="width: {{timelineService.timelineWidth}}px;">
+        <div class="timeline-chunk__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
-            <div class="timeline-junk" data-ng-repeat="junks in TimelineCtrl.timelineList" style="left: {{junks.start}}px; width: {{junks.length}}px;">
-                ID: {{junks.objectListId}}
+            <div class="timeline-chunk" data-ng-repeat="chunks in TimelineCtrl.timelineList" style="left: {{chunks.start}}px; width: {{chunks.length}}px;">
+                ID: {{chunks.objectListId}}
             </div>
         </div>
     </div>

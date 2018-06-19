@@ -10,14 +10,14 @@
     background: black;
 }
 
-.timeline-junk__wrap {
+.timeline-chunk__wrap {
     height: 80px;
 
     position: relative;
     background: grey;
 }
 
-.timeline-junk {
+.timeline-chunk {
     width: 100px;
     height: 50px;
 

@@ -60,7 +60,7 @@ angular.module('moveditorApp')
             };
 
             ContentService.contentList[contentListObjectId].active++;
-            self.calculateJunkPositions(timelineObject);
+            self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
             // console.log('added', ContentService.contentList[contentListObjectId]);
@@ -87,7 +87,7 @@ angular.module('moveditorApp')
         };
 
         // ToDo: still some buggy
-        this.calculateJunkPositions = function (newTimelineObject) {
+        this.calculateChunkPositions = function (newTimelineObject) {
             console.log('object:', newTimelineObject.start, (newTimelineObject.start + newTimelineObject.length));
 
             if(this.timelineList.length > 1) {
@@ -128,7 +128,7 @@ angular.module('moveditorApp')
                 var totalEnd = 0;
 
                 for(var i = 0; i < this.timelineList.length; i++) {
-                    console.log('junks:', this.timelineList[i].start, this.timelineList[i].length, this.timelineList[i].start + this.timelineList[i].length);
+                    console.log('chunks:', this.timelineList[i].start, this.timelineList[i].length, this.timelineList[i].start + this.timelineList[i].length);
                     if((newTimelineObject.start > this.timelineList[i].start) && (newTimelineObject.start < (this.timelineList[i].start + this.timelineList[i].length))) {
                         console.error('collide start');
 

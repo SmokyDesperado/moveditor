@@ -16,6 +16,7 @@ angular.module('moveditorApp')
         this.timelineList = [];
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
+        this.scrollLeft = 0;
 
         this.pixelPerSeconds = 20;
 
@@ -32,6 +33,10 @@ angular.module('moveditorApp')
             this.timelineWidth = width;
         };
 
+        this.setScrollLeft = function (left) {
+            this.scrollLeft = left;
+        };
+
 // =====================================================================================================================
 // getter
 // =====================================================================================================================
@@ -44,14 +49,24 @@ angular.module('moveditorApp')
             return this.timelineWidth;
         };
 
+        this.getScrollLeft = function () {
+            return this.scrollLeft;
+        };
+
 // =====================================================================================================================
 // functions
 // =====================================================================================================================
 
         this.addTimelineObjectToList = function (contentListObjectId) {
+
+            var startPosition = this.getMouseHoverPosX();
+            if(this.scrollLeft > 0) {
+                startPosition = this.getMouseHoverPosX() + this.scrollLeft;
+            }
+
             var timelineObject = {
                 objectListId: contentListObjectId,
-                start: this.getMouseHoverPosX(),
+                start: startPosition,
                 offset: 0,
                 end: 0,
                 type: ContentService.contentList[contentListObjectId].type,
@@ -59,11 +74,12 @@ angular.module('moveditorApp')
                 mute: false
             };
 
+            timelineObject.end = timelineObject.start + timelineObject.length;
             ContentService.contentList[contentListObjectId].active++;
             self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
-            // console.log('added', ContentService.contentList[contentListObjectId]);
+            // console.log('added', timelineObject, this.timelineWidth);
         };
 
         this.calculateTimelineWidth = function (timelineObject) {
@@ -86,7 +102,7 @@ angular.module('moveditorApp')
             this.timelineList.splice(timelineListIndex, 0, timelineObject);
         };
 
-        // ToDo: still some buggy
+        // ToDo: still some bugs
         this.calculateChunkPositions = function (newTimelineObject) {
             console.log('object:', newTimelineObject.start, (newTimelineObject.start + newTimelineObject.length));
 

@@ -79,14 +79,12 @@ angular.module('moveditorApp')
             self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
-            // console.log('added', timelineObject, this.timelineWidth);
         };
 
         this.calculateTimelineWidth = function (timelineObject) {
             var timelineWidthDifference = 0;
             if(timelineObject.end > this.timelineWidth) {
                 timelineWidthDifference = timelineObject.end - this.timelineWidth;
-                console.log('timelineWidth updated');
             }
 
             this.timelineWidth = this.timelineWidth + timelineWidthDifference;
@@ -104,10 +102,7 @@ angular.module('moveditorApp')
 
         // ToDo: still some bugs
         this.calculateChunkPositions = function (newTimelineObject) {
-            console.log('object:', newTimelineObject.start, (newTimelineObject.start + newTimelineObject.length));
-
             if(this.timelineList.length > 1) {
-                console.log('if');
                 for(var i = 0; i < (this.timelineList.length - 1); i++) {
                     if(
                         (newTimelineObject.start >= this.timelineList[i].start) &&
@@ -144,18 +139,13 @@ angular.module('moveditorApp')
                 var totalEnd = 0;
 
                 for(var i = 0; i < this.timelineList.length; i++) {
-                    console.log('chunks:', this.timelineList[i].start, this.timelineList[i].length, this.timelineList[i].start + this.timelineList[i].length);
                     if((newTimelineObject.start > this.timelineList[i].start) && (newTimelineObject.start < (this.timelineList[i].start + this.timelineList[i].length))) {
-                        console.error('collide start');
-
                         if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
                             totalEnd = this.timelineList[i].start + this.timelineList[i].length;
                         }
                     }
 
                     if(((newTimelineObject.start + newTimelineObject.length) > this.timelineList[i].start) && ((newTimelineObject.start + newTimelineObject.length) < (this.timelineList[i].start + this.timelineList[i].length))) {
-                        console.error('collide end');
-
                         if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
                             totalEnd = this.timelineList[i].start + this.timelineList[i].length;
                         }

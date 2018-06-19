@@ -4,6 +4,10 @@
     background: lightgreen;
 }
 
+#timelineDropArea {
+    position: relative;
+}
+
 .dropable {
     height: 100px;
     overflow-x: scroll;
@@ -29,4 +33,23 @@
     border-left: solid 5px black;
     border-right: solid 5px white;
     color: white;
+}
+
+#timeline-scale {
+    height: 80px;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    overflow: hidden;
+}
+
+.timeline-scale__middle-line {
+    height: 2px;
+    width: 100%;
+
+    position: relative;
+    top: 70px;
+
+    background: white;
 }

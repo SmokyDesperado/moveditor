@@ -1,41 +1,16 @@
 <div class="preview-area__wrapper">
     <div class="preview_player">
 	    <div id="active_media">
-	        <!-- <img id="image_0" src="https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583"> -->
-	        <!-- <video id="video_0" controls preload> -->
-	        </video>
 	    </div>
-	    <!-- <hr /> -->
-		    <!-- <p><a href="http://afarkas.github.io/webshim/demos/index.html#Media-elements">webshims mediaelement documentation</a></p> -->
-	    <!-- <hr /> -->
 	    <table>
 	        <tbody>
-	            <!-- <tr> -->
-	                <!-- <th>currentTime</th> -->
-	                <!-- <th>duration</th> -->
-	                <!-- <th>progress</th> -->
-	                <!-- <th>To Start</th> -->
-	                <!-- <th>Play</th> -->
-	                <!-- <th>Pause</th> -->
-	                <!-- <th>Volume</th> -->
-	                <!-- <th>Mute</th> -->
-	                <!-- <th>Loop</th> -->
-					<!-- <th>Position</th> -->
-	            <!-- </tr> -->
 	            <tr>
-	                <input id="position_slider" type="range" value="0" max="16000" step="100" ng-model="pos" ng-change="jumpToPosition(pos)"/>
+	                <input id="position_slider" type="range" ng-model="pos" ng-change="jumpToPosition(pos)"/>
 	            </tr>
 	            <tr>
 	                <td>
-	                	<!-- <span class="current-time"></span> -->
-	                	<div id="time_display">00:00:00:00</div>
+	                	<div id="time_display"></div>
 	                </td>
-	                <!-- <td> -->
-	                	<!-- <span id="preview_duration"></span> -->
-	                <!-- </td> -->
-	                <!-- <td> -->
-	                	<!-- <span id="progress">0</span> -->
-	                <!-- </td> -->
 	                <td>
 	                    <input id="goToStart_button" type="button" value="<<" data-ng-click="goToStart()"/>
 	                </td>
@@ -60,16 +35,8 @@
 	                <td>
 	                	<input id="loop_button" type="checkbox" ng-model="loop" btn-checkbox-true="true" btn-checkbox-false="false" data-ng-click="setLoop()"/>
 	                </td>
-
-	                <!-- <th>currentTime</th> -->
-	                <!-- <td> -->
-	                    <!-- <input class="time-slider" type="range" disabled value="0" step="any"/> -->
-	                <!-- </td> -->
 	            </tr>
 	        </tbody>
 	    </table>
 	</div>
-
-    <!-- =========================================================================================================================== -->
-
 </div>

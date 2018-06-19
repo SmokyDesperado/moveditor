@@ -38,19 +38,16 @@ angular.module('moveditorApp')
 
                 $scope.vol = 1;
                 $scope.setVolume = function (vol) {
-                    console.log("Volume: ", vol);
                     mvPreviewService.setVolume(vol);
                 }
 
                 $scope.mute = false;
                 $scope.setMute = function () {
-                    console.log("Mute: ", !$scope.mute);
                     mvPreviewService.setMute(!$scope.mute);
                 }
 
                 $scope.loop = false;
                 $scope.setLoop = function () {
-                    console.log("Loop: ", !$scope.loop);
                     mvPreviewService.setLoopPlay(!$scope.loop);
                 }
 

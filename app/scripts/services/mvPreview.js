@@ -19,7 +19,7 @@ angular.module('moveditorApp')
         // ====================================================================================================
 
         // objects for interaction between function calls
-        this.timeStepLoop = null;
+        this.timeUpdateStepTimeout = null;
         this.previousChunkPair = [null, null]; // [video/image, audio]
 
         // preview player playing state parameters
@@ -35,8 +35,7 @@ angular.module('moveditorApp')
         this.positionB = 0;
 
         // config parameters
-        this.timeStepInterval = 100; // in ms // BUG: bug mit 1000, fängt den ersten step erst nach 1 sekunde an
-        this.preciseTimeInterval = true;
+        this.timeStepInterval = 100; // in ms
         this.DEBUG_LOGS = false;
 
         // ====================================================================================================
@@ -117,12 +116,10 @@ angular.module('moveditorApp')
             // init time display
             self.updateTimeDisplay(self.currentPlayTime);
 
-            // setup position slider
-            document.getElementById('position_slider').max = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
-            document.getElementById('position_slider').step = self.timeStepInterval;
-
-            // initial positionB is end of chunkList
+            // setup initial positionB which is the end of chunkList and position slider parameters
             self.positionB = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
+            document.getElementById('position_slider').max = self.positionB;
+            document.getElementById('position_slider').step = self.timeStepInterval;
 
             // if first video/image chunk starts at 0 then bring that element to the front
             var currentChunkPair = self.getCurrentChunkPair();
@@ -137,20 +134,24 @@ angular.module('moveditorApp')
         // ====================================================================================================
 
         this.play = function () {
+            console.log("play");
+
             if (!self.isPlaying) {
                 self.isPlaying = true;
                 self.timeAtStart = new Date().getTime() - self.jumpToTime;
-                self.startPreviewPlay(0);
+                self.previewPlayStep();
             } else {
                 self.pause();
             }
         }
 
         this.pause = function () {
+            console.log("pause");
+
             self.isPlaying = false;
             self.timeAtPause = self.currentPlayTime;
             self.jumpToTime = 0;
-            clearTimeout(self.timeStepLoop);
+            clearTimeout(self.timeUpdateStepTimeout);
 
             // pause active <video> and only let current media element be shown
             var currentChunkPair = self.getCurrentChunkPair();
@@ -164,6 +165,7 @@ angular.module('moveditorApp')
         }
 
         this.jumpToPosition = function (newPosition) {
+            console.log("jump to ", newPosition);
 
             // pause current active <video>
             var currentChunkPair = self.getCurrentChunkPair();
@@ -200,24 +202,29 @@ angular.module('moveditorApp')
 
             // if player is currently playing, then continue playing again
             if (self.isPlaying) {
-                clearTimeout(self.timeStepLoop);
-                self.startPreviewPlay(0);
+                clearTimeout(self.timeUpdateStepTimeout);
+                self.previewPlayStep();
             }
         }
 
         this.setLoopPlay = function (loop) {
+            console.log("loop: ", loop);
             self.loopPlay = loop;
         }
 
         this.setPositionA = function (position) {
+            console.log("positionA: ", position);
             self.positionA = position;
         }
 
         this.setPositionB = function (position) {
+            console.log("positionB: ", position);
             self.positionB = position;
         }
 
         this.setVolume = function (vol) {
+            console.log("volume: ", vol);
+
             // set volume of all videos and <audio>
             var videoElements = document.getElementById('active_media').getElementsByTagName("video");
             for (var i = 0; i < videoElements.length; i++) {
@@ -227,6 +234,8 @@ angular.module('moveditorApp')
         }
 
         this.setMute = function (mute) {
+            console.log("mute: ", vol);
+
             // mute all videos and <audio>
             var videoElements = document.getElementById('active_media').getElementsByTagName("video");
             for (var i = 0; i < videoElements.length; i++) {
@@ -236,48 +245,16 @@ angular.module('moveditorApp')
         }
 
         // ====================================================================================================
-        // Preview player time step loop and further logic
+        // Preview play and time update step
+        // Needed to seperate previewPlayStep() and timeUpdateStep() so that preview player does not 
+        // take a timeStepInterval of time before it starts playing.
         // ====================================================================================================
 
         /**
-         * @selfAdjustment use self-adjusting algorithm for more accurate preview player time, may use more cpu
+         * Loop for preview play functionalities.
+         * @diff
          */
-        this.timeStep = function (selfAdjustment) {
-
-            // check whether should stop playing or restart on loop if reached the end or positionB
-            var endTime = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
-            if (self.currentPlayTime == self.positionB || self.currentPlayTime >= endTime) {
-                if (self.loopPlay) {
-                    self.jumpToPosition(self.positionA);
-                } else {
-                    self.pause();
-                }
-                return;
-            }
-
-            // increment current time
-            self.currentPlayTime += self.timeStepInterval;
-            document.getElementById('position_slider').value = self.currentPlayTime;
-
-            // update time display
-            self.updateTimeDisplay(self.currentPlayTime);
-
-            // self-adjusting algorithm from https://www.sitepoint.com/creating-accurate-timers-in-javascript/
-            var diff = 0;
-            if (selfAdjustment) {
-                var realTime = new Date().getTime();
-                var diff = ((realTime - self.timeAtStart) + self.timeAtPause) - self.currentPlayTime;
-
-                if (self.DEBUG_LOGS) {
-                    console.log("(RT - TAS) + TAP: " + ((realTime - self.timeAtStart) + self.timeAtPause) + ", CPT: " + self.currentPlayTime + ", diff: " + diff);
-                    console.log("RT - TAS: " + (realTime - self.timeAtStart) + ", TAP: " + self.timeAtPause + ", JTT: " + self.jumpToTime);
-                }
-            }
-
-            // BETA: more self-adjustment based on active video playing time
-            if (0) {
-                diff -= (self.currentPlayTime - document.getElementById("video_0").currentTime * 1000);
-            }
+        self.previewPlayStep = function () {
 
             // when current chunk has changed, then pause previously active video
             var currentChunkPair = self.getCurrentChunkPair();
@@ -304,12 +281,42 @@ angular.module('moveditorApp')
             }
             self.previousChunkPair = currentChunkPair;
 
-            // repeat
-            self.startPreviewPlay(diff);
+            // check whether should stop playing or restart on loop if reached the end or positionB
+            var endTime = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
+            if (self.currentPlayTime == self.positionB || self.currentPlayTime >= endTime) {
+                if (self.loopPlay && self.positionA != self.positionB) {
+                    self.jumpToPosition(self.positionA);
+                } else {
+                    self.pause();
+                }
+                return;
+            }
+
+            // self-adjusting algorithm from https://www.sitepoint.com/creating-accurate-timers-in-javascript/
+            var realTime = new Date().getTime();
+            var diff = ((realTime - self.timeAtStart) + self.timeAtPause) - self.currentPlayTime;
+
+            if (self.DEBUG_LOGS) {
+                console.log("(RT - TAS) + TAP: " + ((realTime - self.timeAtStart) + self.timeAtPause) + ", CPT: " + self.currentPlayTime + ", diff: " + diff);
+                console.log("RT - TAS: " + (realTime - self.timeAtStart) + ", TAP: " + self.timeAtPause + ", JTT: " + self.jumpToTime);
+            }
+
+            // call timeUpdateStepTimeout after a specific time amount
+            self.timeUpdateStepTimeout = setTimeout(self.timeUpdateStep, self.timeStepInterval - diff);
         }
 
-        self.startPreviewPlay = function (diff) {
-            self.timeStepLoop = setTimeout(self.timeStep.bind(null, self.preciseTimeInterval), self.timeStepInterval - diff);
+        /**
+         * Loop for time display and adjustment logic.
+         */
+        this.timeUpdateStep = function () {
+
+            // increment current time and update time display
+            self.currentPlayTime += self.timeStepInterval;
+            document.getElementById('position_slider').value = self.currentPlayTime;
+            self.updateTimeDisplay(self.currentPlayTime);
+
+            // call previewPlayStep again, but with adjusted time amount to keep the loops precise
+            self.previewPlayStep();
         }
 
         // ====================================================================================================

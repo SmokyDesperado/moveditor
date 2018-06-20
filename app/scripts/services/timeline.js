@@ -66,12 +66,11 @@ angular.module('moveditorApp')
 
             var timelineObject = {
                 objectListId: contentListObjectId,
-                start: startPosition,
-                offset: 0,
+                start: startPosition / this.pixelPerSeconds,
                 end: 0,
-                type: ContentService.contentList[contentListObjectId].type,
-                length: (ContentService.contentList[contentListObjectId].length * this.pixelPerSeconds),
-                mute: false
+                offset: 0,
+                mute: false,
+                length: (ContentService.contentList[contentListObjectId].length)
             };
 
             timelineObject.end = timelineObject.start + timelineObject.length;
@@ -83,8 +82,8 @@ angular.module('moveditorApp')
 
         this.calculateTimelineWidth = function (timelineObject) {
             var timelineWidthDifference = 0;
-            if(timelineObject.end > this.timelineWidth) {
-                timelineWidthDifference = timelineObject.end - this.timelineWidth;
+            if((timelineObject.end * this.pixelPerSeconds) > this.timelineWidth) {
+                timelineWidthDifference = (timelineObject.end * this.pixelPerSeconds) - this.timelineWidth;
             }
 
             this.timelineWidth = this.timelineWidth + timelineWidthDifference;

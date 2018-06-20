@@ -10,7 +10,8 @@
 angular.module('moveditorApp')
     .service('TimelineService', [
         'ContentService',
-        function (ContentService) {
+        'MvHelperService',
+        function (ContentService, MvHelperService) {
 
         var self = this;
         this.timelineList = [];
@@ -93,6 +94,7 @@ angular.module('moveditorApp')
             self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
         };
 
         this.calculateTimelineWidth = function (timelineObject) {

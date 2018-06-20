@@ -101,6 +101,7 @@ angular.module('moveditorApp')
                 reader.onload = function(ev) {
                     var contents = JSON.parse(decodeURIComponent(ev.target.result));
 
+                    // TODO: check whether input session file is valid
                     // update content and timeline data objects
                     ContentService.setContentList(contents.contentArea);
                     this.contentObjects = ContentService.getContentList();

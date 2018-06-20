@@ -17,6 +17,21 @@ angular.module('moveditorApp')
         this.mouseHoverPosX = 0;
         this.timelineWidth = 100;
 
+        // ====================================================================================================
+        // Dummy data
+        // ====================================================================================================
+
+        this.timelineList = [
+            { objectListId: "swyUp88ucxE0o00LIzh5", start: 0, end: 2000, offset: 8000, mute: false },
+            { objectListId: "8kAvuHzBVthTRTnCEOeH", start: 2000, end: 4000, offset: 20000, mute: false },
+            { objectListId: "SAOo3jBge24zJjhRR1Mp", start: 4000, end: 5000, offset: 3000, mute: false },
+            { objectListId: "DwyEujIbOXchn9wWVIgg", start: 6000, end: 8000, offset: 0, mute: false },
+            { objectListId: "tMtBKzzN0gnx6EuV4jLO", start: 8000, end: 10000, offset: 5500, mute: false },
+            { objectListId: "hj0nfAxlY9eNiqkwY5dl", start: 10000, end: 12000, offset: 0, mute: false },
+            { objectListId: "h305Qv2ogZPBReFsiV1u", start: 12000, end: 14000, offset: 0, mute: false },
+            { objectListId: "swyUp88ucxE0o00LIzh5", start: 14000, end: 16000, offset: 15000, mute: false }
+        ];
+
 // =====================================================================================================================
 // setter
 // =====================================================================================================================

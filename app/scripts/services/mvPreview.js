@@ -10,7 +10,8 @@
 angular.module('moveditorApp')
     .service('mvPreviewService', [
         'ContentService',
-        function (ContentService) {
+        'TimelineService',
+        function (ContentService, TimelineService) {
 
         var self = this;
 
@@ -42,33 +43,6 @@ angular.module('moveditorApp')
         // Dummy data
         // ====================================================================================================
 
-        // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
-        //              eingeben und beim ersten redirect load abbrechen.
-        //              link danach 'redirect' durch 'download' ersetzen
-        // dropbox link -> 'www' durch 'dl'
-
-        var contentList = [
-            { id: 0, url: 'http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v', type: "video", activeElements: 2 },
-            { id: 1, url: 'http://corrupt-system.de/assets/media/sintel/sintel-trailer.m4v', type: "video", activeElements: 1 },
-            { id: 2, url: 'https://dl.dropbox.com/s/au3bned42n09ndy/VID-20180524-WA0002.mp4?dl=0', type: "video", activeElements: 1 },
-            { id: 3, url: 'https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4', type: "video", activeElements: 1 },
-            { id: 4, url: 'https://drive.google.com/uc?export=download&id=0B4BsAbG4atWHQzVfLUU3UnhhZTA', type: "video", activeElements: 1 },
-            { id: 5, url: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3', type: "audio", activeElements: 0 },
-            { id: 6, url: 'https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583', type: "image", activeElements: 1 },
-            { id: 7, url: 'https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583', type: "image", activeElements: 1 }
-        ];
-
-        var videoImageChunkList = [
-            { contentID: 0, start: 0, end: 2000, offset: 8000, mute: false },
-            { contentID: 1, start: 2000, end: 4000, offset: 20000, mute: false },
-            { contentID: 2, start: 4000, end: 5000, offset: 3000, mute: false },
-            { contentID: 3, start: 6000, end: 8000, offset: 0, mute: false },
-            { contentID: 4, start: 8000, end: 10000, offset: 5500, mute: false },
-            { contentID: 6, start: 10000, end: 12000, offset: 0, mute: false },
-            { contentID: 7, start: 12000, end: 14000, offset: 0, mute: false },
-            { contentID: 0, start: 14000, end: 16000, offset: 15000, mute: false }
-        ];
-
         var audioChunkList = [
         ];
 
@@ -94,9 +68,9 @@ angular.module('moveditorApp')
             }
 
             // create <video> for every active video in the timeline area
-            for (var i = 0; i < videoImageChunkList.length; i++) {
+            for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
                 // add new <video> only once, i.e. only if id doesn't exist yet
-                self.createVideoElementForChunk(videoImageChunkList[i]);
+                self.createVideoElementForChunk(TimelineService.getTimelineList()[i]);
             }
 
             // create only one <img> which source will be changed throughout preview play
@@ -117,7 +91,7 @@ angular.module('moveditorApp')
             self.updateTimeDisplay(self.currentPlayTime);
 
             // setup initial positionB which is the end of chunkList and position slider parameters
-            self.positionB = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
+            self.positionB = Math.max(self.getTimelineDuration());
             document.getElementById('position_slider').max = self.positionB;
             document.getElementById('position_slider').step = self.timeStepInterval;
 
@@ -170,9 +144,9 @@ angular.module('moveditorApp')
             // pause current active <video>
             var currentChunkPair = self.getCurrentChunkPair();
             if (currentChunkPair[0] != null) {
-                var currentMedia = contentList[currentChunkPair[0].contentID];
+                var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
                 if (currentMedia.type == "video") {
-                    var currentVideoElement = document.getElementById("video_" + currentMedia.id);
+                    var currentVideoElement = document.getElementById("video_" + currentChunkPair[0].objectListId);
                     currentVideoElement.pause();
                 }
             }
@@ -260,9 +234,9 @@ angular.module('moveditorApp')
             var currentChunkPair = self.getCurrentChunkPair();
             if (self.previousChunkPair[0] != currentChunkPair[0]) {
                 if (self.previousChunkPair[0] != null) {
-                    var previousVideoImage = contentList[self.previousChunkPair[0].contentID];
+                    var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
                     if (previousVideoImage.type == "video") {
-                        var previousVideoImageElement = document.getElementById("video_" + previousVideoImage.id);
+                        var previousVideoImageElement = document.getElementById("video_" + self.previousChunkPair[0].objectListId);
                         previousVideoImageElement.pause();
                     }
                 }
@@ -282,7 +256,7 @@ angular.module('moveditorApp')
             self.previousChunkPair = currentChunkPair;
 
             // check whether should stop playing or restart on loop if reached the end or positionB
-            var endTime = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
+            var endTime = Math.max(self.getTimelineDuration());
             if (self.currentPlayTime == self.positionB || self.currentPlayTime >= endTime) {
                 if (self.loopPlay && self.positionA != self.positionB) {
                     self.jumpToPosition(self.positionA);
@@ -328,19 +302,19 @@ angular.module('moveditorApp')
             self.createVideoElementForChunk(newChunk);
 
             // update position slider max value if new chunk was added at the end of timeline
-            document.getElementById('position_slider').max = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
+            document.getElementById('position_slider').max = Math.max(self.getTimelineDuration());
         }
 
         this.chunkDeleted = function (deletedChunk) {
 
             // if deleted chunk is of type video and no more active elements exists then remove its <video>
-            var content = contentList[deletedChunk.contentID];
+            var content = ContentService.getContentList()[deletedChunk.objectListId];
             if (content.type == "video" && content.activeElements == 0) {
-                document.getElementById('active_media').removeChild(document.getElementById("video_" + content.id));
+                document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
             }
 
             // update position slider max value if deleted chunk was at the end of timeline
-            document.getElementById('position_slider').max = Math.max(self.getChunklistLength("video"), self.getChunklistLength("audio"));
+            document.getElementById('position_slider').max = Math.max(self.getTimelineDuration());
         }
 
         // ====================================================================================================
@@ -362,15 +336,20 @@ angular.module('moveditorApp')
                                         (milliseconds > 90 ? milliseconds/10 : "00");
         }
 
-        this.getChunklistLength = function (type) {
-            var chunkList = type == "video"? videoImageChunkList : audioChunkList;
+        this.getTimelineDuration = function () {
 
-            // length of chunklist in seconds is the same as the end time of last chunk
-            var endTime = 0;
-            if (chunkList.length > 0) {
-                endTime = chunkList[chunkList.length - 1].end;
+            // length of chunklist in ms is the same as the end time of last chunk
+            var videoImageTimelineDuration = 0;
+            if (TimelineService.getTimelineList().length > 0) {
+                videoImageTimelineDuration = TimelineService.getTimelineList()[TimelineService.getTimelineList().length - 1].end;
             }
-            return endTime;
+
+            var audioTimelineDuration = 0;
+            if (audioChunkList.length > 0) {
+                audioTimelineDuration = audioChunkList[audioChunkList.length - 1].end;
+            }
+
+            return Math.max(videoImageTimelineDuration, audioTimelineDuration);
         }
 
         this.getCurrentChunkPair = function () {
@@ -378,8 +357,8 @@ angular.module('moveditorApp')
             var currentChunk = [null, null]; // [video/image, audio]
 
             // iterate over all video/image chunks and check their start and end time
-            for (var i = 0; i < videoImageChunkList.length; i++) {
-                var c1 = videoImageChunkList[i];
+            for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
+                var c1 = TimelineService.getTimelineList()[i];
                 if (c1.start <= self.currentPlayTime && self.currentPlayTime < c1.end) { // TODO: at the end preview player is black, should be paused video
                     currentChunk[0] = c1;
                     break;
@@ -402,12 +381,12 @@ angular.module('moveditorApp')
         this.createVideoElementForChunk = function (chunk) {
 
             // if chunk is a video, then add new <video> if video doesn't exist yet
-            var content = contentList[chunk.contentID];
-            if (content.type == "video" && document.getElementById("video_" + content.id) == null) {
+            var content = ContentService.getContentList()[chunk.objectListId];
+            if (content.type == "video" && document.getElementById("video_" + chunk.objectListId) == null) {
                 var video = document.createElement("video");
                 video.src = content.url;
                 // video.src = content.url + "#t=" + chunk.start + "," + chunk.end;
-                video.id = "video_" + content.id;
+                video.id = "video_" + chunk.objectListId;
                 video.controls = false;
                 video.preload = "auto";
                 video.style.zIndex = "-1";
@@ -429,9 +408,9 @@ angular.module('moveditorApp')
             var currentVideoElement = null;
             if (currentChunk != null) {
 
-                var currentMedia = contentList[currentChunk.contentID];
+                var currentMedia = ContentService.getContentList()[currentChunk.objectListId];
                 if (currentMedia.type == "video") {
-                    currentVideoElement = document.getElementById("video_" + currentMedia.id);
+                    currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
                     currentVideoElement.style.zIndex = "0";
                 } else { // if (currentMedia.type == "image")
                     var imageElement = document.getElementById("image_0");

@@ -99,7 +99,7 @@ angular.module('moveditorApp')
             tmpPlayer.src = URL;
         };
 
-        this.getVideoDuration = function (URL, contentObject, $scope) {
+        this.getVideoAudioDuration = function (URL, contentObject, $scope) {
             var tmpPlayer = document.createElement("video");
             tmpPlayer.style.display = "none";
             tmpPlayer.src = URL;

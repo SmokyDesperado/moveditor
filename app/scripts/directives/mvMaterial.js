@@ -36,7 +36,7 @@ angular.module('moveditorApp')
                         container.appendChild(canvas);
 
                         MvHelperService.createVideoThumbnail($scope.materialObject.url, canvas);
-                        MvHelperService.getVideoDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
+                        MvHelperService.getVideoAudioDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
                     }
 
                     if ($scope.materialObject.type == "image") {
@@ -54,6 +54,7 @@ angular.module('moveditorApp')
                         image.src = source;
                         image.className = "media-thumbnail";
                         container.appendChild(image);
+                        MvHelperService.getVideoAudioDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
                     }
                     // ##########################################################################################################
 

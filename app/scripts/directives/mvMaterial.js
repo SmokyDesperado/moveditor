@@ -44,6 +44,7 @@ angular.module('moveditorApp')
                         image.src = $scope.materialObject.url;
                         image.className = "media-thumbnail";
                         container.appendChild(image);
+                        ContentService.contentList[$scope.contentObjectKey].length = 1;
                     }
 
                     if ($scope.materialObject.type == "audio") {

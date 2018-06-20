@@ -4,21 +4,25 @@
     background: lightgreen;
 }
 
+#timelineDropArea {
+    position: relative;
+}
+
 .dropable {
     height: 100px;
-    /*min-width: 100%;*/
+    overflow-x: scroll;
     background: black;
 }
 
-.timeline-junk__wrap {
-    width: 100%;
+.timeline-chunk__wrap {
     height: 80px;
 
     position: relative;
     background: grey;
+    padding: 10px 0;
 }
 
-.timeline-junk {
+.timeline-chunk {
     width: 100px;
     height: 50px;
 
@@ -29,4 +33,23 @@
     border-left: solid 5px black;
     border-right: solid 5px white;
     color: white;
+}
+
+#timeline-scale {
+    height: 80px;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    overflow: hidden;
+}
+
+.timeline-scale__middle-line {
+    height: 2px;
+    width: 100%;
+
+    position: relative;
+    top: 70px;
+
+    background: white;
 }

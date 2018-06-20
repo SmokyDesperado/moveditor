@@ -15,7 +15,10 @@ angular.module('moveditorApp')
         var self = this;
         this.timelineList = [];
         this.mouseHoverPosX = 0;
-        this.timelineWidth = 100;
+        this.timelineWidth = 1920;
+        this.scrollLeft = 0;
+
+        this.pixelPerSeconds = 20;
 
         // ====================================================================================================
         // Dummy data
@@ -45,6 +48,10 @@ angular.module('moveditorApp')
             this.timelineWidth = width;
         };
 
+        this.setScrollLeft = function (left) {
+            this.scrollLeft = left;
+        };
+
 // =====================================================================================================================
 // getter
 // =====================================================================================================================
@@ -57,26 +64,44 @@ angular.module('moveditorApp')
             return this.timelineWidth;
         };
 
+        this.getScrollLeft = function () {
+            return this.scrollLeft;
+        };
+
 // =====================================================================================================================
 // functions
 // =====================================================================================================================
 
         this.addTimelineObjectToList = function (contentListObjectId) {
+
+            var startPosition = this.getMouseHoverPosX();
+            if(this.scrollLeft > 0) {
+                startPosition = this.getMouseHoverPosX() + this.scrollLeft;
+            }
+
             var timelineObject = {
                 objectListId: contentListObjectId,
-                start: this.getMouseHoverPosX(),
-                offset: 0,
+                start: startPosition / this.pixelPerSeconds,
                 end: 0,
-                type: ContentService.contentList[contentListObjectId].type,
-                length: ((ContentService.contentList[contentListObjectId].length + 10) * 10),
-                mute: false
+                offset: 0,
+                mute: false,
+                length: (ContentService.contentList[contentListObjectId].length)
             };
 
+            timelineObject.end = timelineObject.start + timelineObject.length;
             ContentService.contentList[contentListObjectId].active++;
-            self.calculateJunkPositions(timelineObject);
-
+            self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
-            // console.log('added', ContentService.contentList[contentListObjectId]);
+            self.calculateTimelineWidth(timelineObject);
+        };
+
+        this.calculateTimelineWidth = function (timelineObject) {
+            var timelineWidthDifference = 0;
+            if((timelineObject.end * this.pixelPerSeconds) > this.timelineWidth) {
+                timelineWidthDifference = (timelineObject.end * this.pixelPerSeconds) - this.timelineWidth;
+            }
+
+            this.timelineWidth = this.timelineWidth + timelineWidthDifference;
         };
 
         this.sortedAddingObjectToTimelineList = function(timelineObject) {
@@ -89,11 +114,9 @@ angular.module('moveditorApp')
             this.timelineList.splice(timelineListIndex, 0, timelineObject);
         };
 
-        this.calculateJunkPositions = function (newTimelineObject) {
-            console.log('object:', newTimelineObject.start, (newTimelineObject.start + newTimelineObject.length));
-
+        // ToDo: still some bugs
+        this.calculateChunkPositions = function (newTimelineObject) {
             if(this.timelineList.length > 1) {
-                console.log('if');
                 for(var i = 0; i < (this.timelineList.length - 1); i++) {
                     if(
                         (newTimelineObject.start >= this.timelineList[i].start) &&
@@ -122,24 +145,21 @@ angular.module('moveditorApp')
                     ) {
                         newTimelineObject.start = this.timelineList[this.timelineList.length - 1].start + this.timelineList[this.timelineList.length - 1].length;
                     }
+
+                    newTimelineObject.end = newTimelineObject.start + newTimelineObject.length;
                 }
             }
             else {
                 var totalEnd = 0;
 
                 for(var i = 0; i < this.timelineList.length; i++) {
-                    console.log('junks:', this.timelineList[i].start, this.timelineList[i].length, this.timelineList[i].start + this.timelineList[i].length);
                     if((newTimelineObject.start > this.timelineList[i].start) && (newTimelineObject.start < (this.timelineList[i].start + this.timelineList[i].length))) {
-                        console.error('collide start');
-
                         if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
                             totalEnd = this.timelineList[i].start + this.timelineList[i].length;
                         }
                     }
 
                     if(((newTimelineObject.start + newTimelineObject.length) > this.timelineList[i].start) && ((newTimelineObject.start + newTimelineObject.length) < (this.timelineList[i].start + this.timelineList[i].length))) {
-                        console.error('collide end');
-
                         if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
                             totalEnd = this.timelineList[i].start + this.timelineList[i].length;
                         }
@@ -148,6 +168,7 @@ angular.module('moveditorApp')
 
                 if(newTimelineObject.start <= totalEnd) {
                     newTimelineObject.start = totalEnd;
+                    newTimelineObject.end = newTimelineObject.start + newTimelineObject.length;
                 }
             }
         };

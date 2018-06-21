@@ -115,7 +115,7 @@ angular.module('moveditorApp')
                 tmpPlayer.style.display = "none";
                 tmpPlayer.src = URL;
                 tmpPlayer.onloadeddata = function() {
-                    contentObject.length = tmpPlayer.duration; // TODO: auf 2 nachkommastellen runden?
+                    contentObject.length = tmpPlayer.duration;
                     $scope.$apply();
                 };
             };
@@ -156,13 +156,28 @@ angular.module('moveditorApp')
                 return Math.max(videoImageTimelineDuration, audioTimelineDuration);
             }
 
-            // functions to be called by timeline whenever a new chunk is added or deleted
+            // ====================================================================================================
+            // Preview player helper functions
+            // ====================================================================================================
+
+            this.deleteAllVideoElements = function (activeMediaContainer) {
+                var videoElements = activeMediaContainer.getElementsByTagName("video");
+                while (videoElements[0]) {
+                    videoElements[0].parentNode.removeChild(videoElements[0]);
+                }
+            }
+
+            // ====================================================================================================
+            // Functions to be called by timeline whenever a new chunk is added or deleted to signal preveiw player
+            // ====================================================================================================
+
             this.newChunkAdded = function (newChunk, contentList, videoImageChunkList, audioChunkList) {
-                // create <video> if neccessary
+                // create <video> if necessary
                 self.createVideoElementForChunk(newChunk, contentList);
 
                 // update position slider max value if new chunk was added at the end of timeline
-                document.getElementById('position_slider').max = Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList));
+                document.getElementById('position_slider').max = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100;
+                console.log("new position slider max: ", document.getElementById('position_slider').max);
             }
 
             this.chunkDeleted = function (deletedChunk, contentList) {

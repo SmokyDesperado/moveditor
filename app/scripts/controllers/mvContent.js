@@ -106,7 +106,17 @@ angular.module('moveditorApp')
                     ContentService.setContentList(contents.contentArea);
                     this.contentObjects = ContentService.getContentList();
 
+                    // remove all previous <video> and add new one if necessary
+                    var activeMediaContainer = document.getElementById('active_media');
+                    MvHelperService.deleteAllVideoElements(activeMediaContainer);
+                    document.getElementById('position_slider').max = 0;
+
+                    // add each chunk seperately and call MvHelperService.newChunkAdded()
                     TimelineService.setTimelineList(contents.timelineArea);
+                    for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
+                        MvHelperService.newChunkAdded(TimelineService.getTimelineList()[i], ContentService.getContentList(), TimelineService.getTimelineList(), TimelineService.getTimelineList());
+                    }
+                    console.log("load session complete");
                 };
 
                 field.click();

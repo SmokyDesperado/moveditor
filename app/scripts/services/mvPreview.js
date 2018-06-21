@@ -34,7 +34,7 @@ angular.module('moveditorApp')
         // parameters for loop play
         this.loopPlay = false;
         this.positionA = 0;
-        this.positionB = 60000;
+        this.positionB = 0;
 
         // config parameters
         this.timeStepInterval = 100; // in ms
@@ -55,18 +55,7 @@ angular.module('moveditorApp')
 
             // delete all <video>, <img> and <audio> from activeMediaContainer, just a safety measure
             var activeMediaContainer = document.getElementById('active_media');
-            var videoElements = activeMediaContainer.getElementsByTagName("video");
-            var imgElements = activeMediaContainer.getElementsByTagName("img");
-            var audioElements = activeMediaContainer.getElementsByTagName("audio");
-            while (videoElements[0]) {
-                videoElements[0].parentNode.removeChild(videoElements[0]);
-            }
-            while (imgElements[0]) {
-                imgElements[0].parentNode.removeChild(imgElements[0]);
-            }
-            while (audioElements[0]) {
-                audioElements[0].parentNode.removeChild(audioElements[0]);
-            }
+            MvHelperService.deleteAllVideoElements(activeMediaContainer);
 
             // create <video> for every active video in the timeline area
             for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
@@ -91,8 +80,8 @@ angular.module('moveditorApp')
             // init time display
             self.updateTimeDisplay(self.currentPlayTime);
 
-            // setup initial positionB which is the end of chunkList and position slider parameters
-            self.positionB = Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList), self.positionB);
+            // setup initial positionB which is the max(end of chunkList, 60s) ceiled to nearest 100ms and position slider parameters
+            self.positionB = Math.ceil(Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList), 60000) / 100) * 100;
             document.getElementById('position_slider').max = self.positionB;
             document.getElementById('position_slider').step = self.timeStepInterval;
 
@@ -146,9 +135,11 @@ angular.module('moveditorApp')
             var currentChunkPair = self.getCurrentChunkPair();
             if (currentChunkPair[0] != null) {
                 var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
-                if (currentMedia.type == "video") {
-                    var currentVideoElement = document.getElementById("video_" + currentChunkPair[0].objectListId);
-                    currentVideoElement.pause();
+                if (currentMedia != null) {
+                    if (currentMedia.type == "video") {
+                        var currentVideoElement = document.getElementById("video_" + currentChunkPair[0].objectListId);
+                        currentVideoElement.pause();
+                    }
                 }
             }
             
@@ -233,9 +224,9 @@ angular.module('moveditorApp')
 
             // when current chunk has changed, then pause previously active video
             var currentChunkPair = self.getCurrentChunkPair();
-            if (self.previousChunkPair[0] != currentChunkPair[0]) {
-                if (self.previousChunkPair[0] != null) {
-                    var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
+            if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) {
+                var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
+                if (previousVideoImage != null) {
                     if (previousVideoImage.type == "video") {
                         var previousVideoImageElement = document.getElementById("video_" + self.previousChunkPair[0].objectListId);
                         previousVideoImageElement.pause();
@@ -259,7 +250,7 @@ angular.module('moveditorApp')
             // check whether should stop playing or restart on loop if reached the end or positionB
             var endTime = Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList));
             if (self.currentPlayTime == self.positionB || self.currentPlayTime >= endTime) {
-                if (self.loopPlay && self.positionA != self.positionB) {
+                if (self.loopPlay && self.positionA != self.positionB && endTime != 0) {
                     self.jumpToPosition(self.positionA);
                 } else {
                     self.pause();
@@ -352,22 +343,23 @@ angular.module('moveditorApp')
             // bring media element of current chunk to the front
             var currentVideoElement = null;
             if (currentChunk != null) {
-
                 var currentMedia = ContentService.getContentList()[currentChunk.objectListId];
-                if (currentMedia.type == "video") {
-                    currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
-                    currentVideoElement.style.zIndex = "0";
-                } else { // if (currentMedia.type == "image")
-                    var imageElement = document.getElementById("image_0");
-                    imageElement.src = currentMedia.url;
-                    imageElement.style.zIndex = "0";
+                if (currentMedia != null) {
+                    if (currentMedia.type == "video") {
+                        currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
+                        currentVideoElement.style.zIndex = "0";
+                    } else { // if (currentMedia.type == "image")
+                        var imageElement = document.getElementById("image_0");
+                        imageElement.src = currentMedia.url;
+                        imageElement.style.zIndex = "0";
+                    }
                 }
             }
             return currentVideoElement;
         }
 
         this.calculateMediaOffsetTime = function (currentChunk) {
-            return currentChunk.offset + (self.currentPlayTime - currentChunk.start * 1000);
+            return currentChunk.offset * 1000 + (self.currentPlayTime - currentChunk.start * 1000);
         }
 
     }]);

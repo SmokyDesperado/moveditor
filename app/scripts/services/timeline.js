@@ -19,6 +19,11 @@ angular.module('moveditorApp')
         this.scrollLeft = 0;
 
         this.pixelPerSeconds = 20;
+        this.scales = [];
+
+        this.init = function () {
+            self.calculateTimelineScales();
+        };
 
         // ====================================================================================================
         // Dummy data
@@ -102,6 +107,8 @@ angular.module('moveditorApp')
             }
 
             this.timelineWidth = this.timelineWidth + timelineWidthDifference;
+
+            self.calculateTimelineScales();
         };
 
         this.sortedAddingObjectToTimelineList = function(timelineObject) {
@@ -184,4 +191,21 @@ angular.module('moveditorApp')
         this.getTimelineObjectList = function () {
             return this.timelineList;
         };
+
+            this.calculateTimelineScales = function () {
+                var scaleValues = {
+                    'amount': parseInt((this.timelineWidth / this.pixelPerSeconds) / 10)
+                };
+
+                for(var i = 0; i <= scaleValues.amount; i++) {
+                    var scale = {
+                        display: i * 10,
+                        position: (i * 10) * this.pixelPerSeconds
+                    };
+
+                    this.scales.push(scale);
+                }
+            };
+
+        this.init();
     }]);

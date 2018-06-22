@@ -53,3 +53,17 @@
 
     background: white;
 }
+
+.timeline-scale__display-line {
+    height: 100%;
+
+    border-left: 2px solid white;
+
+    position: absolute;
+    display: inline-block;
+}
+
+.timeline-scale__display-time {
+    position: relative;
+    top: 50px;
+}

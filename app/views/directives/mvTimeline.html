@@ -13,10 +13,13 @@
 
             </div>
 
-            <div class="timeline-scale__time-wrapper">
-                <div class="timeline-scale__time-display">
-
-                </div>
+            <div class="timeline-scale__display-wrapper">
+                <span class="timeline-scale__display-line" data-ng-repeat="scale in timelineService.scales" style="left: {{scale.position}}px; width: {{scale.display * timelineService.pixelPerSeconds}}px">
+                    <!--scale: {{scale}}-->
+                    <div class="timeline-scale__display-time">
+                        {{scale.display}}
+                    </div>
+                </span>
             </div>
         </div>
     </div>

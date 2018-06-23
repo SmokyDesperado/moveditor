@@ -10,7 +10,8 @@
 angular.module('moveditorApp')
     .service('ContentService', [
         'MvHelperService',
-        function (MvHelperService) {
+        'Content',
+        function (MvHelperService, Content) {
             this.contentList = {};
 
             // ====================================================================================================
@@ -35,7 +36,10 @@ angular.module('moveditorApp')
 
             // ====================================================================================================
 
-            this.addContentObjectToList = function (contentMaterialObject) {
+            this.addContentObjectToList = function (name, type, length, MaterialURL) {
+
+                var contentMaterialObject = Content.create(name, type, length, MaterialURL);
+
                 if (!this.existInContentList(contentMaterialObject.url)) {
                     var contentIndexHash = MvHelperService.generateRandomHash();
                     this.contentList[contentIndexHash] = contentMaterialObject;
@@ -43,6 +47,12 @@ angular.module('moveditorApp')
                 else {
                     console.log('object already added');
                 }
+            };
+
+            this.addLoadedContentObjectToList = function (hash, loadedContentObject) {
+                var contentMaterialObject = Content.create(loadedContentObject.name, loadedContentObject.type, loadedContentObject.length, loadedContentObject.url);
+                this.contentList[hash] = contentMaterialObject;
+                console.log('added', hash, loadedContentObject);
             };
 
             this.removecontentObjectFromList = function (contetnMaterialIndex) {

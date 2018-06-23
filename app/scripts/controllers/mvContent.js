@@ -15,7 +15,7 @@ angular.module('moveditorApp')
         'MvHelperService',
         function (ContentService, Content, TimelineService, MvHelperService) {
 
-            this.contentObjects = '';
+            this.contentObjects = null;
 
             this.init = function () {
                 this.contentObjects = ContentService.getContentList();
@@ -39,8 +39,8 @@ angular.module('moveditorApp')
                         var name = "";
 
                         // create new content object and add it to the content object list
-                        var newContentObject = Content.create(name, type, length, MaterialURL);
-                        ContentService.addContentObjectToList(newContentObject);
+                        // var newContentObject = Content.create(name, type, length, MaterialURL);
+                        ContentService.addContentObjectToList(name, type, length, MaterialURL);
                     } else {
                         MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
                     }
@@ -78,7 +78,7 @@ angular.module('moveditorApp')
             // load session, modified from http://simey.me/saving-loading-files-with-javascript/
             // ============================================================================
 
-            this.loadContentMaterial = function () {
+            this.loadContentMaterial = function ($scope) {
                 console.log("load session");
 
                 // get the file field
@@ -103,8 +103,31 @@ angular.module('moveditorApp')
 
                     // TODO: check whether input session file is valid
                     // update content and timeline data objects
-                    ContentService.setContentList(contents.contentArea);
-                    this.contentObjects = ContentService.getContentList();
+                    // ContentService.setContentList(contents.contentArea);
+                    // this.contentObjects = ContentService.getContentList();
+
+                    for (var hash in contents.contentArea) {
+
+                        // check for valid URL
+                        if (MvHelperService.validateURL(contents.contentArea[hash].url)) {
+                            // get media type of provided URL
+                            var type = MvHelperService.getURLMediaType(contents.contentArea[hash].url);
+
+                            if (type != null) {
+
+                                var length = 0;
+                                var name = "";
+
+                                // create new content object and add it to the content object list
+                                // var newContentObject = Content.create(name, type, length, MaterialURL);
+                                ContentService.addLoadedContentObjectToList(hash, contents.contentArea[hash]);
+                            } else {
+                                MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
+                            }
+                        } else {
+                            MvHelperService.alert("Provided URL was not valid!");
+                        }
+                    }
 
                     // remove all previous <video> and add new one if necessary
                     var activeMediaContainer = document.getElementById('active_media');
@@ -113,10 +136,13 @@ angular.module('moveditorApp')
 
                     // add each chunk seperately and call MvHelperService.newChunkAdded()
                     TimelineService.setTimelineList(contents.timelineArea);
+
                     for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
                         MvHelperService.newChunkAdded(TimelineService.getTimelineList()[i], ContentService.getContentList(), TimelineService.getTimelineList(), TimelineService.getTimelineList());
                     }
                     console.log("load session complete");
+
+                    $scope.$apply();
                 };
 
                 field.click();

@@ -29,7 +29,7 @@ angular.module('moveditorApp')
                     "https://www.bensound.com/bensound-music/bensound-betterdays.mp3",
                     "https://jpgames.de/wp-content/uploads/2014/12/One-Piece-Pirate-Warriors-3_2014_12-19-14_004-620x250.jpg?x37583",
                     "https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583"
-                ]
+                ];
 
                 $scope.addContentMaterial = function () {
                     var inputURLField = document.getElementById("url__input__field");
@@ -41,10 +41,12 @@ angular.module('moveditorApp')
                         index++;
                         if (index >= tmpList.length) { index = 0;}
                     }
+
+                    console.log(contentCtrl.contentObjects);
                 };
 
                 $scope.loadContentMaterial = function () {
-                    contentCtrl.loadContentMaterial();
+                    contentCtrl.loadContentMaterial($scope);
                 };
 
                 $scope.saveContentMaterial = function () {

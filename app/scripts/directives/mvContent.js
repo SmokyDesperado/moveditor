@@ -35,14 +35,13 @@ angular.module('moveditorApp')
                     var inputURLField = document.getElementById("url__input__field");
                     if(inputURLField.value != "") {
                         contentCtrl.addContentMaterial(inputURLField.value);
+                        inputURLField.value = "";
                         
-                        // reset input field
+                        // test urls
                         inputURLField.value = tmpList[index];
                         index++;
                         if (index >= tmpList.length) { index = 0;}
                     }
-
-                    console.log(contentCtrl.contentObjects);
                 };
 
                 $scope.loadContentMaterial = function () {

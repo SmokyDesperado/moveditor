@@ -10,13 +10,13 @@
 angular.module('moveditorApp')
     .controller('MvContentCtrl', [
         'ContentService',
-        'Content',
         'TimelineService',
         'MvHelperService',
-        function (ContentService, Content, TimelineService, MvHelperService) {
+        function (ContentService, TimelineService, MvHelperService) {
+
+            var self = this;
 
             this.contentObjects = null;
-
             this.init = function () {
                 this.contentObjects = ContentService.getContentList();
             };
@@ -26,27 +26,7 @@ angular.module('moveditorApp')
             // ============================================================================
 
             this.addContentMaterial = function (MaterialURL) {
-                console.log("add content material: ", MaterialURL);
-
-                // check for valid URL
-                if (MvHelperService.validateURL(MaterialURL)) {
-                    // get media type of provided URL
-                    var type = MvHelperService.getURLMediaType(MaterialURL);
-
-                    if (type != null) {
-
-                        var length = 0;
-                        var name = "";
-
-                        // create new content object and add it to the content object list
-                        // var newContentObject = Content.create(name, type, length, MaterialURL);
-                        ContentService.addContentObjectToList(name, type, length, MaterialURL);
-                    } else {
-                        MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
-                    }
-                } else {
-                    MvHelperService.alert("Provided URL was not valid!");
-                }
+                ContentService.addContentObjectToList("", MvHelperService.getURLMediaType(MaterialURL), 0, MaterialURL, null);
             };
 
             // ============================================================================
@@ -62,13 +42,11 @@ angular.module('moveditorApp')
                 var JSONToSave = JSON.stringify(objectToSave);
                 // create a link DOM fragment
                 var tmpLink = $("<a/>");
-                // encode any special characters in the JSON
-                var text = encodeURIComponent(JSONToSave);
 
                 // <a download="video_stitching_session.txt" href='data:application/octet-stream,...'></a>
                 tmpLink
                   .attr("download", "video_stitching_session.txt")
-                  .attr("href", "data:application/octet-stream," + text)
+                  .attr("href", "data:application/octet-stream," + JSONToSave)
                   .appendTo("body")
                   .get(0)
                   .click();
@@ -97,46 +75,32 @@ angular.module('moveditorApp')
                 // create a new FileReader object
                 var reader = new FileReader();
 
+                // remove all objects of current list
+                ContentService.setContentList({});
+                this.contentObjects = ContentService.getContentList();
+
                 // when the file has finished reading, store it's contents to a variable (async)
                 reader.onload = function(ev) {
-                    var contents = JSON.parse(decodeURIComponent(ev.target.result));
+                    var contents = JSON.parse(ev.target.result);
 
                     // TODO: check whether input session file is valid
-                    // update content and timeline data objects
-                    // ContentService.setContentList(contents.contentArea);
-                    // this.contentObjects = ContentService.getContentList();
-
+                    // add objects from session file
                     for (var hash in contents.contentArea) {
-
-                        // check for valid URL
-                        if (MvHelperService.validateURL(contents.contentArea[hash].url)) {
-                            // get media type of provided URL
-                            var type = MvHelperService.getURLMediaType(contents.contentArea[hash].url);
-
-                            if (type != null) {
-
-                                var length = 0;
-                                var name = "";
-
-                                // create new content object and add it to the content object list
-                                // var newContentObject = Content.create(name, type, length, MaterialURL);
-                                ContentService.addLoadedContentObjectToList(hash, contents.contentArea[hash]);
-                            } else {
-                                MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
-                            }
-                        } else {
-                            MvHelperService.alert("Provided URL was not valid!");
-                        }
+                        ContentService.addContentObjectToList(
+                            contents.contentArea[hash].name,
+                            contents.contentArea[hash].type,
+                            contents.contentArea[hash].length,
+                            contents.contentArea[hash].url,
+                            hash);
                     }
 
                     // remove all previous <video> and add new one if necessary
                     var activeMediaContainer = document.getElementById('active_media');
                     MvHelperService.deleteAllVideoElements(activeMediaContainer);
-                    document.getElementById('position_slider').max = 0;
+                    document.getElementById('position_slider').max = 0; // TODO: setCurrentPlayTime = 0
 
                     // add each chunk seperately and call MvHelperService.newChunkAdded()
                     TimelineService.setTimelineList(contents.timelineArea);
-
                     for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
                         MvHelperService.newChunkAdded(TimelineService.getTimelineList()[i], ContentService.getContentList(), TimelineService.getTimelineList(), TimelineService.getTimelineList());
                     }

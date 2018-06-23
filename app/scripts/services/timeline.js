@@ -194,20 +194,20 @@ angular.module('moveditorApp')
             return this.timelineList;
         };
 
-            this.calculateTimelineScales = function () {
-                var scaleValues = {
-                    'amount': parseInt((this.timelineWidth / this.pixelPerSeconds) / 10)
+        this.calculateTimelineScales = function () {
+            var scaleValues = {
+                'amount': parseInt((this.timelineWidth / this.pixelPerSeconds) / 10)
+            };
+
+            for(var i = 0; i <= scaleValues.amount; i++) {
+                var scale = {
+                    display: i * 10,
+                    position: (i * 10) * this.pixelPerSeconds
                 };
 
-                for(var i = 0; i <= scaleValues.amount; i++) {
-                    var scale = {
-                        display: i * 10,
-                        position: (i * 10) * this.pixelPerSeconds
-                    };
-
-                    this.scales.push(scale);
-                }
-            };
+                this.scales.push(scale);
+            }
+        };
 
         this.init();
     }]);

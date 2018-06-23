@@ -10,7 +10,6 @@
     <div class="content-area__materials">
         <div class="content-area__materials__list">
             <div class="content-area__materials__list__element">
-                {{ ContentCtrl.contentObjects }}
                 <mv-material data-ng-repeat="(contentObjectKey, material) in ContentCtrl.contentObjects"
                              material-object="material" content-object-key="contentObjectKey"></mv-material>
             </div>

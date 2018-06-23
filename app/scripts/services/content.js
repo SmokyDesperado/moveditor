@@ -36,23 +36,26 @@ angular.module('moveditorApp')
 
             // ====================================================================================================
 
-            this.addContentObjectToList = function (name, type, length, MaterialURL) {
+            this.addContentObjectToList = function (name, type, length, MaterialURL, hash) {
 
-                var contentMaterialObject = Content.create(name, type, length, MaterialURL);
+                if (MvHelperService.validateURL(MaterialURL)) {
+                    if (type != null) {
+                        if (!this.existInContentList(MaterialURL)) {
+                            var contentMaterialObject = Content.create(name, type, length, MaterialURL);
 
-                if (!this.existInContentList(contentMaterialObject.url)) {
-                    var contentIndexHash = MvHelperService.generateRandomHash();
-                    this.contentList[contentIndexHash] = contentMaterialObject;
+                            if (hash === null) {
+                                hash = MvHelperService.generateRandomHash();
+                            }
+                            this.contentList[hash] = contentMaterialObject;
+                        } else {
+                            console.log('object already added');
+                        }
+                    } else {
+                        MvHelperService.alert("Provided URL is not among accepted media types or could not be rendered!");
+                    }
+                } else {
+                    MvHelperService.alert("Provided URL was not valid!");
                 }
-                else {
-                    console.log('object already added');
-                }
-            };
-
-            this.addLoadedContentObjectToList = function (hash, loadedContentObject) {
-                var contentMaterialObject = Content.create(loadedContentObject.name, loadedContentObject.type, loadedContentObject.length, loadedContentObject.url);
-                this.contentList[hash] = contentMaterialObject;
-                console.log('added', hash, loadedContentObject);
             };
 
             this.removecontentObjectFromList = function (contetnMaterialIndex) {
@@ -69,6 +72,10 @@ angular.module('moveditorApp')
                     this.contentList[contetnMaterialIndex].length = length;
                     console.log(this.contentList[contetnMaterialIndex]);
                 }
+            };
+
+            this.resetContentList = function () {
+                this.contentList = {};
             };
 
             this.setContentList = function (list) {

@@ -128,15 +128,17 @@ angular.module('moveditorApp')
 
                 // if chunk is a video, then add new <video> if video doesn't exist yet
                 var content = contentList[chunk.objectListId];
-                if (content.type == "video" && document.getElementById("video_" + chunk.objectListId) == null) {
-                    var video = document.createElement("video");
-                    video.src = content.url;
-                    // video.src = content.url + "#t=" + chunk.start + "," + chunk.end;
-                    video.id = "video_" + chunk.objectListId;
-                    video.controls = false;
-                    video.preload = "auto";
-                    video.style.zIndex = "-1";
-                    document.getElementById('active_media').appendChild(video);
+                if (content != null) {
+                    if (content.type == "video" && document.getElementById("video_" + chunk.objectListId) == null) {
+                        var video = document.createElement("video");
+                        video.src = content.url;
+                        // video.src = content.url + "#t=" + chunk.start + "," + chunk.end;
+                        video.id = "video_" + chunk.objectListId;
+                        video.controls = false;
+                        video.preload = "auto";
+                        video.style.zIndex = "-1";
+                        document.getElementById('active_media').appendChild(video);
+                    }
                 }
             }
 
@@ -176,15 +178,19 @@ angular.module('moveditorApp')
                 self.createVideoElementForChunk(newChunk, contentList);
 
                 // update position slider max value if new chunk was added at the end of timeline
-                document.getElementById('position_slider').max = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100;
-                console.log("new position slider max: ", document.getElementById('position_slider').max);
+                var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
+                document.getElementById('position_slider').max = newCeil;
+                document.getElementById('position_b').max = newCeil / 1000;
+                console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
             }
 
             this.chunkDeleted = function (deletedChunk, contentList) {
                 // if deleted chunk is of type video and no more active elements exists then remove its <video>
                 var content = contentList[deletedChunk.objectListId];
-                if (content.type == "video" && content.activeElements == 0) {
-                    document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
+                if (content != null) {
+                    if (content.type == "video" && content.activeElements == 0) {
+                        document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
+                    }
                 }
 
                 // update position slider max value if deleted chunk was at the end of timeline

@@ -11,7 +11,8 @@ angular.module('moveditorApp')
     .service('mvPreviewService', [
         'ContentService',
         'TimelineService',
-        function (ContentService, TimelineService) {
+        'MvHelperService',
+        function (ContentService, TimelineService, MvHelperService) {
 
         var self = this;
 
@@ -43,7 +44,7 @@ angular.module('moveditorApp')
         // Dummy data
         // ====================================================================================================
 
-        var audioChunkList = [
+        this.audioChunkList = [
         ];
 
         // ====================================================================================================
@@ -54,23 +55,12 @@ angular.module('moveditorApp')
 
             // delete all <video>, <img> and <audio> from activeMediaContainer, just a safety measure
             var activeMediaContainer = document.getElementById('active_media');
-            var videoElements = activeMediaContainer.getElementsByTagName("video");
-            var imgElements = activeMediaContainer.getElementsByTagName("img");
-            var audioElements = activeMediaContainer.getElementsByTagName("audio");
-            while (videoElements[0]) {
-                videoElements[0].parentNode.removeChild(videoElements[0]);
-            }
-            while (imgElements[0]) {
-                imgElements[0].parentNode.removeChild(imgElements[0]);
-            }
-            while (audioElements[0]) {
-                audioElements[0].parentNode.removeChild(audioElements[0]);
-            }
+            MvHelperService.deleteAllVideoElements(activeMediaContainer);
 
             // create <video> for every active video in the timeline area
             for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
                 // add new <video> only once, i.e. only if id doesn't exist yet
-                self.createVideoElementForChunk(TimelineService.getTimelineList()[i]);
+                self.createVideoElementForChunk(TimelineService.getTimelineList()[i], ContentService.getContentList());
             }
 
             // create only one <img> which source will be changed throughout preview play
@@ -90,8 +80,8 @@ angular.module('moveditorApp')
             // init time display
             self.updateTimeDisplay(self.currentPlayTime);
 
-            // setup initial positionB which is the end of chunkList and position slider parameters
-            self.positionB = Math.max(self.getTimelineDuration());
+            // setup initial positionB which is the max(end of chunkList, 60s) ceiled to nearest 100ms and position slider parameters
+            self.positionB = Math.ceil(Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList), 60000) / 100) * 100;
             document.getElementById('position_slider').max = self.positionB;
             document.getElementById('position_slider').step = self.timeStepInterval;
 
@@ -145,9 +135,11 @@ angular.module('moveditorApp')
             var currentChunkPair = self.getCurrentChunkPair();
             if (currentChunkPair[0] != null) {
                 var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
-                if (currentMedia.type == "video") {
-                    var currentVideoElement = document.getElementById("video_" + currentChunkPair[0].objectListId);
-                    currentVideoElement.pause();
+                if (currentMedia != null) {
+                    if (currentMedia.type == "video") {
+                        var currentVideoElement = document.getElementById("video_" + currentChunkPair[0].objectListId);
+                        currentVideoElement.pause();
+                    }
                 }
             }
             
@@ -232,9 +224,9 @@ angular.module('moveditorApp')
 
             // when current chunk has changed, then pause previously active video
             var currentChunkPair = self.getCurrentChunkPair();
-            if (self.previousChunkPair[0] != currentChunkPair[0]) {
-                if (self.previousChunkPair[0] != null) {
-                    var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
+            if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) {
+                var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
+                if (previousVideoImage != null) {
                     if (previousVideoImage.type == "video") {
                         var previousVideoImageElement = document.getElementById("video_" + self.previousChunkPair[0].objectListId);
                         previousVideoImageElement.pause();
@@ -256,9 +248,9 @@ angular.module('moveditorApp')
             self.previousChunkPair = currentChunkPair;
 
             // check whether should stop playing or restart on loop if reached the end or positionB
-            var endTime = Math.max(self.getTimelineDuration());
+            var endTime = Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList));
             if (self.currentPlayTime == self.positionB || self.currentPlayTime >= endTime) {
-                if (self.loopPlay && self.positionA != self.positionB) {
+                if (self.loopPlay && self.positionA != self.positionB && endTime != 0) {
                     self.jumpToPosition(self.positionA);
                 } else {
                     self.pause();
@@ -294,30 +286,6 @@ angular.module('moveditorApp')
         }
 
         // ====================================================================================================
-        // Functions to be called by timeline when a new chunk is added or deleted
-        // ====================================================================================================
-
-        this.newChunkAdded = function (newChunk) {
-            // create <video> if neccessary
-            self.createVideoElementForChunk(newChunk);
-
-            // update position slider max value if new chunk was added at the end of timeline
-            document.getElementById('position_slider').max = Math.max(self.getTimelineDuration());
-        }
-
-        this.chunkDeleted = function (deletedChunk) {
-
-            // if deleted chunk is of type video and no more active elements exists then remove its <video>
-            var content = ContentService.getContentList()[deletedChunk.objectListId];
-            if (content.type == "video" && content.activeElements == 0) {
-                document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
-            }
-
-            // update position slider max value if deleted chunk was at the end of timeline
-            document.getElementById('position_slider').max = Math.max(self.getTimelineDuration());
-        }
-
-        // ====================================================================================================
         // Helper functions
         // ====================================================================================================
 
@@ -336,22 +304,6 @@ angular.module('moveditorApp')
                                         (milliseconds > 90 ? milliseconds/10 : "00");
         }
 
-        this.getTimelineDuration = function () {
-
-            // length of chunklist in ms is the same as the end time of last chunk
-            var videoImageTimelineDuration = 0;
-            if (TimelineService.getTimelineList().length > 0) {
-                videoImageTimelineDuration = TimelineService.getTimelineList()[TimelineService.getTimelineList().length - 1].end;
-            }
-
-            var audioTimelineDuration = 0;
-            if (audioChunkList.length > 0) {
-                audioTimelineDuration = audioChunkList[audioChunkList.length - 1].end;
-            }
-
-            return Math.max(videoImageTimelineDuration, audioTimelineDuration);
-        }
-
         this.getCurrentChunkPair = function () {
 
             var currentChunk = [null, null]; // [video/image, audio]
@@ -359,39 +311,23 @@ angular.module('moveditorApp')
             // iterate over all video/image chunks and check their start and end time
             for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
                 var c1 = TimelineService.getTimelineList()[i];
-                if (c1.start <= self.currentPlayTime && self.currentPlayTime < c1.end) { // TODO: at the end preview player is black, should be paused video
+                if (c1.start * 1000 <= self.currentPlayTime && self.currentPlayTime < c1.end * 1000) { // TODO: at the end preview player is black, should be paused video
                     currentChunk[0] = c1;
                     break;
                 }
             }
 
             // iterate over all audio chunks and check their start and end time
-            for (var i = 0; i < audioChunkList.length; i++) {
-                var c2 = audioChunkList[i];
+            for (var i = 0; i < self.audioChunkList.length; i++) {
+                var c2 = self.audioChunkList[i];
                 // found current video/image chunk
-                if (c2.start <= self.currentPlayTime && self.currentPlayTime < c2.end) {
+                if (c2.start * 1000 <= self.currentPlayTime && self.currentPlayTime < c2.end * 1000) {
                     currentChunk[1] = c2;
                     break;
                 }
             }
 
             return currentChunk;
-        }
-
-        this.createVideoElementForChunk = function (chunk) {
-
-            // if chunk is a video, then add new <video> if video doesn't exist yet
-            var content = ContentService.getContentList()[chunk.objectListId];
-            if (content.type == "video" && document.getElementById("video_" + chunk.objectListId) == null) {
-                var video = document.createElement("video");
-                video.src = content.url;
-                // video.src = content.url + "#t=" + chunk.start + "," + chunk.end;
-                video.id = "video_" + chunk.objectListId;
-                video.controls = false;
-                video.preload = "auto";
-                video.style.zIndex = "-1";
-                document.getElementById('active_media').appendChild(video);
-            }
         }
 
         this.showCurrentVideoImage = function (currentChunk) {
@@ -407,22 +343,23 @@ angular.module('moveditorApp')
             // bring media element of current chunk to the front
             var currentVideoElement = null;
             if (currentChunk != null) {
-
                 var currentMedia = ContentService.getContentList()[currentChunk.objectListId];
-                if (currentMedia.type == "video") {
-                    currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
-                    currentVideoElement.style.zIndex = "0";
-                } else { // if (currentMedia.type == "image")
-                    var imageElement = document.getElementById("image_0");
-                    imageElement.src = currentMedia.url;
-                    imageElement.style.zIndex = "0";
+                if (currentMedia != null) {
+                    if (currentMedia.type == "video") {
+                        currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
+                        currentVideoElement.style.zIndex = "0";
+                    } else { // if (currentMedia.type == "image")
+                        var imageElement = document.getElementById("image_0");
+                        imageElement.src = currentMedia.url;
+                        imageElement.style.zIndex = "0";
+                    }
                 }
             }
             return currentVideoElement;
         }
 
         this.calculateMediaOffsetTime = function (currentChunk) {
-            return currentChunk.offset + (self.currentPlayTime - currentChunk.start);
+            return currentChunk.offset * 1000 + (self.currentPlayTime - currentChunk.start * 1000);
         }
 
     }]);

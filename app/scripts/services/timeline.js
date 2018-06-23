@@ -10,7 +10,8 @@
 angular.module('moveditorApp')
     .service('TimelineService', [
         'ContentService',
-        function (ContentService) {
+        'MvHelperService',
+        function (ContentService, MvHelperService) {
 
         var self = this;
         this.timelineList = [];
@@ -30,14 +31,14 @@ angular.module('moveditorApp')
         // ====================================================================================================
 
         // this.timelineList = [
-        //     { objectListId: "swyUp88ucxE0o00LIzh5", start: 0, end: 2000, offset: 8000, mute: false },
-        //     { objectListId: "8kAvuHzBVthTRTnCEOeH", start: 2000, end: 4000, offset: 20000, mute: false },
-        //     { objectListId: "SAOo3jBge24zJjhRR1Mp", start: 4000, end: 5000, offset: 3000, mute: false },
-        //     { objectListId: "DwyEujIbOXchn9wWVIgg", start: 6000, end: 8000, offset: 0, mute: false },
-        //     { objectListId: "tMtBKzzN0gnx6EuV4jLO", start: 8000, end: 10000, offset: 5500, mute: false },
-        //     { objectListId: "hj0nfAxlY9eNiqkwY5dl", start: 10000, end: 12000, offset: 0, mute: false },
-        //     { objectListId: "h305Qv2ogZPBReFsiV1u", start: 12000, end: 14000, offset: 0, mute: false },
-        //     { objectListId: "swyUp88ucxE0o00LIzh5", start: 14000, end: 16000, offset: 15000, mute: false }
+        //     { objectListId: "swyUp88ucxE0o00LIzh5", start: 0, end: 2, offset: 8, mute: false },
+        //     { objectListId: "8kAvuHzBVthTRTnCEOeH", start: 2, end: 4, offset: 20, mute: false },
+        //     { objectListId: "SAOo3jBge24zJjhRR1Mp", start: 4, end: 5, offset: 3, mute: false },
+        //     { objectListId: "DwyEujIbOXchn9wWVIgg", start: 6, end: 8, offset: 0, mute: false },
+        //     { objectListId: "tMtBKzzN0gnx6EuV4jLO", start: 8, end: 10, offset: 5, mute: false },
+        //     { objectListId: "hj0nfAxlY9eNiqkwY5dl", start: 10, end: 12, offset: 0, mute: false },
+        //     { objectListId: "h305Qv2ogZPBReFsiV1u", start: 12, end: 14, offset: 0, mute: false },
+        //     { objectListId: "swyUp88ucxE0o00LIzh5", start: 14, end: 16, offset: 15, mute: false }
         // ];
 
 // =====================================================================================================================
@@ -98,6 +99,7 @@ angular.module('moveditorApp')
             self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
         };
 
         this.calculateTimelineWidth = function (timelineObject) {

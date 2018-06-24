@@ -3,7 +3,7 @@
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-chunk__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
-            <div class="timeline-chunk" data-ng-repeat="chunks in TimelineCtrl.timelineList" style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{chunks.length * timelineService.pixelPerSeconds}}px;">
+            <div class="timeline-chunk" data-ng-repeat="chunks in timelineService.timelineList" style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{chunks.length * timelineService.pixelPerSeconds}}px;">
                 ID: {{chunks.objectListId}}
             </div>
         </div>
@@ -14,7 +14,7 @@
             </div>
 
             <div class="timeline-scale__display-wrapper">
-                <span class="timeline-scale__display-line" data-ng-repeat="scale in timelineService.scales" style="left: {{scale.position}}px; width: {{scale.display * timelineService.pixelPerSeconds}}px">
+                <span class="timeline-scale__display-line" data-ng-repeat="scale in timelineService.scales" style="left: {{scale.position}}px; width: {{10 * timelineService.pixelPerSeconds}}px">
                     <!--scale: {{scale}}-->
                     <div class="timeline-scale__display-time">
                         {{scale.display}}

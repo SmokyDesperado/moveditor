@@ -79,6 +79,16 @@ angular.module('moveditorApp')
                 ContentService.setContentList({});
                 this.contentObjects = ContentService.getContentList();
 
+                TimelineService.resetTimeline();
+
+                // TimelineService.timelineList = [];
+                // TimelineService.mouseHoverPosX = 0;
+                // TimelineService.timelineWidth = 1920;
+                // TimelineService.scrollLeft = 0;
+                // TimelineService.scales = [];
+                //
+                // TimelineService.calculateTimelineScales();
+
                 // when the file has finished reading, store it's contents to a variable (async)
                 reader.onload = function(ev) {
                     var contents = JSON.parse(ev.target.result);
@@ -99,11 +109,10 @@ angular.module('moveditorApp')
                     MvHelperService.deleteAllVideoElements(activeMediaContainer);
                     document.getElementById('position_slider').max = 0; // TODO: setCurrentPlayTime = 0
 
-                    // add each chunk seperately and call MvHelperService.newChunkAdded()
-                    TimelineService.setTimelineList(contents.timelineArea);
-                    for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
-                        MvHelperService.newChunkAdded(TimelineService.getTimelineList()[i], ContentService.getContentList(), TimelineService.getTimelineList(), TimelineService.getTimelineList());
+                    for (var i in contents.timelineArea) {
+                        TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
                     }
+
                     console.log("load session complete");
 
                     $scope.$apply();

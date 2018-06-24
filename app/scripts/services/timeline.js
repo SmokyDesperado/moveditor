@@ -26,6 +26,16 @@ angular.module('moveditorApp')
             self.calculateTimelineScales();
         };
 
+        this.resetTimeline = function () {
+            this.timelineList = [];
+            this.mouseHoverPosX = 0;
+            this.timelineWidth = 1920;
+            this.scrollLeft = 0;
+            this.scales = [];
+
+            self.calculateTimelineScales();
+        };
+
         // ====================================================================================================
         // Dummy data
         // ====================================================================================================
@@ -96,6 +106,24 @@ angular.module('moveditorApp')
 
             timelineObject.end = timelineObject.start + timelineObject.length;
             ContentService.contentList[contentListObjectId].active++;
+            self.calculateChunkPositions(timelineObject);
+            self.sortedAddingObjectToTimelineList(timelineObject);
+            self.calculateTimelineWidth(timelineObject);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
+        };
+
+        this.addLoadedTimelineObjectToList = function (loadedTimelineObject, $scope) {
+            console.log('loadedTimelineObject', loadedTimelineObject);
+
+            var timelineObject = {
+                objectListId: loadedTimelineObject.objectListId,
+                start: loadedTimelineObject.start,
+                end: loadedTimelineObject.end,
+                offset: loadedTimelineObject.offset,
+                mute: loadedTimelineObject.mute,
+                length: loadedTimelineObject.length
+            };
+
             self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);

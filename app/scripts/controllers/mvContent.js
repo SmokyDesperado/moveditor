@@ -78,16 +78,7 @@ angular.module('moveditorApp')
                 // remove all objects of current list
                 ContentService.setContentList({});
                 this.contentObjects = ContentService.getContentList();
-
                 TimelineService.resetTimeline();
-
-                // TimelineService.timelineList = [];
-                // TimelineService.mouseHoverPosX = 0;
-                // TimelineService.timelineWidth = 1920;
-                // TimelineService.scrollLeft = 0;
-                // TimelineService.scales = [];
-                //
-                // TimelineService.calculateTimelineScales();
 
                 // when the file has finished reading, store it's contents to a variable (async)
                 reader.onload = function(ev) {

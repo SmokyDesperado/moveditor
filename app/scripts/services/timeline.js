@@ -36,21 +36,6 @@ angular.module('moveditorApp')
             self.calculateTimelineScales();
         };
 
-        // ====================================================================================================
-        // Dummy data
-        // ====================================================================================================
-
-        // this.timelineList = [
-        //     { objectListId: "swyUp88ucxE0o00LIzh5", start: 0, end: 2, offset: 8, mute: false },
-        //     { objectListId: "8kAvuHzBVthTRTnCEOeH", start: 2, end: 4, offset: 20, mute: false },
-        //     { objectListId: "SAOo3jBge24zJjhRR1Mp", start: 4, end: 5, offset: 3, mute: false },
-        //     { objectListId: "DwyEujIbOXchn9wWVIgg", start: 6, end: 8, offset: 0, mute: false },
-        //     { objectListId: "tMtBKzzN0gnx6EuV4jLO", start: 8, end: 10, offset: 5, mute: false },
-        //     { objectListId: "hj0nfAxlY9eNiqkwY5dl", start: 10, end: 12, offset: 0, mute: false },
-        //     { objectListId: "h305Qv2ogZPBReFsiV1u", start: 12, end: 14, offset: 0, mute: false },
-        //     { objectListId: "swyUp88ucxE0o00LIzh5", start: 14, end: 16, offset: 15, mute: false }
-        // ];
-
 // =====================================================================================================================
 // setter
 // =====================================================================================================================
@@ -125,6 +110,7 @@ angular.module('moveditorApp')
             };
 
             self.calculateChunkPositions(timelineObject);
+            ContentService.contentList[loadedTimelineObject.objectListId].active++;
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
             MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);

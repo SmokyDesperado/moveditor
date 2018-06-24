@@ -12,12 +12,13 @@ angular.module('moveditorApp')
     .factory('Content', [
         function () {
             function Content(name, type, length, url) {
+
                 this.name = name;
                 this.type = type;
                 this.length = length;
                 this.url = url;
                 this.active = 0;
-                this.mpd = '';
+
             }
 
             // =========================================================================================================
@@ -44,10 +45,6 @@ angular.module('moveditorApp')
                 return this.active;
             };
 
-            Content.prototype.getMpd = function () {
-                return this.mpd;
-            };
-
             // =========================================================================================================
             // setter
             // =========================================================================================================
@@ -70,10 +67,6 @@ angular.module('moveditorApp')
 
             Content.prototype.setActive = function (active) {
                 this.active = active;
-            };
-
-            Content.prototype.setMdp = function (mdp) {
-                this.mdp = mdp;
             };
 
             // =========================================================================================================

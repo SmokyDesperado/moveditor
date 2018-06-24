@@ -23,9 +23,6 @@ angular.module('moveditorApp')
 
             this.requestSegmentation = function (contetnMaterialIndex, url) {
                 // ToDo: do stuff
-
-                var mpd = ''; // ToDo: set mpd url
-                ContentService.addMpdForContentObject(contetnMaterialIndex, mpd);
             };
 
             this.init();

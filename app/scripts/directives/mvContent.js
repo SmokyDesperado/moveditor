@@ -19,6 +19,13 @@ angular.module('moveditorApp')
             controllerAs: 'ContentCtrl',
             link: function ($scope, $element, $attrs, contentCtrl) {
 
+                // ====================================================================================================
+                // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
+                //              eingeben und beim ersten redirect load abbrechen.
+                //              link danach 'redirect' durch 'download' ersetzen
+                // dropbox link -> 'www' durch 'dl'
+                // ====================================================================================================
+
                 var index = 1;
                 var tmpList = [
                     "http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v",

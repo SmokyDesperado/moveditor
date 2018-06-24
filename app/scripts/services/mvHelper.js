@@ -176,15 +176,10 @@ angular.module('moveditorApp')
             this.newChunkAdded = function (newChunk, contentList, videoImageChunkList, audioChunkList) {
                 // create <video> if necessary
                 self.createVideoElementForChunk(newChunk, contentList);
-
-                // update position slider max value if new chunk was added at the end of timeline
-                var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
-                document.getElementById('position_slider').max = newCeil;
-                document.getElementById('position_b').max = newCeil / 1000;
-                console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
+                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList);
             }
 
-            this.chunkDeleted = function (deletedChunk, contentList) {
+            this.chunkDeleted = function (deletedChunk, contentList, videoImageChunkList, audioChunkList) {
                 // if deleted chunk is of type video and no more active elements exists then remove its <video>
                 var content = contentList[deletedChunk.objectListId];
                 if (content != null) {
@@ -192,9 +187,22 @@ angular.module('moveditorApp')
                         document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
                     }
                 }
+                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList);
+            }
 
-                // update position slider max value if deleted chunk was at the end of timeline
-                document.getElementById('position_slider').max = Math.max(self.getTimelineDuration(timelineList, timelineList));
+            this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList) {
+                var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
+                document.getElementById('position_slider').max = newCeil;
+                document.getElementById('position_a').max = newCeil / 1000;
+                document.getElementById('position_b').max = newCeil / 1000;
+                console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
+
+                if (newCeil / 1000 < document.getElementById('position_a').value) {
+                    document.getElementById('position_a').value = 0;
+                }
+                if (newCeil / 1000 < document.getElementById('position_b').value) {
+                    document.getElementById('position_b').value = newCeil / 1000;
+                }
             }
 
         }

@@ -26,15 +26,15 @@ angular.module('moveditorApp')
 
         // preview player playing state parameters
         this.isPlaying = false;
-        this.currentPlayTime = 0;
+        this.currentPlayTime = 0;   // TODO: auslagern in Timeline -> timeline kann position zeichnen
         this.timeAtStart = 0;
         this.timeAtPause = 0;
         this.jumpToTime = 0;
 
         // parameters for loop play
-        this.loopPlay = false;
-        this.positionA = 0;
-        this.positionB = 0;
+        this.loopPlay = false;  // TODO: auslagern, nutze document.getElementById("loop_checkbox").value -> von außen veränderbar
+        this.positionA = 0;     // TODO: auslagern, nutze document.getElementById("position_A").value -> von außen veränderbar
+        this.positionB = 0;     // TODO: auslagern, nutze document.getElementById("position_B").value -> von außen veränderbar
 
         // config parameters
         this.timeStepInterval = 100; // in ms
@@ -88,7 +88,7 @@ angular.module('moveditorApp')
             // if first video/image chunk starts at 0 then bring that element to the front
             var currentChunkPair = self.getCurrentChunkPair();
             var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
-            if (currentVideoElement !== null) {
+            if (currentVideoElement != null) {
                 currentVideoElement.currentTime = self.calculateMediaOffsetTime(currentChunkPair[0]) / 1000;
             }
         }
@@ -120,7 +120,7 @@ angular.module('moveditorApp')
             // pause active <video> and only let current media element be shown
             var currentChunkPair = self.getCurrentChunkPair();
             var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
-            if (currentVideoElement !== null) {
+            if (currentVideoElement != null) {
                 currentVideoElement.pause(); 
                 // BUG: before every pause(), check whether is promise playing
                 // Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause().
@@ -133,12 +133,12 @@ angular.module('moveditorApp')
 
             // pause current active <video>
             var currentChunkPair = self.getCurrentChunkPair();
-            if (currentChunkPair[0] !== null) {
+            if (currentChunkPair[0] != null) {
                 var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
-                if (currentMedia !== null) {
+                if (currentMedia != null) {
                     if (currentMedia.type === "video") {
                         var currentVideoElement = document.getElementById("video_" + currentChunkPair[0].objectListId);
-                        if (currentVideoElement !== null) {
+                        if (currentVideoElement != null) {
                             currentVideoElement.pause();
                         }
                     }
@@ -164,7 +164,7 @@ angular.module('moveditorApp')
             // check what video should be active now and calculate its position
             currentChunkPair = self.getCurrentChunkPair();
             var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
-            if (currentVideoElement !== null) {
+            if (currentVideoElement != null) {
                 currentVideoElement.currentTime = self.calculateMediaOffsetTime(currentChunkPair[0]) / 1000;
             }
 
@@ -226,12 +226,12 @@ angular.module('moveditorApp')
 
             // when current chunk has changed, then pause previously active video
             var currentChunkPair = self.getCurrentChunkPair();
-            if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] !== null) {
+            if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) {
                 var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
-                if (previousVideoImage !== null) {
+                if (previousVideoImage != null) {
                     if (previousVideoImage.type === "video") {
                         var previousVideoImageElement = document.getElementById("video_" + self.previousChunkPair[0].objectListId);
-                        if (previousVideoImageElement !== null) {
+                        if (previousVideoImageElement != null) {
                             previousVideoImageElement.pause();
                         }
                     }
@@ -240,7 +240,7 @@ angular.module('moveditorApp')
 
             // if current video/image chunk is of type video, then play new active <video>
             var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
-            if (currentVideoElement !== null) {
+            if (currentVideoElement != null) {
 
                 // if starting a new chunk, then set video offset
                 if (self.previousChunkPair[0] != currentChunkPair[0]) {
@@ -252,9 +252,8 @@ angular.module('moveditorApp')
             self.previousChunkPair = currentChunkPair;
 
             // check whether should stop playing or restart on loop if reached the end or positionB
-            var endTime = Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList));
-            if (self.currentPlayTime === self.positionB || self.currentPlayTime >= endTime) {
-                if (self.loopPlay && self.positionA != self.positionB && endTime != 0) {
+            if (self.currentPlayTime === self.positionB || self.currentPlayTime >= document.getElementById('position_slider').max) {
+                if (self.loopPlay && self.positionA != self.positionB && document.getElementById('position_slider').max != 0) {
                     self.jumpToPosition(self.positionA);
                 } else {
                     self.pause();
@@ -346,9 +345,9 @@ angular.module('moveditorApp')
 
             // bring media element of current chunk to the front
             var currentVideoElement = null;
-            if (currentChunk !== null) {
+            if (currentChunk != null) {
                 var currentMedia = ContentService.getContentList()[currentChunk.objectListId];
-                if (currentMedia !== null) {
+                if (currentMedia != null) {
                     if (currentMedia.type === "video") {
                         currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
                         currentVideoElement.style.zIndex = "0";

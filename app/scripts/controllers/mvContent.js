@@ -112,6 +112,10 @@ angular.module('moveditorApp')
                 field.click();
             };
 
+            this.sendStitching = function () {
+                console.log('send stitching');
+            };
+
             this.init();
         }
     ]);

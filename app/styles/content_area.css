@@ -13,16 +13,21 @@
     background: grey;
 }
 
-.content-area__menu__list {
+.content-area__menu-wrapper {
     padding: 10px 20px;
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+content-area__menu--left {
+
 }
 
 .content-area__menu__list__element {
     width: 80px;
     height: 20px;
-    padding: 0;
+    padding: 5px 10px;
     margin: 0 10px 0 0;
 
     text-align: center;
@@ -31,6 +36,7 @@
 
 .content-area__menu__list__element#url__input__field {
     width: 200px;
+    height: 26px;
 }
 
 .content-area__materials {

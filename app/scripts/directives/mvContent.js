@@ -59,6 +59,9 @@ angular.module('moveditorApp')
                     contentCtrl.saveContentMaterial();
                 };
 
+                $scope.sendStitching = function () {
+                    contentCtrl.sendStitching();
+                };
             }
         };
     }]);

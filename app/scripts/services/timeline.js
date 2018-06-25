@@ -15,6 +15,7 @@ angular.module('moveditorApp')
 
         var self = this;
         this.timelineList = [];
+        this.audioTimelineList = [];
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
         this.scrollLeft = 0;
@@ -89,12 +90,13 @@ angular.module('moveditorApp')
                 length: (ContentService.contentList[contentListObjectId].length)
             };
 
-            timelineObject.end = timelineObject.start + timelineObject.length;
+            timelineObject.end = timelineObject.start + ContentService.contentList[contentListObjectId].length;
             ContentService.contentList[contentListObjectId].active++;
+
             self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
         };
 
         this.addLoadedTimelineObjectToList = function (loadedTimelineObject, $scope) {
@@ -109,11 +111,12 @@ angular.module('moveditorApp')
                 length: loadedTimelineObject.length
             };
 
-            self.calculateChunkPositions(timelineObject);
             ContentService.contentList[loadedTimelineObject.objectListId].active++;
+
+            self.calculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
         };
 
         this.calculateTimelineWidth = function (timelineObject) {
@@ -198,6 +201,10 @@ angular.module('moveditorApp')
 
         this.getTimelineList = function () {
             return this.timelineList;
+        };
+
+        this.getAudioTimelineList = function () {
+            return this.audioTimelineList;
         };
 
         this.setTimelineList = function (list) {

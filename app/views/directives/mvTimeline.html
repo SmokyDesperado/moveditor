@@ -1,10 +1,17 @@
 <div class="timeline-area__wrapper">
-    <h1>timeline</h1>
+    <div class="timeline-menu__wrapper">
+        <button data-ng-click="TimelineCtrl.reorder()">reorder</button>
+        <button data-ng-click="TimelineCtrl.cut()">shorten</button>
+        <button data-ng-click="TimelineCtrl.shorten()">split</button>
+    </div>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-chunk__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
-            <div class="timeline-chunk" data-ng-repeat="chunks in timelineService.timelineList" style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{chunks.length * timelineService.pixelPerSeconds}}px;">
-                ID: {{chunks.objectListId}}
+            <div class="timeline-chunk" hm-tap="TimelineCtrl.setFocus(key)"
+                 data-ng-repeat="(key, chunks) in timelineService.timelineList"
+                 data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus}"
+                 style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{chunks.length * timelineService.pixelPerSeconds}}px;">
+                ID: {{chunks.objectListId + ' || ' + key}}
             </div>
         </div>
 

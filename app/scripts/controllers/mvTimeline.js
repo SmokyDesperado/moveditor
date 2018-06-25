@@ -15,6 +15,8 @@ angular.module('moveditorApp')
         function (TimelineService, ContentService, DragAndDropService) {
             var self = this;
 
+            this.focus = null;
+
             this.timelineList = '';
             // this.timelineWidth = TimelineService.getTimelineWidth();
 
@@ -25,8 +27,32 @@ angular.module('moveditorApp')
             };
 
             this.tap = function ($event) {
-                // TimelineService.setTimelineWidth(1000);
                 console.log('timeline', TimelineService.timelineList);
+            };
+
+            this.reorder = function () {
+                console.log('reorder clicked');
+            };
+
+            this.shorten = function () {
+                console.log('reorder shorten');
+            };
+
+            this.cut = function () {
+                console.log('reorder cut');
+            };
+
+            this.setFocus = function (timelineObjectKey) {
+                if(this.focus === timelineObjectKey) {
+                    self.unsetFocusAll();
+                }
+                else {
+                    this.focus = timelineObjectKey;
+                }
+            };
+
+            this.unsetFocusAll = function () {
+                this.focus = null;
             };
         }
     ]);

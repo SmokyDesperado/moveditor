@@ -11,7 +11,8 @@ angular.module('moveditorApp')
         'DragAndDropService',
         'MvHelperService',
         'ContentService',
-        function (DragAndDropService, MvHelperService, ContentService) {
+        'mvContentPreviewService',
+        function (DragAndDropService, MvHelperService, ContentService, mvContentPreviewService) {
             return {
                 templateUrl: '/views/directives/mvMaterial.html',
                 replace: true,
@@ -87,6 +88,7 @@ angular.module('moveditorApp')
 
                     $scope.panDoubletap = function ($event) {
                         console.log('pan double tap', $event);
+                        mvContentPreviewService.showContent($scope.materialObject.url, $scope.materialObject.type);
                     };
 
                     $scope.hammerTap = function ($event) {

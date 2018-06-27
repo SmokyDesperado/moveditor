@@ -15,6 +15,7 @@ angular.module('moveditorApp')
 
         var self = this;
         this.timelineList = [];
+        this.audioTimelineList = [];
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
         this.scrollLeft = 0;
@@ -86,15 +87,15 @@ angular.module('moveditorApp')
                 end: 0,
                 offset: 0,
                 mute: false,
-                length: (ContentService.contentList[contentListObjectId].length)
             };
 
-            timelineObject.end = timelineObject.start + timelineObject.length;
+            timelineObject.end = timelineObject.start + ContentService.contentList[contentListObjectId].length;
             ContentService.contentList[contentListObjectId].active++;
-            self.calculateChunkPositions(timelineObject);
+
+            self.recalculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
         };
 
         this.addLoadedTimelineObjectToList = function (loadedTimelineObject, $scope) {
@@ -106,14 +107,14 @@ angular.module('moveditorApp')
                 end: loadedTimelineObject.end,
                 offset: loadedTimelineObject.offset,
                 mute: loadedTimelineObject.mute,
-                length: loadedTimelineObject.length
             };
 
-            self.calculateChunkPositions(timelineObject);
             ContentService.contentList[loadedTimelineObject.objectListId].active++;
+
+            self.recalculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth(timelineObject);
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.timelineList);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
         };
 
         this.calculateTimelineWidth = function (timelineObject) {
@@ -137,67 +138,47 @@ angular.module('moveditorApp')
             this.timelineList.splice(timelineListIndex, 0, timelineObject);
         };
 
-        // ToDo: still some bugs
-        this.calculateChunkPositions = function (newTimelineObject) {
-            if(this.timelineList.length > 1) {
-                for(var i = 0; i < (this.timelineList.length - 1); i++) {
-                    if(
-                        (newTimelineObject.start >= this.timelineList[i].start) &&
-                        (newTimelineObject.start <= (this.timelineList[i].start + this.timelineList[i].length))
-                    ) {
-                        newTimelineObject.start = this.timelineList[i].start + this.timelineList[i].length;
-                    }
+        this.recalculateChunkPositions = function (newTimelineObject) {
 
-                    if(
-                        ((newTimelineObject.start + newTimelineObject.length) >= this.timelineList[i].start) &&
-                        ((newTimelineObject.start + newTimelineObject.length) <= (this.timelineList[i].start +this.timelineList[i].length))
-                    ) {
-                        newTimelineObject.start = this.timelineList[i].start + this.timelineList[i].length;
-                    }
+            // collision of new chunk with an existing chunk
+            for(var i = 0; i < this.timelineList.length; i++) {
 
-                    if(
-                        ((newTimelineObject.start + newTimelineObject.length) >= this.timelineList[i + 1].start) &&
-                        ((newTimelineObject.start + newTimelineObject.length) <= (this.timelineList[i + 1].start + this.timelineList[i + 1].length))
-                    ) {
-                        newTimelineObject.start = this.timelineList[i + 1].start + this.timelineList[i + 1].length;
-                    }
+                if ((this.timelineList[i].start <= newTimelineObject.start && newTimelineObject.start < this.timelineList[i].end) || // start lands in a chunk
+                    (this.timelineList[i].start < newTimelineObject.end && newTimelineObject.end <= this.timelineList[i].end) || // end lands a chunk
+                    (newTimelineObject.start < this.timelineList[i].start && this.timelineList[i].end < newTimelineObject.end))  // new chunk surrounds an existing chunk
+                {
+                    // console.log("COLLISION START: ", this.timelineList[i].start <= newTimelineObject.start && newTimelineObject.start < this.timelineList[i].end);
+                    // console.log("COLLISION END: ", this.timelineList[i].start < newTimelineObject.end && newTimelineObject.end <= this.timelineList[i].end);
+                    // console.log("COLLISION SURROUND: ", newTimelineObject.start < this.timelineList[i].start && this.timelineList[i].end < newTimelineObject.end);
+                    // console.log(this.timelineList[i]);
 
-                    if(
-                        (newTimelineObject.start >= this.timelineList[this.timelineList.length - 1].start) &&
-                        (newTimelineObject.start <= (this.timelineList[this.timelineList.length - 1].start + this.timelineList[this.timelineList.length - 1].length))
-                    ) {
-                        newTimelineObject.start = this.timelineList[this.timelineList.length - 1].start + this.timelineList[this.timelineList.length - 1].length;
-                    }
+                    var indexedObjectLength = this.timelineList[i].end - this.timelineList[i].start;
+                    this.timelineList[i].start = newTimelineObject.end;
+                    this.timelineList[i].end = this.timelineList[i].start + indexedObjectLength;
 
-                    newTimelineObject.end = newTimelineObject.start + newTimelineObject.length;
-                }
-            }
-            else {
-                var totalEnd = 0;
-
-                for(var i = 0; i < this.timelineList.length; i++) {
-                    if((newTimelineObject.start > this.timelineList[i].start) && (newTimelineObject.start < (this.timelineList[i].start + this.timelineList[i].length))) {
-                        if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
-                            totalEnd = this.timelineList[i].start + this.timelineList[i].length;
+                    // recalculate position of all chunks that come after new chunk
+                    for(var j = i + 1; j < this.timelineList.length; j++) {
+                        if ((this.timelineList[j].start <= this.timelineList[j-1].start && this.timelineList[j-1].start < this.timelineList[j].end) || // start overlaps in previous chunk
+                            (this.timelineList[j].start < this.timelineList[j-1].end && this.timelineList[j-1].end <= this.timelineList[j].end) || // end overlaps in previous chunk
+                            (this.timelineList[j-1].start < this.timelineList[j].start && this.timelineList[j].end < this.timelineList[j-1].end) || // chunk surrounds previous chunk
+                            (this.timelineList[j].start < this.timelineList[j-1].start && this.timelineList[j].end < this.timelineList[j-1].end)) // complete chunk is incorrectly earlier than previous chunk
+                        {
+                            indexedObjectLength = this.timelineList[j].end - this.timelineList[j].start;
+                            this.timelineList[j].start = this.timelineList[j-1].end;
+                            this.timelineList[j].end = this.timelineList[j].start + indexedObjectLength;
                         }
                     }
-
-                    if(((newTimelineObject.start + newTimelineObject.length) > this.timelineList[i].start) && ((newTimelineObject.start + newTimelineObject.length) < (this.timelineList[i].start + this.timelineList[i].length))) {
-                        if(totalEnd <(this.timelineList[i].start + this.timelineList[i].length)) {
-                            totalEnd = this.timelineList[i].start + this.timelineList[i].length;
-                        }
-                    }
-                }
-
-                if(newTimelineObject.start <= totalEnd) {
-                    newTimelineObject.start = totalEnd;
-                    newTimelineObject.end = newTimelineObject.start + newTimelineObject.length;
+                    break;
                 }
             }
         };
 
         this.getTimelineList = function () {
             return this.timelineList;
+        };
+
+        this.getAudioTimelineList = function () {
+            return this.audioTimelineList;
         };
 
         this.setTimelineList = function (list) {

@@ -41,13 +41,6 @@ angular.module('moveditorApp')
         this.DEBUG_LOGS = false;
 
         // ====================================================================================================
-        // Dummy data
-        // ====================================================================================================
-
-        this.audioChunkList = [
-        ];
-
-        // ====================================================================================================
         // Preview player initialization
         // ====================================================================================================
 
@@ -81,7 +74,7 @@ angular.module('moveditorApp')
             self.updateTimeDisplay(self.currentPlayTime);
 
             // setup initial positionB which is the max(end of chunkList, 60s) ceiled to nearest 100ms and position slider parameters
-            self.positionB = Math.ceil(Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), self.audioChunkList), 60000) / 100) * 100;
+            self.positionB = Math.ceil(Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), TimelineService.getAudioTimelineList()), 60000) / 100) * 100;
             document.getElementById('position_slider').max = self.positionB;
             document.getElementById('position_slider').step = self.timeStepInterval;
 
@@ -321,8 +314,8 @@ angular.module('moveditorApp')
             }
 
             // iterate over all audio chunks and check their start and end time
-            for (var i = 0; i < self.audioChunkList.length; i++) {
-                var c2 = self.audioChunkList[i];
+            for (var i = 0; i < TimelineService.getAudioTimelineList().length; i++) {
+                var c2 = TimelineService.getAudioTimelineList()[i];
                 // found current video/image chunk
                 if (c2.start * 1000 <= self.currentPlayTime && self.currentPlayTime < c2.end * 1000) {
                     currentChunk[1] = c2;

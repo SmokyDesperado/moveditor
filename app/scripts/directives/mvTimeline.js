@@ -21,6 +21,7 @@ angular.module('moveditorApp')
 
                 var self = this;
                 this.dragClone = null;
+                this.dragOffset = 0;
 
                 $scope.click = function (param) {
                     console.log('clicked with param:', param);
@@ -30,23 +31,30 @@ angular.module('moveditorApp')
                     TimelineCtrl.tap($event);
                 };
 
-                $scope.panStart = function (timelineObjectKey) {
+                $scope.panStart = function ($event, timelineObjectKey) {
                     if(TimelineCtrl.focus === timelineObjectKey) {
                         self.createDragCloneElement();
+
+                        var chunk = angular.element($event.target);
+                        self.dragOffset = $event.center.x - chunk[0].offsetLeft;
                         // console.log('target: ', $scope.timelineService.timelineList[timelineObjectKey]);
                     }
                 };
 
                 $scope.hammerPanMove = function ($event) {
                     if(self.dragClone) {
-                        // console.log('target: ', $event.center, self.dragClone);
+                        var chunk = angular.element($event.target);
+                        // var x = $event.center.x - chunk[0].offsetLeft;
 
-                        var x = $event.center.x - angular.element(self.dragClone)[0].offsetWidth / 2,
-                            y = $event.center.y - angular.element(self.dragClone)[0].offsetHeight / 2;
+                        console.log('target: ', $event.center.x, self.dragOffset);
 
-                        self.dragClone.style['left'] = x + 'px';
-                        self.dragClone.style['top'] = y + 'px';
-                        self.dragClone.style['z-index'] = 999999;
+                        chunk[0].style['left'] = ($event.center.x - self.dragOffset) + 'px';
+                        // var x = $event.center.x - angular.element(self.dragClone)[0].offsetWidth / 2,h
+                        //     y = $event.center.y - angular.element(self.dragClone)[0].offsetHeight / 2;
+                        //
+                        // self.dragClone.style['left'] = x + 'px';
+                        // self.dragClone.style['top'] = y + 'px';
+                        // self.dragClone.style['z-index'] = 999999;
                     }
                 };
 
@@ -55,6 +63,7 @@ angular.module('moveditorApp')
                         // console.log('pam end', $event.center);
                         angular.element(self.dragClone).remove();
                         self.dragClone = null;
+                        self.dragOffset = 0;
                     }
                 };
 

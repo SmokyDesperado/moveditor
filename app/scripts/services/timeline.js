@@ -18,6 +18,7 @@ angular.module('moveditorApp')
         this.audioTimelineList = [];
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
+        this.timelineWidthAddExtensionInSeconds = 30;
         this.scrollLeft = 0;
 
         this.pixelPerSeconds = 20;
@@ -119,7 +120,7 @@ angular.module('moveditorApp')
 
         this.calculateTimelineWidth = function () {
             var timelineWidthDifference = 0;
-            var lastTimelineListObjectLengthInPPS = self.timelineList[self.timelineList.length - 1].end * self.pixelPerSeconds;
+            var lastTimelineListObjectLengthInPPS = (self.timelineList[self.timelineList.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;
             if(lastTimelineListObjectLengthInPPS > this.timelineWidth) {
                 timelineWidthDifference = lastTimelineListObjectLengthInPPS - this.timelineWidth;
             }

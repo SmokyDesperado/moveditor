@@ -94,7 +94,7 @@ angular.module('moveditorApp')
 
             self.recalculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
-            self.calculateTimelineWidth(timelineObject);
+            self.calculateTimelineWidth();
             MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
         };
 
@@ -113,18 +113,20 @@ angular.module('moveditorApp')
 
             self.recalculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
-            self.calculateTimelineWidth(timelineObject);
+            self.calculateTimelineWidth();
             MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
         };
 
-        this.calculateTimelineWidth = function (timelineObject) {
+        this.calculateTimelineWidth = function () {
             var timelineWidthDifference = 0;
-            if((timelineObject.end * this.pixelPerSeconds) > this.timelineWidth) {
-                timelineWidthDifference = (timelineObject.end * this.pixelPerSeconds) - this.timelineWidth;
+            var lastTimelineListObjectLengthInPPS = self.timelineList[self.timelineList.length - 1].end * self.pixelPerSeconds;
+            if(lastTimelineListObjectLengthInPPS > this.timelineWidth) {
+                timelineWidthDifference = lastTimelineListObjectLengthInPPS - this.timelineWidth;
             }
 
             this.timelineWidth = this.timelineWidth + timelineWidthDifference;
 
+            console.log(this.timelineWidth, lastTimelineListObjectLengthInPPS);
             self.calculateTimelineScales();
         };
 

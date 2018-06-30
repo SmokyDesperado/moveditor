@@ -6,7 +6,7 @@
             <div class="timeline-chunk" hm-tap="TimelineCtrl.setFocus(key)"
                  data-ng-repeat="(key, chunks) in timelineService.timelineList"
                  data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus}"
-                 style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{chunks.length * timelineService.pixelPerSeconds}}px;">
+                 style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{(chunks.end - chunks.start) * timelineService.pixelPerSeconds}}px;">
                 ID: {{chunks.objectListId + ' || ' + key}}
             </div>
         </div>

@@ -19,6 +19,9 @@ angular.module('moveditorApp')
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
         this.timelineWidthAddExtensionInSeconds = 30;
+        this.timelineQuantizationValue = 100;
+        this.timelineQuantization = 1 / (this.timelineQuantizationValue/1000);
+
         this.scrollLeft = 0;
 
         this.pixelPerSeconds = 20;
@@ -84,13 +87,13 @@ angular.module('moveditorApp')
 
             var timelineObject = {
                 objectListId: contentListObjectId,
-                start: startPosition / this.pixelPerSeconds,
+                start: Math.round((startPosition / this.pixelPerSeconds) * self.timelineQuantization) / self.timelineQuantization,
                 end: 0,
                 offset: 0,
                 mute: false,
             };
 
-            timelineObject.end = timelineObject.start + ContentService.contentList[contentListObjectId].length;
+            timelineObject.end = Math.floor((timelineObject.start + ContentService.contentList[contentListObjectId].length) * self.timelineQuantization) / self.timelineQuantization;
             ContentService.contentList[contentListObjectId].active++;
 
             self.recalculateChunkPositions(timelineObject);
@@ -104,8 +107,8 @@ angular.module('moveditorApp')
 
             var timelineObject = {
                 objectListId: loadedTimelineObject.objectListId,
-                start: loadedTimelineObject.start,
-                end: loadedTimelineObject.end,
+                start: Math.round(loadedTimelineObject.start * self.timelineQuantization) / self.timelineQuantization,
+                end: Math.floor(loadedTimelineObject.end * self.timelineQuantization) / self.timelineQuantization,
                 offset: loadedTimelineObject.offset,
                 mute: loadedTimelineObject.mute,
             };
@@ -171,7 +174,7 @@ angular.module('moveditorApp')
                             this.timelineList[j].end = this.timelineList[j].start + indexedObjectLength;
                         }
                     }
-                    break;
+                    // break;
                 }
             }
         };

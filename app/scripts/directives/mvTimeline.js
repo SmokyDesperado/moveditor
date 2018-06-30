@@ -33,28 +33,15 @@ angular.module('moveditorApp')
 
                 $scope.panStart = function ($event, timelineObjectKey) {
                     if(TimelineCtrl.focus === timelineObjectKey) {
-                        self.createDragCloneElement();
-
                         var chunk = angular.element($event.target);
                         self.dragOffset = $event.center.x - chunk[0].offsetLeft;
-                        // console.log('target: ', $scope.timelineService.timelineList[timelineObjectKey]);
                     }
                 };
 
                 $scope.hammerPanMove = function ($event) {
-                    if(self.dragClone) {
+                    if($event.center.x - self.dragOffset >= 0) {
                         var chunk = angular.element($event.target);
-                        // var x = $event.center.x - chunk[0].offsetLeft;
-
-                        console.log('target: ', $event.center.x, self.dragOffset);
-
                         chunk[0].style['left'] = ($event.center.x - self.dragOffset) + 'px';
-                        // var x = $event.center.x - angular.element(self.dragClone)[0].offsetWidth / 2,h
-                        //     y = $event.center.y - angular.element(self.dragClone)[0].offsetHeight / 2;
-                        //
-                        // self.dragClone.style['left'] = x + 'px';
-                        // self.dragClone.style['top'] = y + 'px';
-                        // self.dragClone.style['z-index'] = 999999;
                     }
                 };
 

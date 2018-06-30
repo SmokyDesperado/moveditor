@@ -46,6 +46,7 @@ angular.module('moveditorApp')
 
                         self.dragClone.style['left'] = x + 'px';
                         self.dragClone.style['top'] = y + 'px';
+                        self.dragClone.style['z-index'] = 999999;
                     }
                 };
 

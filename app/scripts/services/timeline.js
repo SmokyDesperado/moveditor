@@ -118,7 +118,7 @@ angular.module('moveditorApp')
             self.recalculateChunkPositions(timelineObject);
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth();
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
+            MvHelperService.createVideoElementForChunk(timelineObject, ContentService.getContentList());
         };
 
         this.calculateTimelineWidth = function () {

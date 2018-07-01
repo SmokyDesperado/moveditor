@@ -49,9 +49,9 @@ angular.module('moveditorApp')
                 });
                 rangeSlider.setAttribute('disabled', true);
 
-                rangeSlider.noUiSlider.on('change', function(value){
-                    mvPreviewService.setPositionA(Math.round(value[0].replace('s', '') * 1000));
-                    mvPreviewService.setPositionB(Math.round(value[1].replace('s', '') * 1000));
+                rangeSlider.noUiSlider.on('update', function(value, handle, unencoded, tap, positions){
+                    mvPreviewService.setPositionA(Math.round(unencoded[0]));
+                    mvPreviewService.setPositionB(Math.round(unencoded[1]));
                 });
 
                 // ============================================================================

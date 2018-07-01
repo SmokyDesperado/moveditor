@@ -6,7 +6,7 @@
             <div class="timeline-chunk"
                  hm-tap="TimelineCtrl.setFocus(key)"
                  hm-panstart="panStart($event, key)"
-                 hm-panmove="hammerPanMove($event, chunks)"
+                 hm-panmove="hammerPanMove($event, key)"
                  hm-panend="panEnd($event)"
                  data-ng-repeat="(key, chunks) in timelineService.timelineList"
                  data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus}"

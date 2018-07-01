@@ -53,6 +53,7 @@ angular.module('moveditorApp')
                 $scope.panEnd = function ($event, timelineObjectKey) {
                     if(TimelineCtrl.focus === timelineObjectKey) {
                         self.dragOffset = 0;
+                        $scope.timelineService.calculateTimelineWidth();
                     }
                 };
 

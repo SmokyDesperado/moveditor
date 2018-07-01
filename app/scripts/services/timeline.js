@@ -122,15 +122,12 @@ angular.module('moveditorApp')
         };
 
         this.calculateTimelineWidth = function () {
-            var timelineWidthDifference = 0;
-            var lastTimelineListObjectLengthInPPS = (self.timelineList[self.timelineList.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;
-            if(lastTimelineListObjectLengthInPPS > this.timelineWidth) {
-                timelineWidthDifference = lastTimelineListObjectLengthInPPS - this.timelineWidth;
+            this.timelineWidth = (self.timelineList[self.timelineList.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;;
+
+            if(this.timelineWidth < 1920) {
+                this.timelineWidth = 1920;
             }
 
-            this.timelineWidth = this.timelineWidth + timelineWidthDifference;
-
-            console.log(this.timelineWidth, lastTimelineListObjectLengthInPPS);
             self.calculateTimelineScales();
         };
 

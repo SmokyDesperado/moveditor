@@ -100,7 +100,7 @@ angular.module('moveditorApp')
                     MvHelperService.deleteAllVideoElements(activeMediaContainer);
                     document.getElementById('position_slider').max = 0; // TODO: setCurrentPlayTime = 0
 
-                    for (var i in contents.timelineArea) {
+                    for (var i = contents.timelineArea.length - 1; i >= 0; i--) {
                         TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
                     }
 

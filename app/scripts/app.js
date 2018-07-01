@@ -18,7 +18,8 @@ angular
         'ngRoute',
         'ngSanitize',
         'ngTouch',
-        'hmTouchEvents'
+        'hmTouchEvents',
+        'noUiSlider'
     ])
     .config(['$locationProvider', function ($locationProvider) {
         $locationProvider.hashPrefix('');

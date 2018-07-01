@@ -26,15 +26,15 @@ angular.module('moveditorApp')
 
         // preview player playing state parameters
         this.isPlaying = false;
-        this.currentPlayTime = 0;   // TODO: auslagern in Timeline -> timeline kann position zeichnen
+        this.currentPlayTime = 0;
         this.timeAtStart = 0;
         this.timeAtPause = 0;
         this.jumpToTime = 0;
 
         // parameters for loop play
-        this.loopPlay = false;  // TODO: auslagern, nutze document.getElementById("loop_checkbox").value -> von außen veränderbar
-        this.positionA = 0;     // TODO: auslagern, nutze document.getElementById("position_A").value -> von außen veränderbar
-        this.positionB = 0;     // TODO: auslagern, nutze document.getElementById("position_B").value -> von außen veränderbar
+        this.loopPlay = false;
+        this.positionA = 0;
+        this.positionB = 0;
 
         // config parameters
         this.timeStepInterval = 100; // in ms
@@ -73,8 +73,8 @@ angular.module('moveditorApp')
             // init time display
             self.updateTimeDisplay(self.currentPlayTime);
 
-            // setup initial positionB which is the max(end of chunkList, 60s) ceiled to nearest 100ms and position slider parameters
-            self.positionB = Math.ceil(Math.max(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), TimelineService.getAudioTimelineList()), 60000) / 100) * 100;
+            // setup initial positionB which is the end of chunkList ceiled to nearest 100ms and position slider parameters
+            self.positionB = Math.ceil(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), TimelineService.getAudioTimelineList()) / 100) * 100;
             document.getElementById('position_slider').max = self.positionB;
             document.getElementById('position_slider').step = self.timeStepInterval;
 

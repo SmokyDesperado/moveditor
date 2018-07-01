@@ -9,6 +9,14 @@
     width: 100%;
 }
 
+.preview_player table {
+    margin: auto;
+}
+
+.preview_player table td{
+    padding: 2px;
+}
+
 #active_media {
     position: relative;
     background-color: black !important;
@@ -31,4 +39,11 @@
     left: 0;
     height: 100%;
     width: 100%;
+}
+
+.noUi-tooltip {
+    display: none;
+}
+.noUi-active .noUi-tooltip {
+    display: block;
 }

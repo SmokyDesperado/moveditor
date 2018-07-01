@@ -193,16 +193,23 @@ angular.module('moveditorApp')
             this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList) {
                 var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
                 document.getElementById('position_slider').max = newCeil;
-                document.getElementById('position_a').max = newCeil / 1000;
-                document.getElementById('position_b').max = newCeil / 1000;
-                console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
 
-                if (newCeil / 1000 < document.getElementById('position_a').value) {
-                    document.getElementById('position_a').value = 0;
+                var rangeSlider = document.getElementById('preview_range_slider');
+                var rangeValues = rangeSlider.noUiSlider.get();
+                rangeSlider.noUiSlider.updateOptions({
+                    range: {
+                        'min': 0,
+                        'max': newCeil != 0? newCeil : 999999999
+                    }
+                });
+                if (newCeil == 0) {
+                    rangeSlider.setAttribute('disabled', true);
+                } else {
+                    rangeSlider.removeAttribute('disabled');
                 }
-                if (newCeil / 1000 < document.getElementById('position_b').value) {
-                    document.getElementById('position_b').value = newCeil / 1000;
-                }
+                rangeSlider.noUiSlider.set([Math.round(rangeValues[0].replace('s', '') * 1000), Math.round(rangeValues[1].replace('s', '') * 1000)]);
+
+                console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
             }
 
         }

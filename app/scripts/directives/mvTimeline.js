@@ -40,16 +40,20 @@ angular.module('moveditorApp')
                 };
 
                 $scope.hammerPanMove = function ($event, timelineObjectKey) {
-                    var timelineObjectLength = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
-                        $scope.timelineService.pixelPerSeconds;
-                    if($event.center.x - self.dragOffset >= self.dragFreeSpaceStart &&
-                        ($event.center.x - self.dragOffset + timelineObjectLength) <= self.dragFreeSpaceEnd) {
-                        self.dragTimelineObject($event, timelineObjectKey);
+                    if(TimelineCtrl.focus === timelineObjectKey) {
+                        var timelineObjectLength = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
+                            $scope.timelineService.pixelPerSeconds;
+                        if ($event.center.x - self.dragOffset >= self.dragFreeSpaceStart &&
+                            ($event.center.x - self.dragOffset + timelineObjectLength) <= self.dragFreeSpaceEnd) {
+                            self.dragTimelineObject($event, timelineObjectKey);
+                        }
                     }
                 };
 
-                $scope.panEnd = function ($event) {
-                    self.dragOffset = 0;
+                $scope.panEnd = function ($event, timelineObjectKey) {
+                    if(TimelineCtrl.focus === timelineObjectKey) {
+                        self.dragOffset = 0;
+                    }
                 };
 
                 this.dragTimelineObject = function($event, timelineObjectKey) {

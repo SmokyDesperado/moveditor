@@ -7,7 +7,12 @@
  * # navigator
  */
 angular.module('moveditorApp')
-    .directive('mvTimeline', ['TimelineService', '$document', 'ContentService', function (TimelineService, $document, ContentService) {
+    .directive('mvTimeline', [
+        'TimelineService',
+        '$document',
+        'ContentService',
+        'MvHelperService',
+        function (TimelineService, $document, ContentService, MvHelperService) {
         return {
             templateUrl: '/views/directives/mvTimeline.html',
             replace: true,
@@ -46,6 +51,7 @@ angular.module('moveditorApp')
                         if ($event.center.x - self.dragOffset >= self.dragFreeSpaceStart &&
                             ($event.center.x - self.dragOffset + timelineObjectLength) <= self.dragFreeSpaceEnd) {
                             self.dragTimelineObject($event, timelineObjectKey);
+                            MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
                         }
                     }
                 };

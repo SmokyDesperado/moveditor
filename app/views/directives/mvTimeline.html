@@ -1,5 +1,6 @@
 <div class="timeline-area__wrapper">
     <h1>timeline</h1>
+    <span class="timeline-area__menu__list__element" data-ng-click="muteChunk()">mute</span>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-chunk__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
@@ -9,7 +10,7 @@
                  hm-panmove="hammerPanMove($event, key)"
                  hm-panend="panEnd($event, key)"
                  data-ng-repeat="(key, chunks) in timelineService.timelineList"
-                 data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus}"
+                 data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus, 'timeline-chunk--mute': chunks.mute}"
                  style="left: {{chunks.start * timelineService.pixelPerSeconds}}px; width: {{(chunks.end - chunks.start) * timelineService.pixelPerSeconds}}px;">
                 ID: {{chunks.objectListId + ' || ' + key}}
             </div>

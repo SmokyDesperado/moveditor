@@ -59,33 +59,19 @@ angular.module('moveditorApp')
             this.loadContentMaterial = function ($scope) {
                 console.log("load session");
 
-                // get the file field
-                var field = document.createElement("input");
-                field.type = "file";
-                field.style.display = "none";
-
-                // when it changes (ie: user selects a file)
-                field.addEventListener("change", function() {
-                    // get the file item from the input field
-                    var file = this.files[0];
-                    // read the file as text so that load event will trigger
-                    reader.readAsText(file);
-                });
-
-                // create a new FileReader object
-                var reader = new FileReader();
-
-                // remove all objects of current list
+                // TODO: put in one of the listeners
                 ContentService.setContentList({});
                 this.contentObjects = ContentService.getContentList();
                 TimelineService.resetTimeline();
 
-                // when the file has finished reading, store it's contents to a variable (async)
+                var reader = new FileReader();
                 reader.onload = function(ev) {
-                    var contents = JSON.parse(ev.target.result);
-
                     // TODO: check whether input session file is valid
-                    // add objects from session file
+                    // TODO: setCurrentPlayTime = 0
+                    MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
+                    document.getElementById('position_slider').max = 0;
+
+                    var contents = JSON.parse(ev.target.result);
                     for (var hash in contents.contentArea) {
                         ContentService.addContentObjectToList(
                             contents.contentArea[hash].name,
@@ -94,24 +80,27 @@ angular.module('moveditorApp')
                             contents.contentArea[hash].url,
                             hash);
                     }
-
-                    // remove all previous <video> and add new one if necessary
-                    var activeMediaContainer = document.getElementById('active_media');
-                    MvHelperService.deleteAllVideoElements(activeMediaContainer);
-                    document.getElementById('position_slider').max = 0; // TODO: setCurrentPlayTime = 0
-
                     for (var i in contents.timelineArea) {
                         TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
                     }
                     MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList());
+                    $scope.$apply();
 
                     console.log("load session complete");
-
-                    $scope.$apply();
                 };
 
+                var field = document.createElement("input");
+                field.type = "file";
+                field.addEventListener("change", function() {
+                    var file = this.files[0];
+                    reader.readAsText(file);
+                });
                 field.click();
             };
+
+            // ============================================================================
+            // SQS segmentation and stitching requests
+            // ============================================================================
 
             this.sendStitching = function () {
                 console.log('send stitching');

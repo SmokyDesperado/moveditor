@@ -45,9 +45,9 @@ angular.module('moveditorApp')
             // ====================================================================================================
 
             // accepted media extensions for specific media types
-            var videoExtensionList = ["flv", "mkv", "m4v", "mp4", "amv", "3gp", "mov"];
-            var imageExtensionList = ["png", "jpg", "webp", "bmp", "gif"];
-            var audioExtensionList = ["mp3", "ogg", "wav", "webm", "flac"];
+            var videoExtensionList = ["3gp", "amv", "flv", "m4v", "mp4", "mkv", "mov", "ogv", "ogg", "webm"];
+            var imageExtensionList = ["bmp", "gif", "jpg", "png", "webp"];
+            var audioExtensionList = ["mp3", "flac", "ogg", "wav"];
             var cloudRegExList = [
                 /https:\/\/onedrive\.live\.com\/download\?resid=/, // https://onedrive.live.com/download?resid=684E21B94B52D0C2!2688&authkey=!AAyRLt9WcK3InHw&ithint=video%2cmp4
                 /https:\/\/drive\.google\.com\/uc\?export=download\&id=/ // https://drive.google.com/uc?export=download&id=1qXlYazitNrc7Up6XceuGPYZKVb6DXG00
@@ -207,7 +207,7 @@ angular.module('moveditorApp')
                 } else {
                     rangeSlider.removeAttribute('disabled');
                 }
-                rangeSlider.noUiSlider.set([Math.round(rangeValues[0].replace('s', '') * 1000), Math.round(rangeValues[1].replace('s', '') * 1000)]);
+                rangeSlider.noUiSlider.set([Math.round(rangeValues[0].replace('s', '') * 1000), newCeil != 0? Math.round(rangeValues[1].replace('s', '') * 1000) : 999999999]);
 
                 console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
             }

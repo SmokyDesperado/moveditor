@@ -24,7 +24,7 @@ angular.module('moveditorApp')
                 link: function ($scope, $element, $attrs) {
                     var self = this;
 
-                    this.dragClone = null;
+                    this.dragIndicator = null;
 
                     // ##########################################################################################################
                     // Create thumbnail
@@ -61,27 +61,29 @@ angular.module('moveditorApp')
                     // ##########################################################################################################
 
                     $scope.panStart = function ($event) {
-                        self.dragClone = angular.copy($event.target);
-                        angular.element(self.dragClone).addClass('drag--clone');
-                        $event.element[0].parentElement.parentElement.parentElement.prepend(self.dragClone);
-                        self.dragClone.style['position'] = 'absolute';
+
+                        self.dragIndicator = document.createElement("div");
+                        self.dragIndicator.style.width = "30px";
+                        self.dragIndicator.style.height = "30px";
+                        self.dragIndicator.style.borderStyle = "dashed";
+                        self.dragIndicator.style.borderStyle = "3p";
+                        self.dragIndicator.style.position = "absolute";
+                        angular.element(self.dragIndicator).addClass('drag--clone');
+                        document.body.appendChild(self.dragIndicator);
 
                         DragAndDropService.panMoveStarted($scope.contentObjectKey);
                     };
 
                     $scope.hammerPanMove = function ($event) {
-                        var x = $event.center.x - $event.target.offsetWidth / 2,
-                            y = $event.center.y - $event.target.offsetHeight;
-
-                        self.dragClone.style['left'] = x + 'px';
-                        self.dragClone.style['top'] = y + 'px';
+                        self.dragIndicator.style['left'] = ($event.center.x - self.dragIndicator.style.width.replace('px', '') / 2) + 'px';
+                        self.dragIndicator.style['top'] = ($event.center.y - self.dragIndicator.style.width.replace('px', '') / 2) + 'px';
 
                         DragAndDropService.panMove($event);
                     };
 
                     $scope.panEnd = function ($event) {
-                        angular.element(self.dragClone).remove();
-                        self.dragClone = null;
+                        angular.element(self.dragIndicator).remove();
+                        self.dragIndicator = null;
 
                         DragAndDropService.panMoveEnd($event, $scope.contentObjectKey);
                     };

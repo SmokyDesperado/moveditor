@@ -34,6 +34,14 @@ angular.module('moveditorApp')
                     console.log('clicked with param:', param);
                 };
 
+                $scope.muteChunk = function () {
+                    if (TimelineCtrl.focus != null) {
+                        if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus].objectListId].type != "image") {
+                            $scope.timelineService.timelineList[TimelineCtrl.focus].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus].mute;
+                        }
+                    }
+                };
+
                 $scope.tap = function($event) {
                     TimelineCtrl.tap($event);
                 };
@@ -67,10 +75,11 @@ angular.module('moveditorApp')
                     var chunk = angular.element($event.target);
                     chunk[0].style['left'] = ($event.center.x - self.dragOffset) + 'px';
 
+                    var chunkLength = $scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start;
                     $scope.timelineService.timelineList[timelineObjectKey].start = self.quantizeDraggedTime(
                         ($event.center.x - self.dragOffset) / $scope.timelineService.pixelPerSeconds);
                     $scope.timelineService.timelineList[timelineObjectKey].end = self.quantizeDraggedTime(
-                        $scope.timelineService.timelineList[timelineObjectKey].start + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
+                        $scope.timelineService.timelineList[timelineObjectKey].start + chunkLength);
                 };
 
                 this.initDragLimitValues = function ($event, timelineObjectKey) {

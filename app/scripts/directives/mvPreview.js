@@ -18,14 +18,9 @@ angular.module('moveditorApp')
                 // preview_player setup
                 // ============================================================================
                 
-                mvPreviewService.initPlayer();
-
-                // ============================================================================
-                // Preview range slider
-                // ============================================================================
+                document.getElementById('position_slider').step = mvPreviewService.timeStepInterval;
 
                 var rangeSlider = document.getElementById('preview_range_slider');
-
                 noUiSlider.create(rangeSlider, {
                     animate: true,
                     behaviour: 'snap-hover',
@@ -48,7 +43,6 @@ angular.module('moveditorApp')
                     }
                 });
                 rangeSlider.setAttribute('disabled', true);
-
                 rangeSlider.noUiSlider.on('update', function(value, handle, unencoded, tap, positions){
                     mvPreviewService.setPositionA(Math.round(unencoded[0]));
                     mvPreviewService.setPositionB(Math.round(unencoded[1]));
@@ -74,12 +68,7 @@ angular.module('moveditorApp')
                 $scope.setVolume = function (vol) {
                     mvPreviewService.setVolume(vol);
                 }
-
-                $scope.mute = false;
-                $scope.setMute = function () {
-                    mvPreviewService.setMute(!$scope.mute);
-                }
-
+                
                 $scope.loop = false;
                 $scope.setLoop = function () {
                     mvPreviewService.setLoopPlay(!$scope.loop);

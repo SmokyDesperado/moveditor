@@ -41,52 +41,6 @@ angular.module('moveditorApp')
         this.DEBUG_LOGS = false;
 
         // ====================================================================================================
-        // Preview player initialization
-        // ====================================================================================================
-
-        this.initPlayer = function () {
-
-            // delete all <video>, <img> and <audio> from activeMediaContainer, just a safety measure
-            var activeMediaContainer = document.getElementById('active_media');
-            MvHelperService.deleteAllVideoElements(activeMediaContainer);
-
-            // create <video> for every active video in the timeline area
-            for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
-                // add new <video> only once, i.e. only if id doesn't exist yet
-                self.createVideoElementForChunk(TimelineService.getTimelineList()[i], ContentService.getContentList());
-            }
-
-            // create only one <img> which source will be changed throughout preview play
-            var image = document.createElement("img");
-            image.src = "";
-            image.id = "image_0";
-            image.style.zIndex = "-1";
-            activeMediaContainer.appendChild(image);
-
-            // create only one <audio> which source will be changed throughout preview play
-            var audio = document.createElement("audio");
-            audio.src = "";
-            audio.id = "audio_0";
-            audio.style.zIndex = "-1";
-            activeMediaContainer.appendChild(audio);
-
-            // init time display
-            self.updateTimeDisplay(self.currentPlayTime);
-
-            // setup initial positionB which is the end of chunkList ceiled to nearest 100ms and position slider parameters
-            self.positionB = Math.ceil(MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), TimelineService.getAudioTimelineList()) / 100) * 100;
-            document.getElementById('position_slider').max = self.positionB;
-            document.getElementById('position_slider').step = self.timeStepInterval;
-
-            // if first video/image chunk starts at 0 then bring that element to the front
-            var currentChunkPair = self.getCurrentChunkPair();
-            var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
-            if (currentVideoElement != null) {
-                currentVideoElement.currentTime = self.calculateMediaOffsetTime(currentChunkPair[0]) / 1000;
-            }
-        }
-
-        // ====================================================================================================
         // Preview player controls
         // ====================================================================================================
 
@@ -192,17 +146,6 @@ angular.module('moveditorApp')
                 videoElements[i].volume = vol;
             }
             document.getElementById("audio_0").volume = vol;
-        }
-
-        this.setMute = function (mute) {
-            console.log("mute: ", vol);
-
-            // mute all videos and <audio>
-            var videoElements = document.getElementById('active_media').getElementsByTagName("video");
-            for (var i = 0; i < videoElements.length; i++) {
-                videoElements[i].muted = mute;
-            }
-            document.getElementById("audio_0").mute = mute;
         }
 
         // ====================================================================================================

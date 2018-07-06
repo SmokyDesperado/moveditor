@@ -42,6 +42,17 @@ angular.module('moveditorApp')
                     }
                 };
 
+                $scope.deleteChunk = function () {
+                    if (TimelineCtrl.focus != null) {
+                        var index = $scope.timelineService.timelineList.indexOf($scope.timelineService.timelineList[TimelineCtrl.focus]);
+                        if (index > -1) {
+                            $scope.timelineService.timelineList.splice(index, 1);
+                        }
+                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
+                        TimelineCtrl.focus = null;
+                    }
+                };
+
                 $scope.tap = function($event) {
                     TimelineCtrl.tap($event);
                 };

@@ -1,6 +1,7 @@
 <div class="timeline-area__wrapper">
     <h1>timeline</h1>
-    <span class="timeline-area__menu__list__element" data-ng-click="muteChunk()">mute</span>
+    <span class="timeline-area__menu__list__element" data-ng-click="muteChunk(key)">mute</span>
+    <span class="timeline-area__menu__list__element" data-ng-click="deleteChunk(key)">delete</span>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-chunk__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->

@@ -25,7 +25,7 @@ angular.module('moveditorApp')
                 $scope.timelineService = TimelineService;
 
                 var self = this;
-                this.dragClone = null;
+                this.dragShorten = false;
                 this.dragOffset = 0;
                 this.dragFreeSpaceStart = 0;
                 this.dragFreeSpaceEnd = 1920;
@@ -47,13 +47,13 @@ angular.module('moveditorApp')
                 };
 
                 $scope.panStart = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus === timelineObjectKey) {
+                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
                         self.initDragLimitValues($event, timelineObjectKey);
                     }
                 };
 
                 $scope.hammerPanMove = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus === timelineObjectKey) {
+                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
                         var timelineObjectLength = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
                             $scope.timelineService.pixelPerSeconds;
                         if ($event.center.x - self.dragOffset >= self.dragFreeSpaceStart &&
@@ -65,7 +65,7 @@ angular.module('moveditorApp')
                 };
 
                 $scope.panEnd = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus === timelineObjectKey) {
+                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
                         self.dragOffset = 0;
                         $scope.timelineService.calculateTimelineWidth();
                     }
@@ -110,6 +110,34 @@ angular.module('moveditorApp')
 
                 this.dragTimelineScroll = function() {
 
+                };
+
+                $scope.dragStartShortenStart = function() {
+                    self.dragShorten = true;
+                    console.log('drag start shorten start');
+                };
+
+                $scope.dragStartShortenMove = function() {
+                    console.log('drag start shorten move');
+                };
+
+                $scope.dragStartShortenEnd = function() {
+                    self.dragShorten = false;
+                    console.log('drag start shorten end');
+                };
+
+                $scope.dragEndShortenStart = function() {
+                    self.dragShorten = true;
+                    console.log('drag end shorten start');
+                };
+
+                $scope.dragEndShortenMove = function() {
+                    console.log('drag end shorten move');
+                };
+
+                $scope.dragEndShortenEnd = function() {
+                    self.dragShorten = false;
+                    console.log('drag end shorten end');
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));

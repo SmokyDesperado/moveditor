@@ -23,7 +23,7 @@
     background: black;
 }
 
-.timeline-chunk__wrap {
+.timeline-object__wrap {
     height: 80px;
 
     position: relative;
@@ -31,17 +31,54 @@
     padding: 10px 0;
 }
 
-.timeline-chunk {
+.timeline-object__chunk {
+    display: inline-block;
+    position: absolute;
+}
+
+.timeline-object__chunk-content {
     width: 100px;
     height: 50px;
 
     display: inline-block;
-    position: absolute;
+    pointer-events: none;
+    position: relative;
 
     background: red;
     border-left: solid 5px black;
     border-right: solid 5px white;
     color: white;
+}
+
+.timeline-object__chunk-manipulator {
+    width: 10px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+
+    background: orange;
+}
+
+.timeline-object__chunk-manipulator--start {
+    left: 0;
+}
+
+.timeline-object__chunk-manipulator--end {
+    right: 0;
+}
+
+.timeline-object__chunk-manipulator--start:hover {
+    width: 50px;
+    left: -25px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.timeline-object__chunk-manipulator--end:hover {
+    width: 50px;
+    right: -25px;
+    opacity: 0.5;
+    cursor: pointer;
 }
 
 #timeline-scale {

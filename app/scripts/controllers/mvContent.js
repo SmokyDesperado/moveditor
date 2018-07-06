@@ -103,7 +103,12 @@ angular.module('moveditorApp')
             // ============================================================================
 
             this.sendStitching = function () {
+                // ToDo: HAN
+                var contentList = ContentService.getContentList();
+                var timelineList = TimelineService.getTimelineList();
                 console.log('send stitching');
+                console.log('contentList:', contentList);
+                console.log('timelineList:', timelineList);
             };
 
             this.init();

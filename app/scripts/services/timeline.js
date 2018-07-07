@@ -207,5 +207,9 @@ angular.module('moveditorApp')
             }
         };
 
+        this.roundTime = function (time) {
+            return Math.round(time * self.timelineQuantization) / self.timelineQuantization;
+        };
+
         this.init();
     }]);

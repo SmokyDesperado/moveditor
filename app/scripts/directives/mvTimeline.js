@@ -119,7 +119,6 @@ angular.module('moveditorApp')
                 $scope.dragStartShortenStart = function($event, timelineObjectKey) {
                     self.dragShorten = true;
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
-                    self.initDragShortenLimit($event, timelineObjectKey);
                     // console.log('drag start shorten start');
                 };
 
@@ -136,12 +135,11 @@ angular.module('moveditorApp')
                 $scope.dragEndShortenStart = function($event, timelineObjectKey) {
                     self.dragShorten = true;
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
-                    self.initDragShortenLimit($event, timelineObjectKey);
                     // console.log('drag end shorten start');
                 };
 
                 $scope.dragEndShortenMove = function($event, timelineObjectKey) {
-                    self.dragEndShortenTimelineObject($event, timelineObjectKey);
+                    self.setEndDragShortenObject($event, timelineObjectKey)
                     // console.log('drag end shorten move');
                 };
 
@@ -151,51 +149,40 @@ angular.module('moveditorApp')
                 };
 
                 this.dragStartShortenTimelineObject = function($event, timelineObjectKey) {
-                    var chunk = angular.element($event.target);
-                    var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.minimalDragShortenLimitValues) - self.dragShortenOffset);
+                    var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
-                    self.setStartDragShortenManipulatorPosition(chunk[0], dragDistant);
-                };
+                    var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
+                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
+                    var limitEnd = $scope.timelineService.roundTime(limitStart + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
 
-                this.setStartDragShortenManipulatorPosition = function(target, dragPosition) {
-                    var position = dragPosition;
-
-                    if(dragPosition <= 0 - self.dragShortenOffset) {
-                        position = 0  - self.dragShortenOffset;
+                    if(position < limitStart) {
+                        position = $scope.timelineService.roundTime(limitStart);
                     }
 
-                    if(dragPosition >= ((self.maximalDragShortenLimitValues - self.dragShortenOffset) - (self.minimalDragShortenLimitValues))) {
-                        position = (self.maximalDragShortenLimitValues - self.dragShortenOffset) - (self.minimalDragShortenLimitValues);
+                    if(position > limitEnd) {
+                        position = $scope.timelineService.roundTime(limitEnd);
                     }
 
-                    target.style['left'] = position + 'px';
+                    $scope.timelineService.timelineList[timelineObjectKey].start = $scope.timelineService.roundTime(position);
+                    $scope.timelineService.timelineList[timelineObjectKey].offset = $scope.timelineService.roundTime(position - limitStart);
                 };
 
-                this.dragEndShortenTimelineObject = function($event, timelineObjectKey) {
-                    var chunk = angular.element($event.target);
-                    var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.maximalDragShortenLimitValues) + self.dragShortenOffset);
+                this.setEndDragShortenObject = function($event, timelineObjectKey) {
+                    var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
-                    self.setEndDragShortenManipulatorPosition(chunk[0], dragDistant);
-                };
+                    var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
+                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
+                    var limitEnd = $scope.timelineService.roundTime(limitStart + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
 
-                this.setEndDragShortenManipulatorPosition = function(target, dragPosition) {
-                    var position = dragPosition;
-
-                    if(dragPosition >= 0 + self.dragShortenOffset) {
-                        position = 0 + self.dragShortenOffset;
+                    if(position < limitStart) {
+                        position = $scope.timelineService.roundTime(limitStart);
                     }
 
-                    if(dragPosition <= -1* ((self.maximalDragShortenLimitValues - self.dragShortenOffset) - self.minimalDragShortenLimitValues)) {
-                        position = -((self.maximalDragShortenLimitValues - self.dragShortenOffset) - self.minimalDragShortenLimitValues);
+                    if(position > limitEnd) {
+                        position = $scope.timelineService.roundTime(limitEnd);
                     }
 
-                    target.style['right'] = -1 * position + 'px';
-                };
-
-                this.initDragShortenLimit = function($event, timelineObjectKey) {
-                    var timelinePixelPerSeconds = $scope.timelineService.pixelPerSeconds;
-                    self.minimalDragShortenLimitValues = $scope.timelineService.timelineList[timelineObjectKey].start * timelinePixelPerSeconds;
-                    self.maximalDragShortenLimitValues = $scope.timelineService.timelineList[timelineObjectKey].end * timelinePixelPerSeconds;
+                    $scope.timelineService.timelineList[timelineObjectKey].end = $scope.timelineService.roundTime(position);
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));

@@ -45,8 +45,6 @@
     position: relative;
 
     background: red;
-    border-left: solid 5px black;
-    border-right: solid 5px white;
     color: white;
 }
 
@@ -56,28 +54,27 @@
     position: absolute;
     top: 0;
 
+    z-index: 100;
     background: orange;
 }
 
 .timeline-object__chunk-manipulator--start {
-    left: 0;
+    left: -5px;
+    border-right: solid 5px black;
+    opacity: 0.5;
 }
 
 .timeline-object__chunk-manipulator--end {
-    right: 0;
+    right: -5px;
+    border-left: solid 5px black;
+    opacity: 0.5;
 }
 
 .timeline-object__chunk-manipulator--start:hover {
-    width: 50px;
-    left: -25px;
-    opacity: 0.5;
     cursor: pointer;
 }
 
 .timeline-object__chunk-manipulator--end:hover {
-    width: 50px;
-    right: -25px;
-    opacity: 0.5;
     cursor: pointer;
 }
 

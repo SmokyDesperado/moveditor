@@ -18,15 +18,15 @@
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
                      data-ng-if="key == TimelineCtrl.focus"
-                     hm-panstart="dragStartShortenStart()"
-                     hm-panmove="dragStartShortenMove()"
-                     hm-panend="dragStartShortenEnd()"></div>
+                     hm-panstart="dragStartShortenStart($event, key)"
+                     hm-panmove="dragStartShortenMove($event, key)"
+                     hm-panend="dragStartShortenEnd($event, key)"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
                      data-ng-if="key == TimelineCtrl.focus"
-                     hm-panstart="dragEndShortenStart()"
-                     hm-panmove="dragEndShortenMove()"
-                     hm-panend="dragEndShortenEnd()"></div>
+                     hm-panstart="dragEndShortenStart($event, key)"
+                     hm-panmove="dragEndShortenMove($event, key)"
+                     hm-panend="dragEndShortenEnd($event, key)"></div>
                 <!--ID: {{chunks.objectListId + ' || ' + key}}-->
             </div>
         </div>

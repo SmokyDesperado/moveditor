@@ -76,6 +76,20 @@ angular.module('moveditorApp')
                     }
                 };
 
+                $scope.swapWithPreviousObject = function () {
+                    if(TimelineCtrl.focus !== null && angular.isDefined($scope.timelineService.timelineList[TimelineCtrl.focus - 1])) {
+                        $scope.timelineService.swapChunkWithPreviousObject(TimelineCtrl.focus);
+                        TimelineCtrl.focus--;
+                    }
+                };
+
+                $scope.swapWithNextObject = function () {
+                    if(TimelineCtrl.focus !== null && angular.isDefined($scope.timelineService.timelineList[TimelineCtrl.focus + 1])) {
+                        $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus);
+                        TimelineCtrl.focus++;
+                    }
+                };
+
                 this.dragTimelineObject = function($event, timelineObjectKey) {
                     var chunk = angular.element($event.target);
                     chunk[0].style['left'] = ($event.center.x - self.dragOffset) + 'px';

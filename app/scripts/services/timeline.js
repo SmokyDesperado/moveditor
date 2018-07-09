@@ -211,5 +211,40 @@ angular.module('moveditorApp')
             return Math.round(time * self.timelineQuantization) / self.timelineQuantization;
         };
 
+        this.swapChunkKeyPositionOneToPositionTwo = function (keyPositionOne, keyPositionTwo) {
+            if(angular.isDefined(self.timelineList[keyPositionOne]) && angular.isDefined(self.timelineList[keyPositionTwo])) {
+                // change start and end of timelineList object one and object two
+                var deltaTimeValueChunkOne = self.roundTime(self.timelineList[keyPositionOne].end - self.timelineList[keyPositionOne].start);
+                var deltaTimeValueChunkTwo = self.roundTime(self.timelineList[keyPositionTwo].end - self.timelineList[keyPositionTwo].start);
+                var endChunkTwo = self.timelineList[keyPositionTwo].end;
+                var startChunkOne = self.timelineList[keyPositionOne].start;
+
+                self.timelineList[keyPositionOne].end = endChunkTwo;
+                self.timelineList[keyPositionOne].start = self.roundTime(self.timelineList[keyPositionOne].end - deltaTimeValueChunkOne);
+
+                self.timelineList[keyPositionTwo].start = startChunkOne;
+                self.timelineList[keyPositionTwo].end = self.roundTime(self.timelineList[keyPositionTwo].start + deltaTimeValueChunkTwo);
+
+                // change timelineList object key position of object one and object two
+                var  tempPosition = self.timelineList[keyPositionOne];
+                self.timelineList[keyPositionOne] = self.timelineList[keyPositionTwo];
+                self.timelineList[keyPositionTwo] = tempPosition;
+            }
+        };
+
+        this.swapChunkWithPreviousObject = function (focusedChunkKey) {
+            var previousFocusedChunkKey = focusedChunkKey - 1;
+            if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[previousFocusedChunkKey])) {
+                self.swapChunkKeyPositionOneToPositionTwo(previousFocusedChunkKey, focusedChunkKey);
+            }
+        };
+
+        this.swapChunkWithNextObject = function (focusedChunkKey) {
+            var nextFocusedChunkKey = focusedChunkKey + 1;
+            if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[nextFocusedChunkKey])) {
+                self.swapChunkKeyPositionOneToPositionTwo(focusedChunkKey, nextFocusedChunkKey);
+            }
+        };
+
         this.init();
     }]);

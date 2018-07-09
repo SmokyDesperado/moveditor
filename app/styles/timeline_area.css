@@ -17,6 +17,10 @@
     background: white;
 }
 
+.timeline-area__menu-button {
+    height: 100%;
+}
+
 .dropable {
     height: 100px;
     overflow-x: scroll;

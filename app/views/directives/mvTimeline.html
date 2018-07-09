@@ -1,6 +1,8 @@
 <div class="timeline-area__wrapper">
     <h1>timeline</h1>
     <span class="timeline-area__menu__list__element" data-ng-click="muteChunk()">mute</span>
+    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="swapWithPreviousObject()">swap <-- </button>
+    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="swapWithNextObject()">swap --> </button>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
@@ -14,6 +16,7 @@
                 <div class="timeline-object__chunk-content"
                      style="width: {{(chunks.end - chunks.start) * timelineService.pixelPerSeconds}}px;"
                      data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus, 'timeline-chunk--mute': chunks.mute}">
+                    ID: {{chunks.objectListId + ' || ' + key}}
                 </div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
@@ -27,7 +30,6 @@
                      hm-panstart="dragEndShortenStart($event, key)"
                      hm-panmove="dragEndShortenMove($event, key)"
                      hm-panend="dragEndShortenEnd($event, key)"></div>
-                <!--ID: {{chunks.objectListId + ' || ' + key}}-->
             </div>
         </div>
 

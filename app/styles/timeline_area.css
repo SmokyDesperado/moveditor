@@ -59,13 +59,13 @@
 }
 
 .timeline-object__chunk-manipulator--start {
-    left: -5px;
+    left: -10px;
     border-right: solid 5px black;
     opacity: 0.5;
 }
 
 .timeline-object__chunk-manipulator--end {
-    right: -5px;
+    right: -10px;
     border-left: solid 5px black;
     opacity: 0.5;
 }
@@ -117,7 +117,8 @@
 }
 
 .timeline-chunk--focus {
-    border: 2px solid blue;
+    background: blue;
+    /*border: 2px solid blue;*/
 }
 
 .timeline-chunk--mute {

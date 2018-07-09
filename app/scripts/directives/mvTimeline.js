@@ -51,7 +51,8 @@ angular.module('moveditorApp')
                 };
 
                 $scope.panStart = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
+                    self.dragShorten = false;
+                    if(TimelineCtrl.focus === timelineObjectKey) {
                         self.initDragLimitValues($event, timelineObjectKey);
                     }
                 };
@@ -123,7 +124,9 @@ angular.module('moveditorApp')
                 };
 
                 $scope.dragStartShortenMove = function($event, timelineObjectKey) {
-                    self.dragStartShortenTimelineObject($event, timelineObjectKey);
+                    if(self.dragShorten) {
+                        self.dragStartShortenTimelineObject($event, timelineObjectKey);
+                    }
                     // console.log('drag start shorten move');
                 };
 
@@ -139,7 +142,9 @@ angular.module('moveditorApp')
                 };
 
                 $scope.dragEndShortenMove = function($event, timelineObjectKey) {
-                    self.setEndDragShortenObject($event, timelineObjectKey)
+                    if(self.dragShorten) {
+                        self.setEndDragShortenObject($event, timelineObjectKey)
+                    }
                     // console.log('drag end shorten move');
                 };
 
@@ -159,8 +164,8 @@ angular.module('moveditorApp')
                         position = $scope.timelineService.roundTime(limitStart);
                     }
 
-                    if(position > limitEnd) {
-                        position = $scope.timelineService.roundTime(limitEnd);
+                    if(position > limitEnd - 0.1) {
+                        position = $scope.timelineService.roundTime(limitEnd - 0.1);
                     }
 
                     $scope.timelineService.timelineList[timelineObjectKey].start = $scope.timelineService.roundTime(position);
@@ -174,8 +179,8 @@ angular.module('moveditorApp')
                     var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
                     var limitEnd = $scope.timelineService.roundTime(limitStart + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
 
-                    if(position < limitStart) {
-                        position = $scope.timelineService.roundTime(limitStart);
+                    if(position < limitStart + 0.1) {
+                        position = $scope.timelineService.roundTime(limitStart + 0.1);
                     }
 
                     if(position > limitEnd) {

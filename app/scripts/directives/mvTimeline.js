@@ -37,6 +37,7 @@ angular.module('moveditorApp')
                 };
 
                 $scope.muteChunk = function () {
+                    // ToDo: !== instead of !=. must be tested
                     if (TimelineCtrl.focus != null) {
                         if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus].objectListId].type != "image") {
                             $scope.timelineService.timelineList[TimelineCtrl.focus].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus].mute;
@@ -45,9 +46,11 @@ angular.module('moveditorApp')
                 };
 
                 $scope.deleteChunk = function () {
+                    // ToDo: !== instead of !=. must be tested
                     if (TimelineCtrl.focus != null) {
                         var index = $scope.timelineService.timelineList.indexOf($scope.timelineService.timelineList[TimelineCtrl.focus]);
                         if (index > -1) {
+                            ContentService.contentList[$scope.timelineService.timelineList[TimelineCtrl.focus].objectListId].active--;
                             $scope.timelineService.timelineList.splice(index, 1);
                         }
                         MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);

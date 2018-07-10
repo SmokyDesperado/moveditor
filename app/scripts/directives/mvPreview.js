@@ -19,6 +19,7 @@ angular.module('moveditorApp')
                 // ============================================================================
                 
                 document.getElementById('position_slider').step = mvPreviewService.timeStepInterval;
+                mvPreviewService.updateTimeDisplay(0);
 
                 var rangeSlider = document.getElementById('preview_range_slider');
                 noUiSlider.create(rangeSlider, {

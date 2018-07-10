@@ -9,7 +9,8 @@
 angular.module('moveditorApp')
     .directive('mvContent', [
         'AWSService',
-        function (AWSService) {
+        'ContentService',
+        function (AWSService, ContentService) {
         return {
             templateUrl: '/views/directives/mv_content.html',
             replace: true,
@@ -18,6 +19,8 @@ angular.module('moveditorApp')
             bindToController: true,
             controllerAs: 'ContentCtrl',
             link: function ($scope, $element, $attrs, contentCtrl) {
+
+                $scope.contentList = ContentService.contentList;
 
                 // ====================================================================================================
                 // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8

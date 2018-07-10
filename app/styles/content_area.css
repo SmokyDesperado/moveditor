@@ -101,3 +101,7 @@ content-area__menu--left {
     top: 0;
     left: 0;
 }
+
+.content-area__menu-button {
+    height: 100%;
+}

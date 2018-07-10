@@ -16,11 +16,6 @@ angular.module('moveditorApp')
 
             var self = this;
 
-            this.contentObjects = null;
-            this.init = function () {
-                this.contentObjects = ContentService.getContentList();
-            };
-
             // ============================================================================
             // add content material
             // ============================================================================
@@ -37,7 +32,7 @@ angular.module('moveditorApp')
                 console.log("save session");
 
                 // object we want to save
-                var objectToSave = {contentArea: this.contentObjects, timelineArea: TimelineService.getTimelineList()};
+                var objectToSave = {contentArea: ContentService.getContentList(), timelineArea: TimelineService.getTimelineList()};
                 // convert to json string
                 var JSONToSave = JSON.stringify(objectToSave);
                 // create a link DOM fragment
@@ -61,7 +56,6 @@ angular.module('moveditorApp')
 
                 // TODO: put in one of the listeners
                 ContentService.setContentList({});
-                this.contentObjects = ContentService.getContentList();
                 TimelineService.resetTimeline();
 
                 var reader = new FileReader();
@@ -110,7 +104,5 @@ angular.module('moveditorApp')
                 console.log('contentList:', contentList);
                 console.log('timelineList:', timelineList);
             };
-
-            this.init();
         }
     ]);

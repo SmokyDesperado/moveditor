@@ -47,13 +47,18 @@ angular.module('moveditorApp')
             };
 
             this.confirmRemoveContentObjectFromList = function (contetnMaterialIndex) {
-                var answer = confirm('realy delete: ' + this.contentList[contetnMaterialIndex].url);
-                if(answer === true) {
-                    self.removecontentObjectFromList(contetnMaterialIndex);
-                    console.log('removed:', contetnMaterialIndex);
+                if(this.contentList[contetnMaterialIndex].active === 0) {
+                    var answer = confirm('realy delete: ' + this.contentList[contetnMaterialIndex].url);
+                    if(answer === true) {
+                        self.removecontentObjectFromList(contetnMaterialIndex);
+                        console.log('removed:', contetnMaterialIndex);
+                    }
+                    else {
+                        console.log('NOT removed:', contetnMaterialIndex);
+                    }
                 }
                 else {
-                    console.log('NOT removed:', contetnMaterialIndex);
+                    alert('active is not 0');
                 }
             };
 

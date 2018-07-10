@@ -41,7 +41,7 @@ angular.module('moveditorApp')
                 }
 
                 if(self.hitTrash($event.center)) {
-                    ContentService.removecontentObjectFromList(contentObjectKey);
+                    ContentService.confirmRemoveContentObjectFromList(contentObjectKey);
                 }
 
                 // console.log('timelineList:', TimelineService.timelineList);

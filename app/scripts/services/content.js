@@ -12,6 +12,7 @@ angular.module('moveditorApp')
         'MvHelperService',
         'Content',
         function (MvHelperService, Content) {
+            var self = this;
             this.contentList = {};
 
             this.addContentObjectToList = function (name, type, length, MaterialURL, hash) {
@@ -42,6 +43,17 @@ angular.module('moveditorApp')
                 }
                 else {
                     console.log('element not in content list');
+                }
+            };
+
+            this.confirmRemoveContentObjectFromList = function (contetnMaterialIndex) {
+                var answer = confirm('realy delete: ' + this.contentList[contetnMaterialIndex].url);
+                if(answer === true) {
+                    self.removecontentObjectFromList(contetnMaterialIndex);
+                    console.log('removed:', contetnMaterialIndex);
+                }
+                else {
+                    console.log('NOT removed:', contetnMaterialIndex);
                 }
             };
 

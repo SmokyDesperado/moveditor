@@ -16,6 +16,7 @@ angular.module('moveditorApp')
             var self = this;
 
             this.focus = null;
+            this.shorten = false;
 
             this.timelineList = '';
             // this.timelineWidth = TimelineService.getTimelineWidth();
@@ -45,10 +46,20 @@ angular.module('moveditorApp')
             this.setFocus = function (timelineObjectKey) {
                 if(this.focus === timelineObjectKey) {
                     self.unsetFocusAll();
+                    self.deactivateShorten();
                 }
                 else {
                     this.focus = timelineObjectKey;
+                    self.activateShorten();
                 }
+            };
+
+            this.activateShorten = function () {
+                this.shorten = true;
+            };
+
+            this.deactivateShorten = function () {
+                this.shorten = false;
             };
 
             this.unsetFocusAll = function () {

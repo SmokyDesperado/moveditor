@@ -30,8 +30,6 @@ angular.module('moveditorApp')
                 this.dragOffset = 0;
                 this.dragFreeSpaceStart = 0;
                 this.dragFreeSpaceEnd = 1920;
-                this.minimalDragShortenLimitValues = 0;
-                this.maximalDragShortenLimitValues = 0;
                 this.dragShortenOffset = 5;
 
                 $scope.click = function (param) {
@@ -61,6 +59,8 @@ angular.module('moveditorApp')
                     if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
                         var timelineObjectLength = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
                             $scope.timelineService.pixelPerSeconds;
+                        TimelineCtrl.deactivateShorten();
+
                         if ($event.center.x - self.dragOffset >= self.dragFreeSpaceStart &&
                             ($event.center.x - self.dragOffset + timelineObjectLength) <= self.dragFreeSpaceEnd) {
                             self.dragTimelineObject($event, timelineObjectKey);
@@ -73,6 +73,7 @@ angular.module('moveditorApp')
                     if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
                         self.dragOffset = 0;
                         $scope.timelineService.calculateTimelineWidth();
+                        TimelineCtrl.activateShorten();
                     }
                 };
 
@@ -134,37 +135,32 @@ angular.module('moveditorApp')
                 $scope.dragStartShortenStart = function($event, timelineObjectKey) {
                     self.dragShorten = true;
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
-                    // console.log('drag start shorten start');
                 };
 
                 $scope.dragStartShortenMove = function($event, timelineObjectKey) {
                     if(self.dragShorten) {
                         self.dragStartShortenTimelineObject($event, timelineObjectKey);
                     }
-                    // console.log('drag start shorten move');
                 };
 
                 $scope.dragStartShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
-                    // console.log('drag start shorten end');
                 };
 
                 $scope.dragEndShortenStart = function($event, timelineObjectKey) {
                     self.dragShorten = true;
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
-                    // console.log('drag end shorten start');
                 };
 
                 $scope.dragEndShortenMove = function($event, timelineObjectKey) {
                     if(self.dragShorten) {
-                        self.setEndDragShortenObject($event, timelineObjectKey)
+                        self.setEndDragShortenObject($event, timelineObjectKey);
                     }
-                    // console.log('drag end shorten move');
                 };
 
                 $scope.dragEndShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
-                    // console.log('drag end shorten end');
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
                 };
 
                 this.dragStartShortenTimelineObject = function($event, timelineObjectKey) {

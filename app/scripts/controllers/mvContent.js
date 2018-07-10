@@ -34,7 +34,7 @@ angular.module('moveditorApp')
                 // object we want to save
                 var objectToSave = {contentArea: ContentService.getContentList(), timelineArea: TimelineService.getTimelineList()};
                 // convert to json string
-                var JSONToSave = JSON.stringify(objectToSave);
+                var JSONToSave = angular.toJson(objectToSave);
                 // create a link DOM fragment
                 var tmpLink = $("<a/>");
 

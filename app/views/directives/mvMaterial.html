@@ -2,12 +2,14 @@
     <div class="mv-material__content mv-material__content--video" hm-tap="hammerTap($event)"
          hm-doubletap="panDoubletap($event)" hm-panmove="hammerPanMove($event)" hm-panstart="panStart($event)"
          hm-panend="panEnd($event)">
-         <!-- <canvas id="canvas_{{contentObjectKey}}"></canvas> -->
-        KEY: <br/>{{contentObjectKey}}
-        <!-- {{ materialObject.name }}<br/> -->
+        <!-- <canvas id="canvas_{{contentObjectKey}}"></canvas> -->
+        <!--KEY: <br/>{{contentObjectKey}}-->
+         {{ materialObject.name }}<br/>
         length: {{ materialObject.length }}<br/>
-        <!-- type: {{ materialObject.type }}<br/> -->
+        <!--type: {{ materialObject.type }}<br/> -->
         <!-- url: {{ materialObject.url }}<br/> -->
         active: {{ materialObject.active }}<br/>
     </div>
+
+    <input ng-model="materialObject.name">
 </div>

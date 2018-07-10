@@ -21,7 +21,7 @@ angular.module('moveditorApp')
             controllerAs: 'ContentCtrl',
             link: function ($scope, $element, $attrs, contentCtrl) {
 
-                $scope.contentList = ContentService.getContentList();
+                $scope.contentService = ContentService;
                 DragAndDropService.setDropableTrash($element.find('#content-trash'));
 
                 // ====================================================================================================

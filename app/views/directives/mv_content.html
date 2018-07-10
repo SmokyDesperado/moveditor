@@ -15,7 +15,7 @@
     <div class="content-area__materials" hm-tap="contentTap()">
         <div class="content-area__materials__list">
             <div class="content-area__materials__list__element">
-                <mv-material data-ng-repeat="(contentObjectKey, material) in contentList"
+                <mv-material data-ng-repeat="(contentObjectKey, material) in contentService.contentList"
                              material-object="material" content-object-key="contentObjectKey"></mv-material>
             </div>
         </div>

@@ -1,4 +1,4 @@
-<div class="content-area__wrapper">
+<div class="content-area__wrapper" >
     <div class="content-area__menu">
         <div class="content-area__menu-wrapper">
             <div class="content-area__menu--left">
@@ -12,12 +12,18 @@
             </div>
         </div>
     </div>
-    <div class="content-area__materials">
+    <div class="content-area__materials" hm-tap="contentTap()">
         <div class="content-area__materials__list">
             <div class="content-area__materials__list__element">
                 <mv-material data-ng-repeat="(contentObjectKey, material) in contentList"
                              material-object="material" content-object-key="contentObjectKey"></mv-material>
             </div>
+        </div>
+    </div>
+
+    <div id="content-trash" class="content-trash">
+        <div class="content-trash__icon">
+            trash
         </div>
     </div>
 </div>

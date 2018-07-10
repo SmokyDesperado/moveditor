@@ -10,7 +10,8 @@ angular.module('moveditorApp')
     .directive('mvContent', [
         'AWSService',
         'ContentService',
-        function (AWSService, ContentService) {
+        'DragAndDropService',
+        function (AWSService, ContentService, DragAndDropService) {
         return {
             templateUrl: '/views/directives/mv_content.html',
             replace: true,
@@ -20,7 +21,8 @@ angular.module('moveditorApp')
             controllerAs: 'ContentCtrl',
             link: function ($scope, $element, $attrs, contentCtrl) {
 
-                $scope.contentList = ContentService.contentList;
+                $scope.contentList = ContentService.getContentList();
+                DragAndDropService.setDropableTrash($element.find('#content-trash'));
 
                 // ====================================================================================================
                 // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
@@ -64,6 +66,10 @@ angular.module('moveditorApp')
 
                 $scope.sendStitching = function () {
                     contentCtrl.sendStitching();
+                };
+
+                $scope.contentTap = function () {
+                    console.log('contentList', $scope.contentList);
                 };
             }
         };

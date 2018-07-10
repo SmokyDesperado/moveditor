@@ -105,3 +105,15 @@ content-area__menu--left {
 .content-area__menu-button {
     height: 100%;
 }
+
+.content-trash {
+    width: 100px;
+    height: 100px;
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    background: red;
+    color: white;
+}

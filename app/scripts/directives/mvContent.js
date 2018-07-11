@@ -57,7 +57,7 @@ angular.module('moveditorApp')
                 };
 
                 $scope.loadContentMaterial = function () {
-                    contentCtrl.loadContentMaterial($scope);
+                    $element.find('.load-file__input')[0].click();
                 };
 
                 $scope.saveContentMaterial = function () {

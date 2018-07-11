@@ -48,51 +48,6 @@ angular.module('moveditorApp')
             };
 
             // ============================================================================
-            // load session, modified from http://simey.me/saving-loading-files-with-javascript/
-            // ============================================================================
-
-            this.loadContentMaterial = function ($scope) {
-                console.log("load session");
-
-                // TODO: put in one of the listeners
-                ContentService.setContentList({});
-                TimelineService.resetTimeline();
-
-                var reader = new FileReader();
-                reader.onload = function(ev) {
-                    // TODO: check whether input session file is valid
-                    // TODO: setCurrentPlayTime = 0
-                    MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
-                    document.getElementById('position_slider').max = 0;
-
-                    var contents = JSON.parse(ev.target.result);
-                    for (var hash in contents.contentArea) {
-                        ContentService.addContentObjectToList(
-                            contents.contentArea[hash].name,
-                            contents.contentArea[hash].type,
-                            contents.contentArea[hash].length,
-                            contents.contentArea[hash].url,
-                            hash);
-                    }
-                    for (var i in contents.timelineArea) {
-                        TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
-                    }
-                    MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList());
-                    $scope.$apply();
-
-                    console.log("load session complete");
-                };
-
-                var field = document.createElement("input");
-                field.type = "file";
-                field.addEventListener("change", function() {
-                    var file = this.files[0];
-                    reader.readAsText(file);
-                });
-                field.click();
-            };
-
-            // ============================================================================
             // SQS segmentation and stitching requests
             // ============================================================================
 

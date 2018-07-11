@@ -117,3 +117,16 @@ content-area__menu--left {
     background: red;
     color: white;
 }
+
+.load-file__wrapper {
+    width: 100px;
+    height: 100%;
+    display: inline-block;
+}
+
+input.load-file__input{
+    width: 0;
+    height: 0;
+    display: inline-block;
+    visibility: hidden;
+}

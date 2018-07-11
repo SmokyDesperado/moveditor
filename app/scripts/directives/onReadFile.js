@@ -11,7 +11,8 @@ angular.module('moveditorApp')
         'ContentService',
         'TimelineService',
         'MvHelperService',
-        function (ContentService, TimelineService, MvHelperService) {
+        'mvPreviewService',
+        function (ContentService, TimelineService, MvHelperService, mvPreviewService) {
         return {
             restrict: 'A',
             link: function($scope, $element, attrs) {
@@ -22,23 +23,34 @@ angular.module('moveditorApp')
                         ContentService.setContentList({});
                         TimelineService.resetTimeline();
 
-                        MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
-                        document.getElementById('position_slider').max = 0;
+                        console.log("load session");
 
-                        var contents = JSON.parse(onLoadEvent.target.result);
-                        for (var hash in contents.contentArea) {
-                            ContentService.addContentObjectToList(
-                                contents.contentArea[hash].name,
-                                contents.contentArea[hash].type,
-                                contents.contentArea[hash].length,
-                                contents.contentArea[hash].url,
-                                hash);
-                        }
-                        for (var i in contents.timelineArea) {
-                            TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
-                        }
-                        MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList());
-                        $scope.$apply();
+                        // TODO: put in one of the listeners
+                        ContentService.setContentList({});
+                        this.contentObjects = ContentService.getContentList();
+                        TimelineService.resetTimeline();
+
+                        var reader = new FileReader();
+                            // TODO: check whether input session file is valid
+                            MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
+                            document.getElementById('audio_0').pause();
+                            document.getElementById('position_slider').max = 0;
+
+                            var contents = JSON.parse(ev.target.result);
+                            for (var hash in contents.contentArea) {
+                                ContentService.addContentObjectToList(
+                                    contents.contentArea[hash].name,
+                                    contents.contentArea[hash].type,
+                                    contents.contentArea[hash].length,
+                                    contents.contentArea[hash].url,
+                                    hash);
+                            }
+                            for (var i in contents.timelineArea) {
+                                TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
+                            }
+                            MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList(), true);
+                            mvPreviewService.jumpToPosition(0);
+                            $scope.$apply();
                     };
 
                     reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);

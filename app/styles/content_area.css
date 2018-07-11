@@ -86,6 +86,11 @@ content-area__menu--left {
     color: white;
 }
 
+.material_type_indicator {
+    width: 40px;
+    height: 40px;
+}
+
 .mv-material__attributes {
     height: 40px;
 }

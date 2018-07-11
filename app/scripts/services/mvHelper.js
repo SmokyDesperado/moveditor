@@ -121,8 +121,29 @@ angular.module('moveditorApp')
             };
 
             // ====================================================================================================
-            // Preview player functions
+            // Preview player helper functions
             // ====================================================================================================
+
+            this.getCurrentChunkPair = function (currentPlayTime, videoImageChunkList, audioChunkList) {
+
+                var currentChunk = [null, null]; // [video/image, audio]
+                for (var i = 0; i < videoImageChunkList.length; i++) {
+                    var c1 = videoImageChunkList[i];
+                    if (c1.start * 1000 <= currentPlayTime && currentPlayTime < c1.end * 1000) {
+                        currentChunk[0] = c1;
+                        break;
+                    }
+                }
+
+                for (var i = 0; i < audioChunkList.length; i++) {
+                    var c2 = audioChunkList[i];
+                    if (c2.start * 1000 <= currentPlayTime && currentPlayTime < c2.end * 1000) {
+                        currentChunk[1] = c2;
+                        break;
+                    }
+                }
+                return currentChunk;
+            }
 
             this.createVideoElementForChunk = function (chunk, contentList) {
 
@@ -158,15 +179,91 @@ angular.module('moveditorApp')
                 return Math.max(videoImageTimelineDuration, audioTimelineDuration);
             }
 
-            // ====================================================================================================
-            // Preview player helper functions
-            // ====================================================================================================
+            this.calculateMediaOffsetTime = function (currentPlayTime, currentChunk) {
+                return currentChunk.offset * 1000 + (currentPlayTime - currentChunk.start * 1000);
+            }
+
+            this.hideVideoImageElements = function () {
+                var videoElements = document.getElementById('active_media').getElementsByTagName("video");
+                for (var i = 0; i < videoElements.length; i++) {
+                    videoElements[i].style.zIndex = "-1";
+                }
+                var imageElement = document.getElementById("image_0");
+                imageElement.style.zIndex = "-1";
+            }
 
             this.deleteAllVideoElements = function (activeMediaContainer) {
                 var videoElements = activeMediaContainer.getElementsByTagName("video");
                 while (videoElements[0]) {
                     videoElements[0].parentNode.removeChild(videoElements[0]);
                 }
+            }
+
+            this.setCurrentAudioSource = function (currentChunk, contentList) {
+                var sourceIsSet = false;
+                if (currentChunk != null) {
+                    var currentMedia = contentList[currentChunk.objectListId];
+                    if (currentMedia != null) {
+
+                        // TODO: remove this if-statement later, when correctly using currentChunkPair[1]
+                        if (currentMedia.type === "video" || currentMedia.type === "image") {
+                            return false;
+                        }
+
+                        var currentAudioElement = document.getElementById("audio_0");
+                        if (currentMedia.url !== currentAudioElement.src) {
+                            currentAudioElement.src = currentMedia.url;
+                        }
+                        sourceIsSet = true;
+                    }
+                }
+                return sourceIsSet;
+            }
+
+            this.showCurrentVideoImage = function (currentChunk, contentList) {
+
+                self.hideVideoImageElements();
+
+                if (currentChunk != null) {
+                    var currentMedia = contentList[currentChunk.objectListId];
+                    if (currentMedia != null) {
+                        if (currentMedia.type === "video") {
+                            document.getElementById("video_" + currentChunk.objectListId).style.zIndex = "0";
+                        } else if (currentMedia.type === "image") {
+                            var imageElement = document.getElementById("image_0");
+                            imageElement.src = currentMedia.url;
+                            imageElement.style.zIndex = "0";
+                        }
+                    }
+                }
+            }
+
+            this.getCurrentVideoElement = function (currentChunk, contentList) {
+                var currentVideoElement = null;
+                if (currentChunk != null) {
+                    var currentMedia = contentList[currentChunk.objectListId];
+                    if (currentMedia != null) {
+                        if (currentMedia.type === "video") {
+                            currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
+                        }
+                    }
+                }
+                return currentVideoElement;
+            }
+
+            this.updateTimeDisplay = function (time) {
+
+                // display in "h:m:s:ms"
+                var milliseconds = Math.floor((time % 1000));
+                var seconds = Math.floor(time / 1000) % 60;
+                var minutes = Math.floor(Math.floor(time / 1000) / 60) % 60;
+                var hours = Math.floor(Math.floor(time / 1000) / 60 / 60) % 60;
+
+                // modified timer display from https://jsfiddle.net/Daniel_Hug/pvk6p/
+                document.getElementById('time_display').textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
+                                            (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
+                                            (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
+                                            (milliseconds > 90 ? milliseconds/10 : "00");
             }
 
             // ====================================================================================================
@@ -190,7 +287,7 @@ angular.module('moveditorApp')
                 self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList);
             }
 
-            this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList) {
+            this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList, maxRange = false) {
                 var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
                 document.getElementById('position_slider').max = newCeil;
 
@@ -207,7 +304,12 @@ angular.module('moveditorApp')
                 } else {
                     rangeSlider.removeAttribute('disabled');
                 }
-                rangeSlider.noUiSlider.set([Math.round(rangeValues[0].replace('s', '') * 1000), newCeil != 0? Math.round(rangeValues[1].replace('s', '') * 1000) : 999999999]);
+
+                if (maxRange) {
+                    rangeSlider.noUiSlider.set([0, newCeil != 0? newCeil : 999999999]);
+                } else {
+                    rangeSlider.noUiSlider.set([Math.round(rangeValues[0].replace('s', '') * 1000), newCeil != 0? Math.round(rangeValues[1].replace('s', '') * 1000) : 999999999]);
+                }
 
                 console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
             }

@@ -31,33 +31,33 @@ angular.module('moveditorApp')
                     // ##########################################################################################################
                     var container = $element.find('.mv-material__content')[0];
 
-                    if ($scope.materialObject.type == "video") {
-                        var canvas = document.createElement('canvas');
-                        canvas.className = "media-thumbnail";
-                        container.appendChild(canvas);
-
-                        MvHelperService.createVideoThumbnail($scope.materialObject.url, canvas);
-                        MvHelperService.getVideoAudioDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
+                    switch ($scope.materialObject.type) {
+                        case "video":
+                            var canvas = document.createElement('canvas');
+                            canvas.className = "media-thumbnail";
+                            container.appendChild(canvas);
+                            MvHelperService.createVideoThumbnail($scope.materialObject.url, canvas);
+                            MvHelperService.getVideoAudioDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
+                            break;
+                        case "image":
+                            var image = new Image();
+                            image.src = $scope.materialObject.url;
+                            image.className = "media-thumbnail";
+                            container.appendChild(image);
+                            ContentService.contentList[$scope.contentObjectKey].length = 1;
+                            break;
+                        case "audio":
+                            var image = new Image();
+                            var source = "https://thumbs.gfycat.com/SatisfiedThankfulCurassow-max-1mb.gif";
+                            image.src = source;
+                            image.className = "media-thumbnail";
+                            container.appendChild(image);
+                            MvHelperService.getVideoAudioDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
+                            break;
+                        default:
+                            break;
                     }
 
-                    if ($scope.materialObject.type == "image") {
-                        var image = new Image();
-                        image.src = $scope.materialObject.url;
-                        image.className = "media-thumbnail";
-                        container.appendChild(image);
-                        ContentService.contentList[$scope.contentObjectKey].length = 1;
-                    }
-
-                    if ($scope.materialObject.type == "audio") {
-                        var image = new Image();
-
-                        // var source = "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=beb0f979ed2a7da134fb95a2ae6290c3&auto=format&fit=crop&w=1350&q=80";
-                        var source = "https://thumbs.gfycat.com/SatisfiedThankfulCurassow-max-1mb.gif";
-                        image.src = source;
-                        image.className = "media-thumbnail";
-                        container.appendChild(image);
-                        MvHelperService.getVideoAudioDuration($scope.materialObject.url, ContentService.contentList[$scope.contentObjectKey], $scope);
-                    }
                     // ##########################################################################################################
 
                     $scope.panStart = function ($event) {

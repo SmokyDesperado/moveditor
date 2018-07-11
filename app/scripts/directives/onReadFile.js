@@ -36,7 +36,7 @@ angular.module('moveditorApp')
                             document.getElementById('audio_0').pause();
                             document.getElementById('position_slider').max = 0;
 
-                            var contents = JSON.parse(ev.target.result);
+                            var contents = JSON.parse(onLoadEvent.target.result);
                             for (var hash in contents.contentArea) {
                                 ContentService.addContentObjectToList(
                                     contents.contentArea[hash].name,
@@ -50,6 +50,7 @@ angular.module('moveditorApp')
                             }
                             MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList(), true);
                             mvPreviewService.jumpToPosition(0);
+                            onChangeEvent.target.value = '';
                             $scope.$apply();
                     };
 

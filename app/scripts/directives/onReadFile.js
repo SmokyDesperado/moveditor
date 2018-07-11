@@ -33,7 +33,7 @@ angular.module('moveditorApp')
                         var reader = new FileReader();
                             // TODO: check whether input session file is valid
                             MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
-                            document.getElementById('audio_0').pause();
+                            mvPreviewService.pause();
                             document.getElementById('position_slider').max = 0;
 
                             var contents = JSON.parse(onLoadEvent.target.result);

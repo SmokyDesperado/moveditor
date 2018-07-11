@@ -24,3 +24,33 @@
     top: 50%;
     transform: translateY(-50%);
 }
+
+#content_metadata {
+    width: 500px;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    bottom: 3%;
+}
+
+#content_name {
+    width: 100%;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+
+    color: white;
+    background-color: transparent;
+    border-color: transparent;
+    text-align: center;
+}
+
+#content_url {
+    width: 400px;
+}
+
+#copy_url_button {
+    width: 95px;
+}

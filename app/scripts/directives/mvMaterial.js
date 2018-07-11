@@ -90,7 +90,7 @@ angular.module('moveditorApp')
 
                     $scope.panDoubletap = function ($event) {
                         console.log('pan double tap', $event);
-                        mvContentPreviewService.showContent($scope.materialObject.url, $scope.materialObject.type);
+                        mvContentPreviewService.showContent($scope.materialObject);
                     };
 
                     $scope.hammerTap = function ($event) {

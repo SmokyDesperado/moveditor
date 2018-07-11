@@ -12,23 +12,25 @@ angular.module('moveditorApp')
         'MvHelperService',
         function (MvHelperService) {
             var self = this;
-            this.previewType = "image";
+            this.previewType = null;
 
-            this.showContent = function (contentURL, type) {
+            this.showContent = function (materialObject) {
                 self.showContentPreviewPopup();
-                this.previewType = type;
+                this.previewType = materialObject.type;
+                document.getElementById('content_url').value = materialObject.url;
+                document.getElementById('content_name').value = materialObject.name;
 
-                switch(type) {
+                switch(this.previewType) {
                     case "image":
                         var image = document.createElement("img");
-                        image.src = contentURL;
+                        image.src = materialObject.url;
                         image.id = "content_preview_image";
                         image.className = "centered_content";
                         document.getElementById('content_preview_popup').appendChild(image);
                         break;
                     case "audio":
                         var audio = document.createElement("audio");
-                        audio.src = contentURL;
+                        audio.src = materialObject.url;
                         audio.id = "content_preview_audio";
                         audio.className = "centered_content";
                         audio.controls = true;
@@ -38,7 +40,7 @@ angular.module('moveditorApp')
                         break;
                     case "video":
                         var video = document.createElement("video");
-                        video.src = contentURL;
+                        video.src = materialObject.url;
                         video.id = "content_preview_video";
                         video.className = "centered_content";
                         video.controls = "controls";
@@ -76,7 +78,6 @@ angular.module('moveditorApp')
                     case "video":
                         var contentPreviewVideo = document.getElementById('content_preview_video');
                         contentPreviewVideo.pause();
-
                         MvHelperService.deleteAllVideoElements(activeMediaContainer);
                         break;
                     default:

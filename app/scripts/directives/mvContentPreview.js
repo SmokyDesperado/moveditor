@@ -19,6 +19,11 @@ angular.module('moveditorApp')
                         mvContentPreviewService.hideContentPreviewPopup();
                     }
                 }
+
+                $scope.coypURL = function () {
+                    document.getElementById('content_url').select();
+                    document.execCommand("copy");
+                }
             }
         };
     }]);

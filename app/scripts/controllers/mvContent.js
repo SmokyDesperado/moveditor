@@ -11,8 +11,9 @@ angular.module('moveditorApp')
     .controller('MvContentCtrl', [
         'ContentService',
         'TimelineService',
+        'mvPreviewService',
         'MvHelperService',
-        function (ContentService, TimelineService, MvHelperService) {
+        function (ContentService, TimelineService, mvPreviewService, MvHelperService) {
 
             var self = this;
 
@@ -69,6 +70,7 @@ angular.module('moveditorApp')
                     // TODO: check whether input session file is valid
                     // TODO: setCurrentPlayTime = 0
                     MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
+                    document.getElementById('audio_0').pause();
                     document.getElementById('position_slider').max = 0;
 
                     var contents = JSON.parse(ev.target.result);
@@ -83,7 +85,8 @@ angular.module('moveditorApp')
                     for (var i in contents.timelineArea) {
                         TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
                     }
-                    MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList());
+                    MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList(), true);
+                    mvPreviewService.jumpToPosition(0);
                     $scope.$apply();
 
                     console.log("load session complete");

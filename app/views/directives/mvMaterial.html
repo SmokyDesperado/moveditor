@@ -4,12 +4,13 @@
          hm-panend="panEnd($event)">
         <!-- <canvas id="canvas_{{contentObjectKey}}"></canvas> -->
         <!--KEY: <br/>{{contentObjectKey}}-->
-         {{ materialObject.name }}<br/>
+        <!-- {{ materialObject.name }}<br/> -->
         length: {{ materialObject.length }}<br/>
-        <!--type: {{ materialObject.type }}<br/> -->
+        <!-- type: {{ materialObject.type }}<br/>  -->
         <!-- url: {{ materialObject.url }}<br/> -->
         active: {{ materialObject.active }}<br/>
-    </div>
-
+        <img class="material_type_indicator" ng-if="materialObject.type == 'video'" src="https://image.flaticon.com/icons/svg/148/148709.svg">
+        <img class="material_type_indicator" ng-if="materialObject.type == 'audio'" src="https://image.flaticon.com/icons/svg/148/148754.svg">
+        <img class="material_type_indicator" ng-if="materialObject.type == 'image'" src="https://image.flaticon.com/icons/svg/148/148711.svg">
     <input ng-model="materialObject.name">
 </div>

@@ -41,6 +41,43 @@ angular.module('moveditorApp')
         this.DEBUG_LOGS = false;
 
         // ====================================================================================================
+        // Preview player init
+        // ====================================================================================================
+        
+        this.init = function () {
+            document.getElementById('position_slider').step = self.timeStepInterval;
+            MvHelperService.updateTimeDisplay(self.currentPlayTime);
+
+            var rangeSlider = document.getElementById('preview_range_slider');
+            noUiSlider.create(rangeSlider, {
+                animate: true,
+                behaviour: 'snap-hover',
+                connect: true,
+                tooltips: true,
+
+                start: [0, 999999999],
+                step: 100,
+                range: {
+                    'min': 0,
+                    'max': 999999999
+                },
+                format: {
+                    to: function (value) {
+                        return Math.round((value / 1000) * 10) / 10 + 's';
+                    },
+                    from: function (value) {
+                        return value.replace('s', '');
+                    }
+                }
+            });
+            rangeSlider.setAttribute('disabled', true);
+            rangeSlider.noUiSlider.on('update', function(value, handle, unencoded, tap, positions){
+                self.setPositionA(Math.round(unencoded[0]));
+                self.setPositionB(Math.round(unencoded[1]));
+            });
+        }
+
+        // ====================================================================================================
         // Preview player controls
         // ====================================================================================================
 
@@ -65,21 +102,24 @@ angular.module('moveditorApp')
             clearTimeout(self.timeUpdateStepTimeout);
 
             // pause active <video> and only let current media element be shown
-            var currentChunkPair = self.getCurrentChunkPair();
-            var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
+            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
+            MvHelperService.showCurrentVideoImage(currentChunkPair[0], ContentService.getContentList());
+            var currentVideoElement = MvHelperService.getCurrentVideoElement(currentChunkPair[0], ContentService.getContentList());
             if (currentVideoElement != null) {
                 currentVideoElement.pause(); 
                 // BUG: before every pause(), check whether is promise playing
                 // Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause().
                 // https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
             }
+
+            document.getElementById("audio_0").pause();
         }
 
         this.jumpToPosition = function (newPosition) {
             console.log("jump to ", newPosition);
 
             // pause current active <video>
-            var currentChunkPair = self.getCurrentChunkPair();
+            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
             if (currentChunkPair[0] != null) {
                 var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
                 if (currentMedia != null) {
@@ -88,6 +128,15 @@ angular.module('moveditorApp')
                         if (currentVideoElement != null) {
                             currentVideoElement.pause();
                         }
+                    }
+                }
+            }
+
+            if (currentChunkPair[0] != null) { // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+                var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
+                if (currentMedia != null) {
+                    if (currentMedia.type === "audio") {
+                        document.getElementById("audio_0").pause();
                     }
                 }
             }
@@ -100,7 +149,7 @@ angular.module('moveditorApp')
             self.timeAtPause = 0;
             
             // update time display
-            self.updateTimeDisplay(self.currentPlayTime);
+            MvHelperService.updateTimeDisplay(self.currentPlayTime);
 
             if (self.DEBUG_LOGS) {
                 console.log("============================== JUMP ==============================");
@@ -109,10 +158,16 @@ angular.module('moveditorApp')
             }
 
             // check what video should be active now and calculate its position
-            currentChunkPair = self.getCurrentChunkPair();
-            var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
+            currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
+            MvHelperService.showCurrentVideoImage(currentChunkPair[0], ContentService.getContentList());
+            var currentVideoElement = MvHelperService.getCurrentVideoElement(currentChunkPair[0], ContentService.getContentList());
             if (currentVideoElement != null) {
-                currentVideoElement.currentTime = self.calculateMediaOffsetTime(currentChunkPair[0]) / 1000;
+                currentVideoElement.currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
+            }
+
+            var sourceIsSet = MvHelperService.setCurrentAudioSource(currentChunkPair[0], ContentService.getContentList()); // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+            if (sourceIsSet) {
+                document.getElementById("audio_0").currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
             }
 
             // if player is currently playing, then continue playing again
@@ -161,7 +216,7 @@ angular.module('moveditorApp')
         self.previewPlayStep = function () {
 
             // when current chunk has changed, then pause previously active video
-            var currentChunkPair = self.getCurrentChunkPair();
+            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
             if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) {
                 var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
                 if (previousVideoImage != null) {
@@ -174,17 +229,39 @@ angular.module('moveditorApp')
                 }
             }
 
+            if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) { // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+                var previousAudio = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
+                if (previousAudio != null) {
+                    if (previousAudio.type === "audio") {
+                        document.getElementById("audio_0").pause();
+                    }
+                }
+            }
+
             // if current video/image chunk is of type video, then play new active <video>
-            var currentVideoElement = self.showCurrentVideoImage(currentChunkPair[0]);
+            MvHelperService.showCurrentVideoImage(currentChunkPair[0], ContentService.getContentList());
+            var currentVideoElement = MvHelperService.getCurrentVideoElement(currentChunkPair[0], ContentService.getContentList());
             if (currentVideoElement != null) {
 
                 // if starting a new chunk, then set video offset
                 if (self.previousChunkPair[0] != currentChunkPair[0]) {
-                    currentVideoElement.currentTime = self.calculateMediaOffsetTime(currentChunkPair[0]) / 1000;
+                    currentVideoElement.currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
                 }
                 currentVideoElement.muted = currentChunkPair[0].mute;
-                currentVideoElement.play();                    
+                if (currentVideoElement.paused) {currentVideoElement.play();}
             }
+
+            var sourceIsSet = MvHelperService.setCurrentAudioSource(currentChunkPair[0], ContentService.getContentList()); // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+            if (sourceIsSet) {
+                var currentAudioElement = document.getElementById("audio_0");
+
+                if (self.previousChunkPair[0] != currentChunkPair[0]) {
+                    currentAudioElement.currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
+                }
+                currentAudioElement.muted = currentChunkPair[0].mute;
+                if (currentAudioElement.paused) {currentAudioElement.play();}
+            }
+
             self.previousChunkPair = currentChunkPair;
 
             // check whether should stop playing or restart on loop if reached the end or positionB
@@ -218,87 +295,10 @@ angular.module('moveditorApp')
             // increment current time and update time display
             self.currentPlayTime += self.timeStepInterval;
             document.getElementById('position_slider').value = self.currentPlayTime;
-            self.updateTimeDisplay(self.currentPlayTime);
+            MvHelperService.updateTimeDisplay(self.currentPlayTime);
 
             // call previewPlayStep again, but with adjusted time amount to keep the loops precise
             self.previewPlayStep();
-        }
-
-        // ====================================================================================================
-        // Helper functions
-        // ====================================================================================================
-
-        this.updateTimeDisplay = function (time) {
-
-            // display in "h:m:s:ms"
-            var milliseconds = Math.floor((time % 1000));
-            var seconds = Math.floor(time / 1000) % 60;
-            var minutes = Math.floor(Math.floor(time / 1000) / 60) % 60;
-            var hours = Math.floor(Math.floor(time / 1000) / 60 / 60) % 60;
-
-            // modified timer display from https://jsfiddle.net/Daniel_Hug/pvk6p/
-            document.getElementById('time_display').textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
-                                        (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
-                                        (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00") + ":" +
-                                        (milliseconds > 90 ? milliseconds/10 : "00");
-        }
-
-        this.getCurrentChunkPair = function () {
-
-            var currentChunk = [null, null]; // [video/image, audio]
-
-            // iterate over all video/image chunks and check their start and end time
-            for (var i = 0; i < TimelineService.getTimelineList().length; i++) {
-                var c1 = TimelineService.getTimelineList()[i];
-                if (c1.start * 1000 <= self.currentPlayTime && self.currentPlayTime < c1.end * 1000) { // TODO: at the end preview player is black, should be paused video
-                    currentChunk[0] = c1;
-                    break;
-                }
-            }
-
-            // iterate over all audio chunks and check their start and end time
-            for (var i = 0; i < TimelineService.getAudioTimelineList().length; i++) {
-                var c2 = TimelineService.getAudioTimelineList()[i];
-                // found current video/image chunk
-                if (c2.start * 1000 <= self.currentPlayTime && self.currentPlayTime < c2.end * 1000) {
-                    currentChunk[1] = c2;
-                    break;
-                }
-            }
-
-            return currentChunk;
-        }
-
-        this.showCurrentVideoImage = function (currentChunk) {
-
-            // hide all other <video> and <img>
-            var videoElements = document.getElementById('active_media').getElementsByTagName("video");
-            for (var i = 0; i < videoElements.length; i++) {
-                videoElements[i].style.zIndex = "-1";
-            }
-            var imageElement = document.getElementById("image_0");
-            imageElement.style.zIndex = "-1";
-
-            // bring media element of current chunk to the front
-            var currentVideoElement = null;
-            if (currentChunk != null) {
-                var currentMedia = ContentService.getContentList()[currentChunk.objectListId];
-                if (currentMedia != null) {
-                    if (currentMedia.type === "video") {
-                        currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
-                        currentVideoElement.style.zIndex = "0";
-                    } else { // if (currentMedia.type === "image")
-                        var imageElement = document.getElementById("image_0");
-                        imageElement.src = currentMedia.url;
-                        imageElement.style.zIndex = "0";
-                    }
-                }
-            }
-            return currentVideoElement;
-        }
-
-        this.calculateMediaOffsetTime = function (currentChunk) {
-            return currentChunk.offset * 1000 + (self.currentPlayTime - currentChunk.start * 1000);
         }
 
     }]);

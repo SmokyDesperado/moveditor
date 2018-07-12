@@ -21,6 +21,11 @@
     height: 100%;
 }
 
+.timeline-area__menu-button--cut {
+    background: red;
+    color: white;
+}
+
 .dropable {
     height: 100px;
     overflow-x: scroll;
@@ -38,6 +43,10 @@
 .timeline-object__chunk {
     display: inline-block;
     position: absolute;
+}
+
+.timeline-object__chunk--cut {
+    cursor: crosshair;
 }
 
 .timeline-object__chunk-content {

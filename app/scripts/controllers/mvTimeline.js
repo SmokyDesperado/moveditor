@@ -39,10 +39,6 @@ angular.module('moveditorApp')
                 console.log('reorder shorten');
             };
 
-            this.cut = function () {
-                console.log('reorder cut');
-            };
-
             this.setFocus = function (timelineObjectKey) {
                 if(this.focus === timelineObjectKey) {
                     self.unsetFocusAll();
@@ -52,6 +48,10 @@ angular.module('moveditorApp')
                     this.focus = timelineObjectKey;
                     self.activateShorten();
                 }
+            };
+
+            this.cutChunk = function ($event, timelineObjectKey, timeline) {
+                TimelineService.cutChunk($event, timelineObjectKey, timeline);
             };
 
             this.activateShorten = function () {

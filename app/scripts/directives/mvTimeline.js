@@ -25,6 +25,7 @@ angular.module('moveditorApp')
 
                 $scope.timelineService = TimelineService;
                 $scope.contentService = ContentService;
+                $scope.isCutActive = false;
 
                 var self = this;
                 this.dragShorten = false;
@@ -61,6 +62,21 @@ angular.module('moveditorApp')
 
                 $scope.tap = function($event) {
                     TimelineCtrl.tap($event);
+                };
+
+                $scope.chunkTap = function($event, key) {
+                    if(!$scope.isCutActive) {
+                        TimelineCtrl.setFocus(key);
+                    }
+
+                    if($scope.isCutActive && TimelineCtrl.focus === key) {
+                        TimelineCtrl.cutChunk($event, key, $element.find('#timelineDropArea'));
+                        $scope.isCutActive = false;
+                    }
+
+                    if($scope.isCutActive && TimelineCtrl.focus === null) {
+                        $scope.isCutActive = false;
+                    }
                 };
 
                 $scope.panStart = function ($event, timelineObjectKey) {
@@ -228,6 +244,10 @@ angular.module('moveditorApp')
                     }
 
                     $scope.timelineService.timelineList[timelineObjectKey].end = $scope.timelineService.roundTime(position);
+                };
+
+                $scope.activateCuttingMode = function() {
+                    $scope.isCutActive = !$scope.isCutActive;
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));

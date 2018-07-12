@@ -78,6 +78,17 @@ angular.module('moveditorApp')
 // functions
 // =====================================================================================================================
 
+        this.createNewChunk = function (contentListObjectId, start, end, offset, mute, name) {
+            return {
+                objectListId: contentListObjectId,
+                start: start,
+                end: end,
+                offset: offset,
+                mute: mute,
+                name: name
+            };
+        };
+
         this.addTimelineObjectToList = function (contentListObjectId) {
 
             var startPosition = this.getMouseHoverPosX();
@@ -246,6 +257,23 @@ angular.module('moveditorApp')
             if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[nextFocusedChunkKey])) {
                 self.swapChunkKeyPositionOneToPositionTwo(focusedChunkKey, nextFocusedChunkKey);
             }
+        };
+
+        this.cutChunk = function ($event, focusedChunkKey, timeline) {
+            var positionInPixel = $event.center.x + timeline[0].scrollLeft;
+            var positionInTime = self.roundTime(positionInPixel / self.pixelPerSeconds);
+            var newChunkAfterCut = self.createNewChunk(
+                self.timelineList[focusedChunkKey].objectListId,
+                positionInTime,
+                self.timelineList[focusedChunkKey].end,
+                self.roundTime((positionInTime - self.timelineList[focusedChunkKey].start + self.timelineList[focusedChunkKey].offset)),
+                self.timelineList[focusedChunkKey].mute,
+                self.timelineList[focusedChunkKey].name
+            );
+            self.timelineList[focusedChunkKey].end = positionInTime;
+            self.sortedAddingObjectToTimelineList(newChunkAfterCut);
+
+            MvHelperService.updatePreviewPlayerParameters(self.getTimelineList(), self.getTimelineList(), true);
         };
 
         this.init();

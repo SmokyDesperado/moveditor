@@ -139,3 +139,56 @@
 
     position: absolute;
 }
+
+.chunk-meta__wrapper {
+    margin: 20px 0 0 20px;
+}
+
+.chunk-meta__name-input {
+    width: 50px;
+    height: 16px;
+
+    font: 16px;
+    line-height: 160px;
+    border: none;
+}
+
+.chunk-meta__timeline-values {
+    border-spacing: 0;
+}
+
+.chunk-meta__timeline-values th{
+    width: 200px;
+}
+
+.chunk-meta__timeline-values--start {
+
+}
+
+.chunk-meta__timeline-values--end {
+
+}
+
+.chunk-meta__timeline-values--length {
+
+}
+
+.chunk-meta__video-values {
+
+}
+
+.chunk-meta__video-values--start {
+
+}
+
+.chunk-meta__video-values--end {
+
+}
+
+.chunk-meta__mute {
+
+}
+
+.chunk-meta__timeline-values--name {
+
+}

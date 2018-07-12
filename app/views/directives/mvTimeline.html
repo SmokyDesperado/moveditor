@@ -52,34 +52,28 @@
 
     <div class="chunk-meta__wrapper" data-ng-if="TimelineCtrl.focus !== null">
         <!--focus: {{timelineService.timelineList[TimelineCtrl.focus]}} <br/>-->
-        <input class="chunk-meta__name-input" ng-model="timelineService.timelineList[TimelineCtrl.focus].name"/>
-        <div class="chunk-meta__timeline-values">
-            <div class="chunk-meta__timeline-values--start">
-                start: {{ timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s
-            </div>
+        <table class="chunk-meta__timeline-values">
+            <tr>
+                <th class="chunk-meta__timeline-values">timeline values</th>
+                <th class="chunk-meta__video-values">video values</th>
+                <th class="chunk-meta__other-values">others</th>
+            </tr>
 
-            <div class="chunk-meta__timeline-values--end">
-                end: {{ timelineService.timelineList[TimelineCtrl.focus].end | number: 2 }} s
-            </div>
-
-            <div class="chunk-meta__timeline-values--length">
-                length: {{ timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s
-            </div>
-        </div>
-
-        <div class="chunk-meta__video-values">
-            <div class="chunk-meta__video-values--start">
-                <!--{{ contentService.contentList[timelineService.timelineList[TimelineCtrl.focus].objectListId]}}-->
-                start:{{ timelineService.timelineList[TimelineCtrl.focus].offset | number: 2 }} s
-            </div>
-
-            <div class="chunk-meta__video-values--end">
-                end:{{timelineService.timelineList[TimelineCtrl.focus].offset + (timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start) | number: 2 }} s
-            </div>
-        </div>
-
-        <div class="chunk-meta__mute">
-            mute: {{ timelineService.timelineList[TimelineCtrl.focus].mute }}
-        </div>
+            <tr>
+                <td class="chunk-meta__timeline-values--start">start: {{ timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
+                <td class="chunk-meta__video-values--start">start: {{ timelineService.timelineList[TimelineCtrl.focus].offset | number: 2 }} s</td>
+                <td class="chunk-meta__mute">mute: {{ timelineService.timelineList[TimelineCtrl.focus].mute }}</td>
+            </tr>
+            <tr>
+                <td class="chunk-meta__timeline-values--end">end: {{ timelineService.timelineList[TimelineCtrl.focus].end | number: 2 }} s</td>
+                <td class="chunk-meta__video-values--end">end: {{timelineService.timelineList[TimelineCtrl.focus].offset + (timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start) | number: 2 }} s</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="chunk-meta__timeline-values--length">length: {{ timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
+                <td></td>
+                <td class="chunk-meta__timeline-values--name">name: <input class="chunk-meta__name-input" ng-model="timelineService.timelineList[TimelineCtrl.focus].name"/></td>
+            </tr>
+        </table>
     </div>
 </div>

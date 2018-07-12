@@ -25,11 +25,22 @@ angular.module('moveditorApp')
         this.scrollLeft = 0;
 
         this.pixelPerSeconds = 20;
-        this.pixelPerSecondsMin = 4;
-        this.pixelPerSecondsMax = 60;
-        this.zoomStep = 4;
         this.scales = [];
         this.scaleSteps = 10;
+
+        this.zoomIndexDefault = 4;
+        this.zoomIndex = this.zoomIndexDefault;
+        this.zoomTable = [
+            {pixelPerSeconds: 4, scaleSteps: 30},
+            {pixelPerSeconds: 8, scaleSteps: 20},
+            {pixelPerSeconds: 12, scaleSteps: 15},
+            {pixelPerSeconds: 16, scaleSteps: 12},
+            {pixelPerSeconds: 20, scaleSteps: 10},
+            {pixelPerSeconds: 32, scaleSteps: 8},
+            {pixelPerSeconds: 44, scaleSteps: 4},
+            {pixelPerSeconds: 60, scaleSteps: 2},
+            {pixelPerSeconds: 80, scaleSteps: 1}
+        ]
 
         this.init = function () {
             self.calculateTimelineScales();
@@ -46,12 +57,6 @@ angular.module('moveditorApp')
 
             self.calculateTimelineScales();
         };
-
-        this.zoomMap = [
-            {pixelPerSeconds: 4, scaleSteps: 20},
-            {pixelPerSeconds: 20, scaleSteps: 10},
-            {pixelPerSeconds: 60, scaleSteps: 2}
-        ]
 
 // =====================================================================================================================
 // setter
@@ -225,28 +230,25 @@ angular.module('moveditorApp')
         };
 
         this.zoomIn = function () {
-            self.pixelPerSeconds += self.zoomStep;
-            self.scaleSteps = 10;
-            if (self.pixelPerSeconds > self.pixelPerSecondsMax) {
-                self.pixelPerSeconds = self.pixelPerSecondsMax;
-            }
+            self.zoomIndex = Math.min(self.zoomIndex+1, self.zoomTable.length-1);
+            self.pixelPerSeconds = self.zoomTable[self.zoomIndex].pixelPerSeconds;
+            self.scaleSteps = self.zoomTable[self.zoomIndex].scaleSteps;
             this.scales = [];
             self.calculateTimelineWidth();
         }
 
         this.zoomOut = function () {
-            self.pixelPerSeconds -= self.zoomStep;
-            self.scaleSteps = 10;
-            if (self.pixelPerSeconds < self.pixelPerSecondsMin) {
-                self.pixelPerSeconds = self.pixelPerSecondsMin;
-            }
+            self.zoomIndex = Math.max(self.zoomIndex-1, 0);
+            self.pixelPerSeconds = self.zoomTable[self.zoomIndex].pixelPerSeconds;
+            self.scaleSteps = self.zoomTable[self.zoomIndex].scaleSteps;
             this.scales = [];
             self.calculateTimelineWidth();
         }
 
         this.zoomReset = function () {
-            self.pixelPerSeconds = 20;
-            self.scaleSteps = 10;
+            self.zoomIndex = self.zoomIndexDefault;
+            self.pixelPerSeconds = self.zoomTable[self.zoomIndex].pixelPerSeconds;
+            self.scaleSteps = self.zoomTable[self.zoomIndex].scaleSteps;
             this.scales = [];
             self.calculateTimelineWidth();
         }

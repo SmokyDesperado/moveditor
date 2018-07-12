@@ -91,6 +91,10 @@ content-area__menu--left {
     height: 40px;
 }
 
+.mv-material__content--video input {
+    color: black;
+}
+
 .mv-material__attributes {
     height: 40px;
 }

@@ -91,6 +91,7 @@ angular.module('moveditorApp')
                 end: 0,
                 offset: 0,
                 mute: false,
+                name: ContentService.contentList[contentListObjectId].name
             };
 
             timelineObject.end = Math.floor((timelineObject.start + ContentService.contentList[contentListObjectId].length) * self.timelineQuantization) / self.timelineQuantization;
@@ -111,6 +112,7 @@ angular.module('moveditorApp')
                 end: Math.floor(loadedTimelineObject.end * self.timelineQuantization) / self.timelineQuantization,
                 offset: loadedTimelineObject.offset,
                 mute: loadedTimelineObject.mute,
+                name: loadedTimelineObject.name
             };
 
             ContentService.contentList[loadedTimelineObject.objectListId].active++;

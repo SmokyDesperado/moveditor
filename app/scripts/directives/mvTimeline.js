@@ -24,6 +24,7 @@ angular.module('moveditorApp')
             link: function ($scope, $element, $attrs, TimelineCtrl) {
 
                 $scope.timelineService = TimelineService;
+                $scope.contentService = ContentService;
 
                 var self = this;
                 this.dragShorten = false;

@@ -190,10 +190,14 @@ angular.module('moveditorApp')
 
                     var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
                     var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
-                    var limitEnd = $scope.timelineService.roundTime(limitStart + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
+                    var limitEnd = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].end);
 
                     if(position < limitStart) {
                         position = $scope.timelineService.roundTime(limitStart);
+                    }
+
+                    if(angular.isDefined($scope.timelineService.timelineList[timelineObjectKey - 1]) && position < $scope.timelineService.timelineList[timelineObjectKey - 1].end) {
+                        position = $scope.timelineService.timelineList[timelineObjectKey - 1].end;
                     }
 
                     if(position > limitEnd - 0.1) {
@@ -208,8 +212,8 @@ angular.module('moveditorApp')
                     var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
                     var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
-                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
-                    var limitEnd = $scope.timelineService.roundTime(limitStart + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
+                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start);
+                    var limitEnd = $scope.timelineService.roundTime((limitStart - $scope.timelineService.timelineList[timelineObjectKey].offset) + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
 
                     if(position < limitStart + 0.1) {
                         position = $scope.timelineService.roundTime(limitStart + 0.1);
@@ -217,6 +221,10 @@ angular.module('moveditorApp')
 
                     if(position > limitEnd) {
                         position = $scope.timelineService.roundTime(limitEnd);
+                    }
+
+                    if(angular.isDefined($scope.timelineService.timelineList[timelineObjectKey + 1]) && position > $scope.timelineService.timelineList[timelineObjectKey + 1].start) {
+                        position = $scope.timelineService.timelineList[timelineObjectKey + 1].start;
                     }
 
                     $scope.timelineService.timelineList[timelineObjectKey].end = $scope.timelineService.roundTime(position);

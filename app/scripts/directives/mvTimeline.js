@@ -65,9 +65,8 @@ angular.module('moveditorApp')
 
                 $scope.panStart = function ($event, timelineObjectKey) {
                     self.dragShorten = false;
-                    if(TimelineCtrl.focus === timelineObjectKey) {
-                        self.initDragLimitValues($event, timelineObjectKey);
-                    }
+                    TimelineCtrl.focus = timelineObjectKey;
+                    self.initDragLimitValues($event, timelineObjectKey);
                 };
 
                 $scope.hammerPanMove = function ($event, timelineObjectKey) {

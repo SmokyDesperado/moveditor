@@ -311,7 +311,7 @@ angular.module('moveditorApp')
                     rangeSlider.noUiSlider.set([Math.round(rangeValues[0].replace('s', '') * 1000), newCeil != 0? Math.round(rangeValues[1].replace('s', '') * 1000) : 999999999]);
                 }
 
-                console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
+                // console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
             }
 
         }

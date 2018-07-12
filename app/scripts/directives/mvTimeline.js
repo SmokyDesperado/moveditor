@@ -71,16 +71,35 @@ angular.module('moveditorApp')
 
                 $scope.hammerPanMove = function ($event, timelineObjectKey) {
                     if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
-                        var timelineObjectLength = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
-                            $scope.timelineService.pixelPerSeconds;
                         TimelineCtrl.deactivateShorten();
-
-                        if ($event.center.x - self.dragOffset >= self.dragFreeSpaceStart &&
-                            ($event.center.x - self.dragOffset + timelineObjectLength) <= self.dragFreeSpaceEnd) {
-                            self.dragTimelineObject($event, timelineObjectKey);
-                            MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
-                        }
+                        self.setTimelineObjectToPosition($event, timelineObjectKey);
+                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
                     }
+                };
+
+                this.setTimelineObjectToPosition = function($event, timelineObjectKey) {
+                    var chunk = angular.element($event.target);
+                    var chunkLengthInPixel = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
+                        $scope.timelineService.pixelPerSeconds;
+                    var dragPosition = $event.center.x - self.dragOffset;
+
+                    if(dragPosition <= self.dragFreeSpaceStart) {
+                        dragPosition = self.dragFreeSpaceStart;
+                    }
+
+                    if (dragPosition >= (self.dragFreeSpaceEnd - chunkLengthInPixel)) {
+                        dragPosition = self.dragFreeSpaceEnd - chunkLengthInPixel;
+                    }
+
+                    chunk[0].style['left'] = dragPosition + 'px';
+                    self.calculateChunkTimeFromPixelPosition(dragPosition, timelineObjectKey);
+                };
+
+                this.calculateChunkTimeFromPixelPosition = function (startPosition, timelineObjectKey) {
+                    var chunkLength = $scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start;
+
+                    $scope.timelineService.timelineList[timelineObjectKey].start = self.quantizeDraggedTime(startPosition / $scope.timelineService.pixelPerSeconds);
+                    $scope.timelineService.timelineList[timelineObjectKey].end = self.quantizeDraggedTime($scope.timelineService.timelineList[timelineObjectKey].start + chunkLength);
                 };
 
                 $scope.panEnd = function ($event, timelineObjectKey) {
@@ -103,17 +122,6 @@ angular.module('moveditorApp')
                         $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus);
                         TimelineCtrl.focus++;
                     }
-                };
-
-                this.dragTimelineObject = function($event, timelineObjectKey) {
-                    var chunk = angular.element($event.target);
-                    chunk[0].style['left'] = ($event.center.x - self.dragOffset) + 'px';
-
-                    var chunkLength = $scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start;
-                    $scope.timelineService.timelineList[timelineObjectKey].start = self.quantizeDraggedTime(
-                        ($event.center.x - self.dragOffset) / $scope.timelineService.pixelPerSeconds);
-                    $scope.timelineService.timelineList[timelineObjectKey].end = self.quantizeDraggedTime(
-                        $scope.timelineService.timelineList[timelineObjectKey].start + chunkLength);
                 };
 
                 this.initDragLimitValues = function ($event, timelineObjectKey) {

@@ -24,7 +24,7 @@ angular.module('moveditorApp')
             this.initTimelineElement = function ($element) {
                 DragAndDropService.setDropableElement($element);
                 this.timelineList = TimelineService.getTimelineList();
-                console.log(this.timelineList);
+                // console.log(this.timelineList);
             };
 
             this.tap = function ($event) {

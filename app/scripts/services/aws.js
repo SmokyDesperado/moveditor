@@ -18,7 +18,7 @@ angular.module('moveditorApp')
 
             this.init = function () {
                 this.aws = new AWS.SQS();
-                console.log('init:', this.aws);
+                // console.log('init:', this.aws);
             };
 
             this.requestSegmentation = function (contetnMaterialIndex, url) {

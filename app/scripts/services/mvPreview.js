@@ -82,7 +82,7 @@ angular.module('moveditorApp')
         // ====================================================================================================
 
         this.play = function () {
-            console.log("play");
+            // console.log("play");
 
             if (!self.isPlaying) {
                 self.isPlaying = true;
@@ -94,7 +94,7 @@ angular.module('moveditorApp')
         }
 
         this.pause = function () {
-            console.log("pause");
+            // console.log("pause");
 
             self.isPlaying = false;
             self.timeAtPause = self.currentPlayTime;
@@ -116,7 +116,7 @@ angular.module('moveditorApp')
         }
 
         this.jumpToPosition = function (newPosition) {
-            console.log("jump to ", newPosition);
+            // console.log("jump to ", newPosition);
 
             // pause current active <video>
             var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
@@ -152,9 +152,9 @@ angular.module('moveditorApp')
             MvHelperService.updateTimeDisplay(self.currentPlayTime);
 
             if (self.DEBUG_LOGS) {
-                console.log("============================== JUMP ==============================");
-                console.log("NP: " + newPosition + ", CPT: " + self.currentPlayTime + ", TAS: " + self.timeAtStart);
-                console.log("============================== JUMP ==============================");
+                // console.log("============================== JUMP ==============================");
+                // console.log("NP: " + newPosition + ", CPT: " + self.currentPlayTime + ", TAS: " + self.timeAtStart);
+                // console.log("============================== JUMP ==============================");
             }
 
             // check what video should be active now and calculate its position
@@ -178,22 +178,22 @@ angular.module('moveditorApp')
         }
 
         this.setLoopPlay = function (loop) {
-            console.log("loop: ", loop);
+            // console.log("loop: ", loop);
             self.loopPlay = loop;
         }
 
         this.setPositionA = function (position) {
-            console.log("positionA: ", position);
+            // console.log("positionA: ", position);
             self.positionA = position;
         }
 
         this.setPositionB = function (position) {
-            console.log("positionB: ", position);
+            // console.log("positionB: ", position);
             self.positionB = position;
         }
 
         this.setVolume = function (vol) {
-            console.log("volume: ", vol);
+            // console.log("volume: ", vol);
 
             // set volume of all videos and <audio>
             var videoElements = document.getElementById('active_media').getElementsByTagName("video");
@@ -279,8 +279,8 @@ angular.module('moveditorApp')
             var diff = ((realTime - self.timeAtStart) + self.timeAtPause) - self.currentPlayTime;
 
             if (self.DEBUG_LOGS) {
-                console.log("(RT - TAS) + TAP: " + ((realTime - self.timeAtStart) + self.timeAtPause) + ", CPT: " + self.currentPlayTime + ", diff: " + diff);
-                console.log("RT - TAS: " + (realTime - self.timeAtStart) + ", TAP: " + self.timeAtPause + ", JTT: " + self.jumpToTime);
+                // console.log("(RT - TAS) + TAP: " + ((realTime - self.timeAtStart) + self.timeAtPause) + ", CPT: " + self.currentPlayTime + ", diff: " + diff);
+                // console.log("RT - TAS: " + (realTime - self.timeAtStart) + ", TAP: " + self.timeAtPause + ", JTT: " + self.jumpToTime);
             }
 
             // call timeUpdateStepTimeout after a specific time amount

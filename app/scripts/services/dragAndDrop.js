@@ -64,7 +64,7 @@ angular.module('moveditorApp')
                 trashAttributes.scrollLeft = element[0].scrollLeft;
 
                 this.dropableTrash = trashAttributes;
-                console.log(this.dropableTrash);
+                // console.log(this.dropableTrash);
             };
 
             this.setDropableElement = function (element) {
@@ -84,7 +84,7 @@ angular.module('moveditorApp')
                 timelineAttributes.scrollLeft = element[0].scrollLeft;
 
                 this.dropableElement = timelineAttributes;
-                console.log(this.dropableElement);
+                // console.log(this.dropableElement);
             };
 
             this.hitTest = function (draggableElement) {

@@ -25,7 +25,11 @@ angular.module('moveditorApp')
         this.scrollLeft = 0;
 
         this.pixelPerSeconds = 20;
+        this.pixelPerSecondsMin = 4;
+        this.pixelPerSecondsMax = 60;
+        this.zoomStep = 4;
         this.scales = [];
+        this.scaleSteps = 10;
 
         this.init = function () {
             self.calculateTimelineScales();
@@ -37,9 +41,17 @@ angular.module('moveditorApp')
             this.timelineWidth = 1920;
             this.scrollLeft = 0;
             this.scales = [];
+            this.scaleSteps = 10;
+            this.pixelPerSeconds = 20;
 
             self.calculateTimelineScales();
         };
+
+        this.zoomMap = [
+            {pixelPerSeconds: 4, scaleSteps: 20},
+            {pixelPerSeconds: 20, scaleSteps: 10},
+            {pixelPerSeconds: 60, scaleSteps: 2}
+        ]
 
 // =====================================================================================================================
 // setter
@@ -124,7 +136,10 @@ angular.module('moveditorApp')
         };
 
         this.calculateTimelineWidth = function () {
-            this.timelineWidth = (self.timelineList[self.timelineList.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;;
+
+            if (self.timelineList.length > 0) {
+                this.timelineWidth = (self.timelineList[self.timelineList.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;
+            }
 
             if(this.timelineWidth < 1920) {
                 this.timelineWidth = 1920;
@@ -196,18 +211,45 @@ angular.module('moveditorApp')
 
         this.calculateTimelineScales = function () {
             var scaleValues = {
-                'amount': parseInt((this.timelineWidth / this.pixelPerSeconds) / 10)
+                'amount': parseInt((this.timelineWidth / this.pixelPerSeconds) / this.scaleSteps)
             };
 
             for(var i = 0; i <= scaleValues.amount; i++) {
                 var scale = {
-                    display: i * 10,
-                    position: (i * 10) * this.pixelPerSeconds
+                    display: i * this.scaleSteps,
+                    position: (i * this.scaleSteps) * this.pixelPerSeconds
                 };
 
                 this.scales.push(scale);
             }
         };
+
+        this.zoomIn = function () {
+            self.pixelPerSeconds += self.zoomStep;
+            self.scaleSteps = 10;
+            if (self.pixelPerSeconds > self.pixelPerSecondsMax) {
+                self.pixelPerSeconds = self.pixelPerSecondsMax;
+            }
+            this.scales = [];
+            self.calculateTimelineWidth();
+        }
+
+        this.zoomOut = function () {
+            self.pixelPerSeconds -= self.zoomStep;
+            self.scaleSteps = 10;
+            if (self.pixelPerSeconds < self.pixelPerSecondsMin) {
+                self.pixelPerSeconds = self.pixelPerSecondsMin;
+            }
+            this.scales = [];
+            self.calculateTimelineWidth();
+        }
+
+        this.zoomReset = function () {
+            self.pixelPerSeconds = 20;
+            self.scaleSteps = 10;
+            this.scales = [];
+            self.calculateTimelineWidth();
+        }
 
         this.roundTime = function (time) {
             return Math.round(time * self.timelineQuantization) / self.timelineQuantization;

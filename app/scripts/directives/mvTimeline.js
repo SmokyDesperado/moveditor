@@ -56,8 +56,21 @@ angular.module('moveditorApp')
                         }
                         MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
                         TimelineCtrl.focus = null;
+                        $scope.timelineService.calculateTimelineWidth();
                     }
                 };
+
+                $scope.zoomIn = function () {
+                    $scope.timelineService.zoomIn();
+                }
+
+                $scope.zoomOut = function () {
+                    $scope.timelineService.zoomOut();
+                }
+
+                $scope.zoomReset = function () {
+                    $scope.timelineService.zoomReset();
+                }
 
                 $scope.tap = function($event) {
                     TimelineCtrl.tap($event);

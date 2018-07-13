@@ -5,6 +5,9 @@
     <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="muteChunk(key)">mute</button>
     <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="deleteChunk(key)">delete</button>
     <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-class="{'timeline-area__menu-button--cut': isCutActive}" data-ng-click="activateCuttingMode()">cut</button>
+    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="zoomOut()">zoom out</button>
+    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="zoomReset()">zoom reset</button>
+    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="zoomIn()">zoom in</button>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
@@ -42,7 +45,7 @@
             </div>
 
             <div class="timeline-scale__display-wrapper">
-                <span class="timeline-scale__display-line" data-ng-repeat="scale in timelineService.scales" style="left: {{scale.position}}px; width: {{10 * timelineService.pixelPerSeconds}}px">
+                <span class="timeline-scale__display-line" data-ng-repeat="scale in timelineService.scales" style="left: {{scale.position}}px; width: {{timelineService.scaleSteps * timelineService.pixelPerSeconds}}px">
                     <!--scale: {{scale}}-->
                     <div class="timeline-scale__display-time">
                         {{scale.display}}
@@ -69,11 +72,11 @@
             <tr>
                 <td class="chunk-meta__timeline-values--end">end: {{ timelineService.timelineList[TimelineCtrl.focus].end | number: 2 }} s</td>
                 <td class="chunk-meta__video-values--end">end: {{timelineService.timelineList[TimelineCtrl.focus].offset + (timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start) | number: 2 }} s</td>
-                <td></td>
+                <td class="chunk-meta__url">url: <input type="text" value="{{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].url }}" readonly=""></td>
             </tr>
             <tr>
                 <td class="chunk-meta__timeline-values--length">length: {{ timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
-                <td></td>
+                <td class="chunk-meta__type">type: {{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].type }}</td>
                 <td class="chunk-meta__timeline-values--name">name: <input class="chunk-meta__name-input" ng-model="timelineService.timelineList[TimelineCtrl.focus].name"/></td>
             </tr>
         </table>

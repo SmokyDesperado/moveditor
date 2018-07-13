@@ -23,18 +23,10 @@ angular.module('moveditorApp')
                         ContentService.setContentList({});
                         TimelineService.resetTimeline();
 
-                        console.log("load session");
-
-                        // TODO: put in one of the listeners
-                        ContentService.setContentList({});
-                        this.contentObjects = ContentService.getContentList();
-                        TimelineService.resetTimeline();
-
                         var reader = new FileReader();
                             // TODO: check whether input session file is valid
                             MvHelperService.deleteAllVideoElements(document.getElementById('active_media'));
                             mvPreviewService.pause();
-                            document.getElementById('position_slider').max = 0;
 
                             var contents = JSON.parse(onLoadEvent.target.result);
                             for (var hash in contents.contentArea) {

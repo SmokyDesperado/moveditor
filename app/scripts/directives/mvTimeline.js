@@ -93,13 +93,15 @@ angular.module('moveditorApp')
                 };
 
                 $scope.panStart = function ($event, timelineObjectKey) {
-                    self.dragShorten = false;
-                    TimelineCtrl.focus = timelineObjectKey;
-                    self.initDragLimitValues($event, timelineObjectKey);
+                    if(angular.element($event.target)[0].className === 'timeline-object__chunk ng-scope') {
+                        self.dragShorten = false;
+                        TimelineCtrl.focus = timelineObjectKey;
+                        self.initDragLimitValues($event, timelineObjectKey);
+                    }
                 };
 
                 $scope.hammerPanMove = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten) {
+                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk ng-scope') {
                         TimelineCtrl.deactivateShorten();
                         self.setTimelineObjectToPosition($event, timelineObjectKey);
                         MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
@@ -111,6 +113,10 @@ angular.module('moveditorApp')
                     var chunkLengthInPixel = ($scope.timelineService.timelineList[timelineObjectKey].end - $scope.timelineService.timelineList[timelineObjectKey].start) *
                         $scope.timelineService.pixelPerSeconds;
                     var dragPosition = $event.center.x - self.dragOffset;
+
+                    // console.log('dragPosition', dragPosition, '$event.center.x', $event.center.x, '- self.dragOffset', self.dragOffset);
+                    // console.log('self.dragFreeSpaceStart', self.dragFreeSpaceStart);
+                    // console.log('self.dragFreeSpaceEnd', self.dragFreeSpaceEnd, '- chunkLengthInPixel', chunkLengthInPixel, '=', self.dragFreeSpaceEnd - chunkLengthInPixel);
 
                     if(dragPosition <= self.dragFreeSpaceStart) {
                         dragPosition = self.dragFreeSpaceStart;
@@ -154,7 +160,8 @@ angular.module('moveditorApp')
                 };
 
                 this.initDragLimitValues = function ($event, timelineObjectKey) {
-                    self.dragOffset = $event.center.x - angular.element($event.target)[0].offsetLeft;
+                    // console.log(angular.element($event.target));
+                    self.initDragOffset($event.center.x, angular.element($event.target)[0].offsetLeft);
 
                     if(angular.isDefined($scope.timelineService.timelineList[timelineObjectKey - 1])) {
                         self.dragFreeSpaceStart = $scope.timelineService.timelineList[timelineObjectKey - 1].end * $scope.timelineService.pixelPerSeconds;
@@ -169,6 +176,11 @@ angular.module('moveditorApp')
                     else {
                         self.dragFreeSpaceEnd = $scope.timelineService.timelineWidth;
                     }
+                };
+
+                this.initDragOffset = function (mousePosition, offsetLeft) {
+                    // console.log('mousePosition', mousePosition, '- offsetLeft', offsetLeft, '=', mousePosition - offsetLeft);
+                    this.dragOffset = mousePosition - offsetLeft;
                 };
 
                 this.quantizeDraggedTime = function (timevalue) {

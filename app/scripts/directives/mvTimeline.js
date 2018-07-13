@@ -34,6 +34,11 @@ angular.module('moveditorApp')
                 this.dragFreeSpaceEnd = 1920;
                 this.dragShortenOffset = 5;
 
+                $scope.timelineService.dropArea = $element.find('#timelineDropArea');
+                $scope.timelineService.positionPointer = $element.find('#position_pointer');
+                $scope.timelineService.rangePointerA = $element.find('#range_pointer_a');
+                $scope.timelineService.rangePointerB = $element.find('#range_pointer_b');
+
                 $scope.click = function (param) {
                     console.log('clicked with param:', param);
                 };

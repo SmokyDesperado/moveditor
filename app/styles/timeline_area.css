@@ -125,6 +125,32 @@
     top: 50px;
 }
 
+#position_pointer {
+    height: 80px;
+    position: absolute;
+    top: 0;
+
+    overflow: hidden;
+    pointer-events: none;
+
+    border-right: 1px solid;
+    border-left: 1px solid;
+    border-color: yellow;
+}
+
+.range_pointer {
+    height: 30px;
+    position: absolute;
+    top: 0;
+
+    overflow: hidden;
+    pointer-events: none;
+
+    border-right: 2px solid;
+    border-left: 2px solid;
+    border-color: green;
+}
+
 .timeline-menu__wrapper {
     padding: 10px 20px;
 }

@@ -40,7 +40,11 @@ angular.module('moveditorApp')
             {pixelPerSeconds: 44, scaleSteps: 4},
             {pixelPerSeconds: 60, scaleSteps: 2},
             {pixelPerSeconds: 80, scaleSteps: 1}
-        ]
+        ];
+
+        this.savedSteps = [];
+        this.savedStepsPointer = 0;
+        this.savedStepsAmount = 10;
 
         this.init = function () {
             self.calculateTimelineScales();
@@ -129,6 +133,8 @@ angular.module('moveditorApp')
             self.sortedAddingObjectToTimelineList(timelineObject);
             self.calculateTimelineWidth();
             MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
+
+            self.saveTimelineStep();
         };
 
         this.addLoadedTimelineObjectToList = function (loadedTimelineObject, $scope) {
@@ -294,6 +300,8 @@ angular.module('moveditorApp')
             if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[previousFocusedChunkKey])) {
                 self.swapChunkKeyPositionOneToPositionTwo(previousFocusedChunkKey, focusedChunkKey);
             }
+
+            self.saveTimelineStep();
         };
 
         this.swapChunkWithNextObject = function (focusedChunkKey) {
@@ -301,6 +309,8 @@ angular.module('moveditorApp')
             if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[nextFocusedChunkKey])) {
                 self.swapChunkKeyPositionOneToPositionTwo(focusedChunkKey, nextFocusedChunkKey);
             }
+
+            self.saveTimelineStep();
         };
 
         this.cutChunk = function ($event, focusedChunkKey, timeline) {
@@ -318,6 +328,53 @@ angular.module('moveditorApp')
             self.sortedAddingObjectToTimelineList(newChunkAfterCut);
 
             MvHelperService.updatePreviewPlayerParameters(self.getTimelineList(), self.getTimelineList(), true);
+
+            self.saveTimelineStep();
+        };
+
+        this.saveTimelineStep = function () {
+            var savedStepsLength = this.savedSteps.length;
+
+            if(savedStepsLength !== 0) {
+                this.savedSteps.splice(this.savedStepsPointer + 1, this.savedSteps.length - (this.savedStepsPointer + 1), JSON.stringify(this.timelineList));
+                this.savedStepsPointer++;
+            }
+            else {
+                this.savedSteps.splice(this.savedStepsPointer, this.savedSteps.length - (this.savedStepsPointer + 1), JSON.stringify(this.timelineList));
+            }
+
+            if(this.savedStepsPointer >= this.savedStepsAmount) {
+                this.savedSteps.shift();
+                this.savedStepsPointer = savedStepsLength - 1;
+            }
+
+            // console.warn('savedsteps', this.savedSteps, 'pointer', this.savedStepsPointer);
+        };
+
+        this.undoTimelineAction = function () {
+            if(this.savedStepsPointer > 0) {
+                this.savedStepsPointer--;
+                // console.log('savedStepsPointer', this.savedStepsPointer, 'savedSteps', this.savedSteps[this.savedStepsPointer]);
+                // console.log('before undo:', this.timelineList);
+                this.timelineList = JSON.parse(this.savedSteps[this.savedStepsPointer]);
+                // console.log('after undo:', this.timelineList);
+            }
+            else {
+                console.error('saved steps pointer is already 0');
+            }
+        };
+
+        this.redoTimelineAction = function () {
+            if(this.savedStepsPointer < this.savedSteps.length - 1) {
+                this.savedStepsPointer++;
+                // console.log('savedStepsPointer', this.savedStepsPointer, 'savedSteps', this.savedSteps[this.savedStepsPointer]);
+                // console.log('before redo:', this.timelineList);
+                this.timelineList = JSON.parse(this.savedSteps[this.savedStepsPointer]);
+                // console.log('after redo:', this.timelineList);
+            }
+            else {
+                console.error('saved steps pointer is already at end');
+            }
         };
 
         this.init();

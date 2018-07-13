@@ -43,6 +43,8 @@ angular.module('moveditorApp')
                     if (TimelineCtrl.focus != null) {
                         if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus].objectListId].type != "image") {
                             $scope.timelineService.timelineList[TimelineCtrl.focus].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus].mute;
+
+                            $scope.timelineService.saveTimelineStep();
                         }
                     }
                 };
@@ -58,6 +60,8 @@ angular.module('moveditorApp')
                         MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
                         TimelineCtrl.focus = null;
                         $scope.timelineService.calculateTimelineWidth();
+
+                        $scope.timelineService.saveTimelineStep();
                     }
                 };
 
@@ -142,6 +146,8 @@ angular.module('moveditorApp')
                         self.dragOffset = 0;
                         $scope.timelineService.calculateTimelineWidth();
                         TimelineCtrl.activateShorten();
+
+                        $scope.timelineService.saveTimelineStep();
                     }
                 };
 
@@ -208,6 +214,7 @@ angular.module('moveditorApp')
 
                 $scope.dragStartShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
+                    $scope.timelineService.saveTimelineStep();
                 };
 
                 $scope.dragEndShortenStart = function($event, timelineObjectKey) {
@@ -224,6 +231,7 @@ angular.module('moveditorApp')
                 $scope.dragEndShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
                     MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
+                    $scope.timelineService.saveTimelineStep();
                 };
 
                 this.dragStartShortenTimelineObject = function($event, timelineObjectKey) {
@@ -276,6 +284,18 @@ angular.module('moveditorApp')
 
                 $scope.activateCuttingMode = function() {
                     $scope.isCutActive = !$scope.isCutActive;
+                };
+
+                $scope.undo = function() {
+                    // console.log('undo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
+                    $scope.timelineService.undoTimelineAction();
+                    TimelineCtrl.unsetFocusAll();
+                };
+
+                $scope.redo = function () {
+                    // console.log('redo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
+                    $scope.timelineService.redoTimelineAction();
+                    TimelineCtrl.unsetFocusAll();
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));

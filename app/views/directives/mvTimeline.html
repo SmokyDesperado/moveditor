@@ -57,27 +57,23 @@
 
     <div class="chunk-meta__wrapper" data-ng-if="TimelineCtrl.focus !== null">
         <!--focus: {{timelineService.timelineList[TimelineCtrl.focus]}} <br/>-->
-        <table class="chunk-meta__timeline-values">
+        <table class="chunk-meta__chunk-values">
             <tr>
-                <th class="chunk-meta__timeline-values">timeline values</th>
-                <th class="chunk-meta__video-values">video values</th>
-                <th class="chunk-meta__other-values">others</th>
-            </tr>
-
-            <tr>
-                <td class="chunk-meta__timeline-values--start">start: {{ timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
-                <td class="chunk-meta__video-values--start">start: {{ timelineService.timelineList[TimelineCtrl.focus].offset | number: 2 }} s</td>
-                <td class="chunk-meta__mute">mute: {{ timelineService.timelineList[TimelineCtrl.focus].mute }}</td>
+                <th class="chunk-meta__chunk-values">chunk values</th>
+                <td class="chunk-meta__chunk-values--name">name: <input class="chunk-meta__chunk-name-input" ng-model="timelineService.timelineList[TimelineCtrl.focus].name"/></td>
+                <td class="chunk-meta__chunk-values--start">start: {{ timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
+                <td class="chunk-meta__chunk-values--end">end: {{ timelineService.timelineList[TimelineCtrl.focus].end | number: 2 }} s</td>
+                <td class="chunk-meta__chunk-values--length">chunk length: {{ timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
+                <td class="chunk-meta__chunk-values--offset" ng-if="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].type != 'image'">offset: {{ timelineService.timelineList[TimelineCtrl.focus].offset | number: 2 }} s</td>
+                <td class="chunk-meta__mute" ng-if="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].type != 'image'">mute: {{ timelineService.timelineList[TimelineCtrl.focus].mute }}</td>
             </tr>
             <tr>
-                <td class="chunk-meta__timeline-values--end">end: {{ timelineService.timelineList[TimelineCtrl.focus].end | number: 2 }} s</td>
-                <td class="chunk-meta__video-values--end">end: {{timelineService.timelineList[TimelineCtrl.focus].offset + (timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start) | number: 2 }} s</td>
-                <td class="chunk-meta__url">url: <input type="text" value="{{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].url }}" readonly=""></td>
-            </tr>
-            <tr>
-                <td class="chunk-meta__timeline-values--length">length: {{ timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start | number: 2 }} s</td>
-                <td class="chunk-meta__type">type: {{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].type }}</td>
-                <td class="chunk-meta__timeline-values--name">name: <input class="chunk-meta__name-input" ng-model="timelineService.timelineList[TimelineCtrl.focus].name"/></td>
+                <th class="chunk-meta__material-values">material values</th>
+                <td class="chunk-meta__material-values--name">name: <input class="chunk-meta__chunk-name-input" ng-model="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].name"/></td>
+                <td class="chunk-meta__material-values--url">url: <input class="chunk-meta__chunk-name-input" value="{{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].url }}" readonly=""></td>
+                <td class="chunk-meta__material-values--type">type: {{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].type }}</td>
+                <td class="chunk-meta__material-values--type" ng-if="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].type != 'image'">original length: {{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus].objectListId].length | number: 2 }} s</td>
+                <!-- <td class="chunk-meta__material-values--end">end: {{timelineService.timelineList[TimelineCtrl.focus].offset + (timelineService.timelineList[TimelineCtrl.focus].end -  timelineService.timelineList[TimelineCtrl.focus].start) | number: 2 }} s</td> -->
             </tr>
         </table>
     </div>

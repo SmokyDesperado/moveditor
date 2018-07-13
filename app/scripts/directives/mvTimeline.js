@@ -207,8 +207,8 @@ angular.module('moveditorApp')
                     var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
                     var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
                     var limitEnd = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].end);
-
-                    if(position < limitStart) {
+                    var chunkType = $scope.contentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].type;
+                    if(position < limitStart && chunkType !== 'image') {
                         position = $scope.timelineService.roundTime(limitStart);
                     }
 
@@ -222,6 +222,8 @@ angular.module('moveditorApp')
 
                     $scope.timelineService.timelineList[timelineObjectKey].start = $scope.timelineService.roundTime(position);
                     $scope.timelineService.timelineList[timelineObjectKey].offset = $scope.timelineService.roundTime(position - limitStart);
+
+
                 };
 
                 this.setEndDragShortenObject = function($event, timelineObjectKey) {
@@ -230,12 +232,13 @@ angular.module('moveditorApp')
                     var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
                     var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start);
                     var limitEnd = $scope.timelineService.roundTime((limitStart - $scope.timelineService.timelineList[timelineObjectKey].offset) + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
+                    var chunkType = $scope.contentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].type;
 
                     if(position < limitStart + 0.1) {
                         position = $scope.timelineService.roundTime(limitStart + 0.1);
                     }
 
-                    if(position > limitEnd) {
+                    if(position > limitEnd  && chunkType !== 'image') {
                         position = $scope.timelineService.roundTime(limitEnd);
                     }
 

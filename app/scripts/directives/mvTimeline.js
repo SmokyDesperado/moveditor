@@ -40,10 +40,9 @@ angular.module('moveditorApp')
 
                 $scope.muteChunk = function () {
                     // ToDo: !== instead of !=. must be tested
-                    if (TimelineCtrl.focus != null) {
-                        if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus].objectListId].type != "image") {
-                            $scope.timelineService.timelineList[TimelineCtrl.focus].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus].mute;
-
+                    if (TimelineCtrl.focus.key !== null) {
+                        if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type != "image") {
+                            $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute;
                             $scope.timelineService.saveTimelineStep();
                         }
                     }

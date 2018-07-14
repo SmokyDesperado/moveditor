@@ -334,21 +334,21 @@ angular.module('moveditorApp')
             self.saveTimelineStep();
         };
 
-        this.cutChunk = function ($event, focusedChunkKey, timeline) {
+        this.cutChunk = function ($event, focusedChunkKey, listType, timeline) {
             var positionInPixel = $event.center.x + timeline[0].scrollLeft;
             var positionInTime = self.roundTime(positionInPixel / self.pixelPerSeconds);
             var newChunkAfterCut = self.createNewChunk(
-                self.timelineList[focusedChunkKey].objectListId,
+                self.timelineList[listType][focusedChunkKey].objectListId,
                 positionInTime,
-                self.timelineList[focusedChunkKey].end,
-                self.roundTime((positionInTime - self.timelineList[focusedChunkKey].start + self.timelineList[focusedChunkKey].offset)),
-                self.timelineList[focusedChunkKey].mute,
-                self.timelineList[focusedChunkKey].name
+                self.timelineList[listType][focusedChunkKey].end,
+                self.roundTime((positionInTime - self.timelineList[listType][focusedChunkKey].start + self.timelineList[listType][focusedChunkKey].offset)),
+                self.timelineList[listType][focusedChunkKey].mute,
+                self.timelineList[listType][focusedChunkKey].name
             );
-            self.timelineList[focusedChunkKey].end = positionInTime;
-            self.sortedAddingObjectToTimelineList(newChunkAfterCut);
+            self.timelineList[listType][focusedChunkKey].end = positionInTime;
+            self.sortedAddingObjectToTimelineList(newChunkAfterCut, listType);
 
-            MvHelperService.updatePreviewPlayerParameters(self.getTimelineList(), self.getTimelineList(), true);
+            MvHelperService.updatePreviewPlayerParameters(self.timelineList['video'], self.timelineList['audio'], true);
 
             self.saveTimelineStep();
         };

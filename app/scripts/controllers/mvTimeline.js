@@ -56,10 +56,6 @@ angular.module('moveditorApp')
                 }
             };
 
-            this.cutChunk = function ($event, timelineObjectKey, timeline) {
-                TimelineService.cutChunk($event, timelineObjectKey, timeline);
-            };
-
             this.activateShorten = function () {
                 this.shorten = true;
             };

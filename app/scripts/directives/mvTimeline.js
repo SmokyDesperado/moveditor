@@ -77,17 +77,17 @@ angular.module('moveditorApp')
                     TimelineCtrl.tap($event);
                 };
 
-                $scope.chunkTap = function($event, key, type) {
+                $scope.chunkTap = function($event, key, listType) {
                     if(!$scope.isCutActive) {
-                        TimelineCtrl.setFocus(key, type);
+                        TimelineCtrl.setFocus(key, listType);
                     }
 
-                    if($scope.isCutActive && TimelineCtrl.focus === key) {
-                        TimelineCtrl.cutChunk($event, key, $element.find('#timelineDropArea'));
+                    if($scope.isCutActive && TimelineCtrl.focus.key === key && TimelineCtrl.focus.type === listType) {
+                        $scope.timelineService.cutChunk($event, key, listType, $element.find('#timelineDropArea'));
                         $scope.isCutActive = false;
                     }
 
-                    if($scope.isCutActive && TimelineCtrl.focus === null) {
+                    if($scope.isCutActive && TimelineCtrl.focus.key === null) {
                         $scope.isCutActive = false;
                     }
                 };

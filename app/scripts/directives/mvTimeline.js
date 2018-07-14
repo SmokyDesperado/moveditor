@@ -145,17 +145,23 @@ angular.module('moveditorApp')
                 };
 
                 $scope.swapWithPreviousObject = function () {
-                    if(TimelineCtrl.focus !== null && angular.isDefined($scope.timelineService.timelineList[TimelineCtrl.focus - 1])) {
-                        $scope.timelineService.swapChunkWithPreviousObject(TimelineCtrl.focus);
-                        TimelineCtrl.focus--;
+                    var listType = self.getFocusTypeFromFocusKey();
+                    if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key - 1])) {
+                        $scope.timelineService.swapChunkWithPreviousObject(TimelineCtrl.focus.key, listType);
+                        TimelineCtrl.focus.key--;
                     }
                 };
 
                 $scope.swapWithNextObject = function () {
-                    if(TimelineCtrl.focus !== null && angular.isDefined($scope.timelineService.timelineList[TimelineCtrl.focus + 1])) {
-                        $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus);
-                        TimelineCtrl.focus++;
+                    var listType = self.getFocusTypeFromFocusKey();
+                    if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key + 1])) {
+                        $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus.key, listType);
+                        TimelineCtrl.focus.key++;
                     }
+                };
+
+                this.getFocusTypeFromFocusKey = function () {
+                    return (TimelineCtrl.focus.key !== null) ? TimelineCtrl.focus.type : null;
                 };
 
                 this.initDragLimitValues = function ($event, timelineObjectKey, listType) {

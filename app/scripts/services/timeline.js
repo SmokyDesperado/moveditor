@@ -295,40 +295,40 @@ angular.module('moveditorApp')
             return Math.round(time * self.timelineQuantization) / self.timelineQuantization;
         };
 
-        this.swapChunkKeyPositionOneToPositionTwo = function (keyPositionOne, keyPositionTwo) {
-            if(angular.isDefined(self.timelineList[keyPositionOne]) && angular.isDefined(self.timelineList[keyPositionTwo])) {
+        this.swapChunkKeyPositionOneToPositionTwo = function (keyPositionOne, keyPositionTwo, listType) {
+            if(angular.isDefined(self.timelineList[listType][keyPositionOne]) && angular.isDefined(self.timelineList[listType][keyPositionTwo])) {
                 // change start and end of timelineList object one and object two
-                var deltaTimeValueChunkOne = self.roundTime(self.timelineList[keyPositionOne].end - self.timelineList[keyPositionOne].start);
-                var deltaTimeValueChunkTwo = self.roundTime(self.timelineList[keyPositionTwo].end - self.timelineList[keyPositionTwo].start);
-                var endChunkTwo = self.timelineList[keyPositionTwo].end;
-                var startChunkOne = self.timelineList[keyPositionOne].start;
+                var deltaTimeValueChunkOne = self.roundTime(self.timelineList[listType][keyPositionOne].end - self.timelineList[listType][keyPositionOne].start);
+                var deltaTimeValueChunkTwo = self.roundTime(self.timelineList[listType][keyPositionTwo].end - self.timelineList[listType][keyPositionTwo].start);
+                var endChunkTwo = self.timelineList[listType][keyPositionTwo].end;
+                var startChunkOne = self.timelineList[listType][keyPositionOne].start;
 
-                self.timelineList[keyPositionOne].end = endChunkTwo;
-                self.timelineList[keyPositionOne].start = self.roundTime(self.timelineList[keyPositionOne].end - deltaTimeValueChunkOne);
+                self.timelineList[listType][keyPositionOne].end = endChunkTwo;
+                self.timelineList[listType][keyPositionOne].start = self.roundTime(self.timelineList[listType][keyPositionOne].end - deltaTimeValueChunkOne);
 
-                self.timelineList[keyPositionTwo].start = startChunkOne;
-                self.timelineList[keyPositionTwo].end = self.roundTime(self.timelineList[keyPositionTwo].start + deltaTimeValueChunkTwo);
+                self.timelineList[listType][keyPositionTwo].start = startChunkOne;
+                self.timelineList[listType][keyPositionTwo].end = self.roundTime(self.timelineList[listType][keyPositionTwo].start + deltaTimeValueChunkTwo);
 
                 // change timelineList object key position of object one and object two
-                var  tempPosition = self.timelineList[keyPositionOne];
-                self.timelineList[keyPositionOne] = self.timelineList[keyPositionTwo];
-                self.timelineList[keyPositionTwo] = tempPosition;
+                var  tempPosition = self.timelineList[listType][keyPositionOne];
+                self.timelineList[listType][keyPositionOne] = self.timelineList[listType][keyPositionTwo];
+                self.timelineList[listType][keyPositionTwo] = tempPosition;
             }
         };
 
-        this.swapChunkWithPreviousObject = function (focusedChunkKey) {
+        this.swapChunkWithPreviousObject = function (focusedChunkKey, listType) {
             var previousFocusedChunkKey = focusedChunkKey - 1;
-            if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[previousFocusedChunkKey])) {
-                self.swapChunkKeyPositionOneToPositionTwo(previousFocusedChunkKey, focusedChunkKey);
+            if(angular.isDefined(self.timelineList[listType][focusedChunkKey]) && angular.isDefined(self.timelineList[listType][previousFocusedChunkKey])) {
+                self.swapChunkKeyPositionOneToPositionTwo(previousFocusedChunkKey, focusedChunkKey, listType);
             }
 
             self.saveTimelineStep();
         };
 
-        this.swapChunkWithNextObject = function (focusedChunkKey) {
+        this.swapChunkWithNextObject = function (focusedChunkKey, listType) {
             var nextFocusedChunkKey = focusedChunkKey + 1;
-            if(angular.isDefined(self.timelineList[focusedChunkKey]) && angular.isDefined(self.timelineList[nextFocusedChunkKey])) {
-                self.swapChunkKeyPositionOneToPositionTwo(focusedChunkKey, nextFocusedChunkKey);
+            if(angular.isDefined(self.timelineList[listType][focusedChunkKey]) && angular.isDefined(self.timelineList[listType][nextFocusedChunkKey])) {
+                self.swapChunkKeyPositionOneToPositionTwo(focusedChunkKey, nextFocusedChunkKey, listType);
             }
 
             self.saveTimelineStep();

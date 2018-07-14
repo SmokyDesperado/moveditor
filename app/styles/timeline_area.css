@@ -27,13 +27,13 @@
 }
 
 .dropable {
-    height: 100px;
+    height: 220px;
     overflow-x: scroll;
     background: black;
 }
 
 .timeline-object__wrap {
-    height: 80px;
+    height: 200px;
 
     position: relative;
     background: grey;
@@ -41,8 +41,17 @@
 }
 
 .timeline-object__chunk {
+    height: 50px;
     display: inline-block;
     position: absolute;
+}
+
+.timeline-object__chunk--video {
+    top: 30px;
+}
+
+.timeline-object__chunk--audio {
+    top: 120px;
 }
 
 .timeline-object__chunk--cut {
@@ -92,7 +101,7 @@
 }
 
 #timeline-scale {
-    height: 80px;
+    height: 200px;
     position: absolute;
     left: 0;
     top: 0;
@@ -102,17 +111,17 @@
 }
 
 .timeline-scale__middle-line {
-    height: 2px;
+    height: 20px;
     width: 100%;
-
     position: relative;
-    top: 70px;
-
+    top: 90px;
     background: white;
+    opacity: 0.5;
 }
 
 .timeline-scale__display-line {
     height: 100%;
+    top: 0;
 
     border-left: 2px solid white;
 
@@ -122,7 +131,7 @@
 
 .timeline-scale__display-time {
     position: relative;
-    top: 50px;
+    top: 90px;
 }
 
 .timeline-menu__wrapper {

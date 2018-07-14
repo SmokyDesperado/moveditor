@@ -1,5 +1,4 @@
 <div class="timeline-area__wrapper">
-    <h1>timeline</h1>
     <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="swapWithPreviousObject()">swap <-- </button>
     <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="swapWithNextObject()">swap --> </button>
     <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="muteChunk(key)">mute</button>
@@ -14,7 +13,7 @@
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
-            <div class="timeline-object__chunk"
+            <div class="timeline-object__chunk timeline-object__chunk--video"
                  hm-tap="chunkTap($event, key)"
                  hm-panstart="panStart($event, key)"
                  hm-panmove="hammerPanMove($event, key)"
@@ -51,7 +50,7 @@
                 <span class="timeline-scale__display-line" data-ng-repeat="scale in timelineService.scales" style="left: {{scale.position}}px; width: {{timelineService.scaleSteps * timelineService.pixelPerSeconds}}px">
                     <!--scale: {{scale}}-->
                     <div class="timeline-scale__display-time">
-                        {{scale.display}}
+                        {{scale.display}} s
                     </div>
                 </span>
             </div>

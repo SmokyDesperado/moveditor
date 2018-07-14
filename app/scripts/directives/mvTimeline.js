@@ -97,7 +97,7 @@ angular.module('moveditorApp')
                 };
 
                 $scope.panStart = function ($event, timelineObjectKey) {
-                    if(angular.element($event.target)[0].className === 'timeline-object__chunk ng-scope') {
+                    if(angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--video ng-scope') {
                         self.dragShorten = false;
                         TimelineCtrl.focus = timelineObjectKey;
                         self.initDragLimitValues($event, timelineObjectKey);
@@ -105,7 +105,7 @@ angular.module('moveditorApp')
                 };
 
                 $scope.hammerPanMove = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk ng-scope') {
+                    if(TimelineCtrl.focus === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--video ng-scope') {
                         TimelineCtrl.deactivateShorten();
                         self.setTimelineObjectToPosition($event, timelineObjectKey);
                         MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);

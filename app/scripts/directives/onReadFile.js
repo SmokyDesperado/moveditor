@@ -37,9 +37,15 @@ angular.module('moveditorApp')
                                     contents.contentArea[hash].url,
                                     hash);
                             }
-                            for (var i in contents.timelineArea) {
-                                TimelineService.addLoadedTimelineObjectToList(contents.timelineArea[i], $scope);
+
+                            for (var i in contents.timelineArea.audio) {
+                                TimelineService.addLoadedTimelineObjectToList(contents.timelineArea.audio[i]);
                             }
+
+                            for (var i in contents.timelineArea.video) {
+                                TimelineService.addLoadedTimelineObjectToList(contents.timelineArea.video[i]);
+                            }
+
                             MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList(), true);
                             mvPreviewService.jumpToPosition(0);
                             onChangeEvent.target.value = '';

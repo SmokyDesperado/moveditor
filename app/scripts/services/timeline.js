@@ -14,7 +14,11 @@ angular.module('moveditorApp')
         function (ContentService, MvHelperService) {
 
         var self = this;
-        this.timelineList = [];
+        this.timelineList = {
+            'audio': [],
+            'video': []
+        };
+
         this.audioTimelineList = [];
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
@@ -51,7 +55,10 @@ angular.module('moveditorApp')
         };
 
         this.resetTimeline = function () {
-            this.timelineList = [];
+            this.timelineList = {
+                'audio': [],
+                'video': []
+            };
             this.mouseHoverPosX = 0;
             this.timelineWidth = 1920;
             this.scrollLeft = 0;
@@ -130,16 +137,18 @@ angular.module('moveditorApp')
             ContentService.contentList[contentListObjectId].active++;
 
             self.recalculateChunkPositions(timelineObject);
-            self.sortedAddingObjectToTimelineList(timelineObject);
+            self.sortedAddingObjectToTimelineList(timelineObject, self.getListTypeFromContentListObjectId(contentListObjectId));
             self.calculateTimelineWidth();
             MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
 
             self.saveTimelineStep();
         };
 
-        this.addLoadedTimelineObjectToList = function (loadedTimelineObject, $scope) {
-            console.log('loadedTimelineObject', loadedTimelineObject);
+        this.getListTypeFromContentListObjectId = function (contentListObjectId) {
+            return (ContentService.contentList[contentListObjectId].type === 'audio') ? 'audio' : 'video';
+        };
 
+        this.addLoadedTimelineObjectToList = function (loadedTimelineObject) {
             var timelineObject = {
                 objectListId: loadedTimelineObject.objectListId,
                 start: Math.round(loadedTimelineObject.start * self.timelineQuantization) / self.timelineQuantization,
@@ -152,7 +161,7 @@ angular.module('moveditorApp')
             ContentService.contentList[loadedTimelineObject.objectListId].active++;
 
             self.recalculateChunkPositions(timelineObject);
-            self.sortedAddingObjectToTimelineList(timelineObject);
+            self.sortedAddingObjectToTimelineList(timelineObject, self.getListTypeFromContentListObjectId(loadedTimelineObject.objectListId));
             self.calculateTimelineWidth();
             MvHelperService.createVideoElementForChunk(timelineObject, ContentService.getContentList());
         };
@@ -170,14 +179,14 @@ angular.module('moveditorApp')
             self.calculateTimelineScales();
         };
 
-        this.sortedAddingObjectToTimelineList = function(timelineObject) {
+        this.sortedAddingObjectToTimelineList = function(timelineObject, listType) {
             var timelineListIndex = 0;
-            for(var i = 0; i < this.timelineList.length; i++) {
-                if(timelineObject.start > this.timelineList[i].start) {
-                    timelineListIndex = this.timelineList.indexOf(this.timelineList[i]) + 1;
+            for(var i = 0; i < this.timelineList[listType].length; i++) {
+                if(timelineObject.start > this.timelineList[listType][i].start) {
+                    timelineListIndex = this.timelineList[listType].indexOf(this.timelineList[i]) + 1;
                 }
             }
-            this.timelineList.splice(timelineListIndex, 0, timelineObject);
+            this.timelineList[listType].splice(timelineListIndex, 0, timelineObject);
         };
 
         this.recalculateChunkPositions = function (newTimelineObject) {

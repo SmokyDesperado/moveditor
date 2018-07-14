@@ -46,7 +46,7 @@ angular.module('moveditorApp')
                                 TimelineService.addLoadedTimelineObjectToList(contents.timelineArea.video[i]);
                             }
 
-                            MvHelperService.updatePreviewPlayerParameters(TimelineService.getTimelineList(), TimelineService.getTimelineList(), true);
+                            MvHelperService.updatePreviewPlayerParameters(TimelineService.timelineList['video'], TimelineService.timelineList['audio'], true);
                             mvPreviewService.jumpToPosition(0);
                             onChangeEvent.target.value = '';
                             $scope.$apply();

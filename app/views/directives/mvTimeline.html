@@ -30,13 +30,13 @@
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video' && TimelineCtrl.shorten == true"
                      hm-panstart="dragStartShortenStart($event, key)"
-                     hm-panmove="dragStartShortenMove($event, key)"
+                     hm-panmove="dragStartShortenMove($event, key, 'video')"
                      hm-panend="dragStartShortenEnd($event, key)"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video' && TimelineCtrl.shorten == true"
                      hm-panstart="dragEndShortenStart($event, key)"
-                     hm-panmove="dragEndShortenMove($event, key)"
+                     hm-panmove="dragEndShortenMove($event, key, 'video')"
                      hm-panend="dragEndShortenEnd($event, key)"></div>
             </div>
 
@@ -57,13 +57,13 @@
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio' && TimelineCtrl.shorten == true"
                      hm-panstart="dragStartShortenStart($event, key)"
-                     hm-panmove="dragStartShortenMove($event, key)"
+                     hm-panmove="dragStartShortenMove($event, key, 'audio')"
                      hm-panend="dragStartShortenEnd($event, key)"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio' && TimelineCtrl.shorten == true"
                      hm-panstart="dragEndShortenStart($event, key)"
-                     hm-panmove="dragEndShortenMove($event, key)"
+                     hm-panmove="dragEndShortenMove($event, key, 'audio')"
                      hm-panend="dragEndShortenEnd($event, key)"></div>
             </div>
         </div>

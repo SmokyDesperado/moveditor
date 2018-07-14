@@ -196,7 +196,7 @@ angular.module('moveditorApp')
             var timelineListIndex = 0;
             for(var i = 0; i < this.timelineList[listType].length; i++) {
                 if(timelineObject.start > this.timelineList[listType][i].start) {
-                    timelineListIndex = this.timelineList[listType].indexOf(this.timelineList[i]) + 1;
+                    timelineListIndex = this.timelineList[listType].indexOf(this.timelineList[listType][i]) + 1;
                 }
             }
             this.timelineList[listType].splice(timelineListIndex, 0, timelineObject);

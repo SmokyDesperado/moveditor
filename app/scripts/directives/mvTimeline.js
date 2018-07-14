@@ -105,7 +105,7 @@ angular.module('moveditorApp')
                     if(TimelineCtrl.focus.key === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--' + listType + ' ng-scope') {
                         TimelineCtrl.deactivateShorten();
                         self.setTimelineObjectToPosition($event, timelineObjectKey, listType);
-                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
+                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
                     }
                 };
 
@@ -199,9 +199,9 @@ angular.module('moveditorApp')
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
                 };
 
-                $scope.dragStartShortenMove = function($event, timelineObjectKey) {
+                $scope.dragStartShortenMove = function($event, timelineObjectKey, listType) {
                     if(self.dragShorten) {
-                        self.dragStartShortenTimelineObject($event, timelineObjectKey);
+                        self.dragStartShortenTimelineObject($event, timelineObjectKey, listType);
                     }
                 };
 
@@ -215,50 +215,48 @@ angular.module('moveditorApp')
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
                 };
 
-                $scope.dragEndShortenMove = function($event, timelineObjectKey) {
+                $scope.dragEndShortenMove = function($event, timelineObjectKey, listType) {
                     if(self.dragShorten) {
-                        self.setEndDragShortenObject($event, timelineObjectKey);
+                        self.setEndDragShortenObject($event, timelineObjectKey, listType);
                     }
                 };
 
                 $scope.dragEndShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
                     $scope.timelineService.saveTimelineStep();
                 };
 
-                this.dragStartShortenTimelineObject = function($event, timelineObjectKey) {
+                this.dragStartShortenTimelineObject = function($event, timelineObjectKey, listType) {
                     var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
                     var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
-                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start - $scope.timelineService.timelineList[timelineObjectKey].offset);
-                    var limitEnd = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].end);
-                    var chunkType = $scope.contentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].type;
+                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[listType][timelineObjectKey].start - $scope.timelineService.timelineList[listType][timelineObjectKey].offset);
+                    var limitEnd = $scope.timelineService.roundTime($scope.timelineService.timelineList[listType][timelineObjectKey].end);
+                    var chunkType = $scope.contentService.contentList[$scope.timelineService.timelineList[listType][timelineObjectKey].objectListId].type;
                     if(position < limitStart && chunkType !== 'image') {
                         position = $scope.timelineService.roundTime(limitStart);
                     }
 
-                    if(angular.isDefined($scope.timelineService.timelineList[timelineObjectKey - 1]) && position < $scope.timelineService.timelineList[timelineObjectKey - 1].end) {
-                        position = $scope.timelineService.timelineList[timelineObjectKey - 1].end;
+                    if(angular.isDefined($scope.timelineService.timelineList[listType][timelineObjectKey - 1]) && position < $scope.timelineService.timelineList[listType][timelineObjectKey - 1].end) {
+                        position = $scope.timelineService.timelineList[listType][timelineObjectKey - 1].end;
                     }
 
                     if(position > limitEnd - 0.1) {
                         position = $scope.timelineService.roundTime(limitEnd - 0.1);
                     }
 
-                    $scope.timelineService.timelineList[timelineObjectKey].start = $scope.timelineService.roundTime(position);
-                    $scope.timelineService.timelineList[timelineObjectKey].offset = $scope.timelineService.roundTime(position - limitStart);
-
-
+                    $scope.timelineService.timelineList[listType][timelineObjectKey].start = $scope.timelineService.roundTime(position);
+                    $scope.timelineService.timelineList[listType][timelineObjectKey].offset = $scope.timelineService.roundTime(position - limitStart);
                 };
 
-                this.setEndDragShortenObject = function($event, timelineObjectKey) {
+                this.setEndDragShortenObject = function($event, timelineObjectKey, listType) {
                     var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
                     var position = $scope.timelineService.roundTime(dragDistant / $scope.timelineService.pixelPerSeconds);
-                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[timelineObjectKey].start);
-                    var limitEnd = $scope.timelineService.roundTime((limitStart - $scope.timelineService.timelineList[timelineObjectKey].offset) + ContentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].length);
-                    var chunkType = $scope.contentService.contentList[$scope.timelineService.timelineList[timelineObjectKey].objectListId].type;
+                    var limitStart = $scope.timelineService.roundTime($scope.timelineService.timelineList[listType][timelineObjectKey].start);
+                    var limitEnd = $scope.timelineService.roundTime((limitStart - $scope.timelineService.timelineList[listType][timelineObjectKey].offset) + ContentService.contentList[$scope.timelineService.timelineList[listType][timelineObjectKey].objectListId].length);
+                    var chunkType = $scope.contentService.contentList[$scope.timelineService.timelineList[listType][timelineObjectKey].objectListId].type;
 
                     if(position < limitStart + 0.1) {
                         position = $scope.timelineService.roundTime(limitStart + 0.1);
@@ -268,11 +266,11 @@ angular.module('moveditorApp')
                         position = $scope.timelineService.roundTime(limitEnd);
                     }
 
-                    if(angular.isDefined($scope.timelineService.timelineList[timelineObjectKey + 1]) && position > $scope.timelineService.timelineList[timelineObjectKey + 1].start) {
-                        position = $scope.timelineService.timelineList[timelineObjectKey + 1].start;
+                    if(angular.isDefined($scope.timelineService.timelineList[listType][timelineObjectKey + 1]) && position > $scope.timelineService.timelineList[listType][timelineObjectKey + 1].start) {
+                        position = $scope.timelineService.timelineList[listType][timelineObjectKey + 1].start;
                     }
 
-                    $scope.timelineService.timelineList[timelineObjectKey].end = $scope.timelineService.roundTime(position);
+                    $scope.timelineService.timelineList[listType][timelineObjectKey].end = $scope.timelineService.roundTime(position);
                 };
 
                 $scope.activateCuttingMode = function() {

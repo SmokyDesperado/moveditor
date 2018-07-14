@@ -15,8 +15,8 @@
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
             <div class="timeline-object__chunk timeline-object__chunk--video"
                  hm-tap="chunkTap($event, key, 'video')"
-                 hm-panstart="panStart($event, key)"
-                 hm-panmove="hammerPanMove($event, key)"
+                 hm-panstart="panStart($event, key, 'video')"
+                 hm-panmove="hammerPanMove($event, key, 'video')"
                  hm-panend="panEnd($event, key)"
                  data-ng-class="{'timeline-object__chunk--cut': isCutActive && key == TimelineCtrl.focus}"
                  style="left: {{chunks.start * timelineService.pixelPerSeconds}}px;"
@@ -42,8 +42,8 @@
 
             <div class="timeline-object__chunk timeline-object__chunk--audio"
                  hm-tap="chunkTap($event, key, 'audio')"
-                 hm-panstart="panStart($event, key)"
-                 hm-panmove="hammerPanMove($event, key)"
+                 hm-panstart="panStart($event, key, 'audio')"
+                 hm-panmove="hammerPanMove($event, key, 'audio')"
                  hm-panend="panEnd($event, key)"
                  data-ng-class="{'timeline-object__chunk--cut': isCutActive && key == TimelineCtrl.focus}"
                  style="left: {{chunks.start * timelineService.pixelPerSeconds}}px;"

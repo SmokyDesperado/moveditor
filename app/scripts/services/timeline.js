@@ -168,8 +168,12 @@ angular.module('moveditorApp')
 
         this.calculateTimelineWidth = function () {
 
-            if (self.timelineList.length > 0) {
-                this.timelineWidth = (self.timelineList[self.timelineList.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;
+            if (self.timelineList.video.length > 0) {
+                this.timelineWidth = (self.timelineList.video[self.timelineList.video.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;
+            }
+
+            if (self.timelineList.audio.length > 0) {
+                this.timelineWidth = (self.timelineList.audio[self.timelineList.audio.length - 1].end + self.timelineWidthAddExtensionInSeconds) * self.pixelPerSeconds;
             }
 
             if(this.timelineWidth < 1920) {

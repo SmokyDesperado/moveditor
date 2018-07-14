@@ -81,9 +81,9 @@ angular.module('moveditorApp')
                     TimelineCtrl.tap($event);
                 };
 
-                $scope.chunkTap = function($event, key) {
+                $scope.chunkTap = function($event, key, type) {
                     if(!$scope.isCutActive) {
-                        TimelineCtrl.setFocus(key);
+                        TimelineCtrl.setFocus(key, type);
                     }
 
                     if($scope.isCutActive && TimelineCtrl.focus === key) {

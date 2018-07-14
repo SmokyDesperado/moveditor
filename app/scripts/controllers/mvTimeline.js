@@ -15,7 +15,10 @@ angular.module('moveditorApp')
         function (TimelineService, ContentService, DragAndDropService) {
             var self = this;
 
-            this.focus = null;
+            this.focus = {
+                'type': null,
+                'key': null
+            };
             this.shorten = false;
 
             this.timelineList = '';
@@ -39,13 +42,16 @@ angular.module('moveditorApp')
                 console.log('reorder shorten');
             };
 
-            this.setFocus = function (timelineObjectKey) {
-                if(this.focus === timelineObjectKey) {
+            this.setFocus = function (timelineObjectKey, type) {
+                if(this.focus['type'] === type && this.focus['key'] === timelineObjectKey) {
                     self.unsetFocusAll();
                     self.deactivateShorten();
                 }
                 else {
-                    this.focus = timelineObjectKey;
+                    this.focus = {
+                        'type': type,
+                        'key': timelineObjectKey
+                    };
                     self.activateShorten();
                 }
             };
@@ -63,7 +69,10 @@ angular.module('moveditorApp')
             };
 
             this.unsetFocusAll = function () {
-                this.focus = null;
+                this.focus = {
+                    'type': null,
+                    'key': null
+                };
             };
         }
     ]);

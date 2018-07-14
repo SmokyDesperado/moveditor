@@ -14,7 +14,7 @@
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
             <div class="timeline-object__chunk timeline-object__chunk--video"
-                 hm-tap="chunkTap($event, key)"
+                 hm-tap="chunkTap($event, key, 'video')"
                  hm-panstart="panStart($event, key)"
                  hm-panmove="hammerPanMove($event, key)"
                  hm-panend="panEnd($event, key)"
@@ -23,25 +23,25 @@
                  data-ng-repeat="(key, chunks) in timelineService.timelineList.video">
                 <div class="timeline-object__chunk-content"
                      style="width: {{(chunks.end - chunks.start) * timelineService.pixelPerSeconds}}px;"
-                     data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus, 'timeline-chunk--mute': chunks.mute}">
+                     data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video', 'timeline-chunk--mute': chunks.mute}">
                     <!--ID: {{chunks.objectListId + ' || ' + key}}-->
                 </div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
-                     data-ng-if="key == TimelineCtrl.focus && TimelineCtrl.shorten == true"
+                     data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video' && TimelineCtrl.shorten == true"
                      hm-panstart="dragStartShortenStart($event, key)"
                      hm-panmove="dragStartShortenMove($event, key)"
                      hm-panend="dragStartShortenEnd($event, key)"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
-                     data-ng-if="key == TimelineCtrl.focus && TimelineCtrl.shorten == true"
+                     data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video' && TimelineCtrl.shorten == true"
                      hm-panstart="dragEndShortenStart($event, key)"
                      hm-panmove="dragEndShortenMove($event, key)"
                      hm-panend="dragEndShortenEnd($event, key)"></div>
             </div>
 
             <div class="timeline-object__chunk timeline-object__chunk--audio"
-                 hm-tap="chunkTap($event, key)"
+                 hm-tap="chunkTap($event, key, 'audio')"
                  hm-panstart="panStart($event, key)"
                  hm-panmove="hammerPanMove($event, key)"
                  hm-panend="panEnd($event, key)"
@@ -50,18 +50,18 @@
                  data-ng-repeat="(key, chunks) in timelineService.timelineList.audio">
                 <div class="timeline-object__chunk-content"
                      style="width: {{(chunks.end - chunks.start) * timelineService.pixelPerSeconds}}px;"
-                     data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus, 'timeline-chunk--mute': chunks.mute}">
+                     data-ng-class="{'timeline-chunk--focus': key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio', 'timeline-chunk--mute': chunks.mute}">
                     <!--ID: {{chunks.objectListId + ' || ' + key}}-->
                 </div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
-                     data-ng-if="key == TimelineCtrl.focus && TimelineCtrl.shorten == true"
+                     data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio' && TimelineCtrl.shorten == true"
                      hm-panstart="dragStartShortenStart($event, key)"
                      hm-panmove="dragStartShortenMove($event, key)"
                      hm-panend="dragStartShortenEnd($event, key)"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
-                     data-ng-if="key == TimelineCtrl.focus && TimelineCtrl.shorten == true"
+                     data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio' && TimelineCtrl.shorten == true"
                      hm-panstart="dragEndShortenStart($event, key)"
                      hm-panmove="dragEndShortenMove($event, key)"
                      hm-panend="dragEndShortenEnd($event, key)"></div>

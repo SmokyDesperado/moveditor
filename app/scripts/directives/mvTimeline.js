@@ -39,7 +39,6 @@ angular.module('moveditorApp')
                 };
 
                 $scope.muteChunk = function () {
-                    // ToDo: !== instead of !=. must be tested
                     if (TimelineCtrl.focus.key !== null) {
                         if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type != "image") {
                             $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute;
@@ -49,32 +48,30 @@ angular.module('moveditorApp')
                 };
 
                 $scope.deleteChunk = function () {
-                    // ToDo: !== instead of !=. must be tested
-                    if (TimelineCtrl.focus != null) {
-                        var index = $scope.timelineService.timelineList.indexOf($scope.timelineService.timelineList[TimelineCtrl.focus]);
+                    if (TimelineCtrl.focus.key !== null) {
+                        var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf($scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key]);
                         if (index > -1) {
-                            ContentService.contentList[$scope.timelineService.timelineList[TimelineCtrl.focus].objectListId].active--;
-                            $scope.timelineService.timelineList.splice(index, 1);
+                            ContentService.contentList[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].active--;
+                            $scope.timelineService.timelineList[TimelineCtrl.focus.type].splice(index, 1);
                         }
-                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, $scope.timelineService.timelineList);
-                        TimelineCtrl.focus = null;
+                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
+                        TimelineCtrl.unsetFocusAll();
                         $scope.timelineService.calculateTimelineWidth();
-
                         $scope.timelineService.saveTimelineStep();
                     }
                 };
 
                 $scope.zoomIn = function () {
                     $scope.timelineService.zoomIn();
-                }
+                };
 
                 $scope.zoomOut = function () {
                     $scope.timelineService.zoomOut();
-                }
+                };
 
                 $scope.zoomReset = function () {
                     $scope.timelineService.zoomReset();
-                }
+                };
 
                 $scope.tap = function($event) {
                     TimelineCtrl.tap($event);

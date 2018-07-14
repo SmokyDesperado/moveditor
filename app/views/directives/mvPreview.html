@@ -5,7 +5,7 @@
 	    	<audio src="" id="audio_0" style="z-index: -1;"></audio>
 	    </div>
 		<div id="preview_range_slider"></div>
-		<input id="position_slider" type="range" ng-model="pos" ng-change="jumpToPosition(pos)"/>
+		<input id="position_slider" type="range" ng-model="pos" ng-change="jumpToPosition(pos)" onfocus="this.blur();"/>
 	    <table>
 	        <tbody>
 	            <tr>
@@ -13,19 +13,19 @@
 	                	<div id="time_display"></div>
 	                </td>
 	                <td>
-	                    <input id="goToStart_button" type="button" value="<<" data-ng-click="goToStart()"/>
+	                    <input id="goToStart_button" type="button" value="<<" data-ng-click="goToStart()" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                    <input id="play_button" type="button" value="play" data-ng-click="play()"/>
+	                    <input id="play_button" type="button" value="play" data-ng-click="play()" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                    <input id="pause_button" type="button" value="pause" data-ng-click="pause()"/>
+	                    <input id="pause_button" type="button" value="pause" data-ng-click="pause()" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                	<input id="volume_slider" type="range" value="1" max="1" step="0.01" ng-model="vol" ng-change="setVolume(vol)"/>
+	                	<input id="volume_slider" type="range" value="1" max="1" step="0.01" ng-model="vol" ng-change="setVolume(vol)" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                	<input id="loop_button" type="checkbox" ng-model="loop" btn-checkbox-true="true" btn-checkbox-false="false" data-ng-click="setLoop()"/>
+	                	<input id="loop_button" type="checkbox" ng-model="loop" btn-checkbox-true="true" btn-checkbox-false="false" data-ng-click="setLoop()" onfocus="this.blur();"/>
 	                </td>
 	            </tr>
 	        </tbody>

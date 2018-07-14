@@ -284,6 +284,53 @@ angular.module('moveditorApp')
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));
+
+                // ====================================================================================================
+                // short keys for controlling timeline
+                // ====================================================================================================
+
+                document.onkeyup = function(e) {
+                    console.log("KEY UP: ", e.which);
+                    switch (e.which) {
+                        case 109: // num -
+                        case 189: // -
+                            $scope.zoomOut();
+                            $scope.$apply();
+                            break;
+                        case 107: // num +
+                        case 187: // +
+                            $scope.zoomIn();
+                            $scope.$apply();
+                            break;
+                        case 8: // backspace
+                        case 46: // del
+                            $scope.deleteChunk();
+                            $scope.$apply();
+                            break;
+                        case 67: // C
+                            $scope.activateCuttingMode();
+                            $scope.$apply();
+                            break;
+                        case 77: // M
+                            $scope.muteChunk();
+                            $scope.$apply();
+                            break;
+                        case 37:
+                            if (e.ctrlKey) {
+                                $scope.swapWithPreviousObject();
+                                $scope.$apply();
+                            }
+                            break;
+                        case 39:
+                            if (e.ctrlKey) {
+                                 $scope.swapWithNextObject();
+                                 $scope.$apply();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                };
             }
         };
     }]);

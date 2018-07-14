@@ -150,7 +150,7 @@ angular.module('moveditorApp')
             }
             
             // update time parameters
-            self.currentPlayTime = newPosition;
+            self.currentPlayTime = Math.max(0, Math.min(newPosition, MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), TimelineService.getAudioTimelineList())));
             document.getElementById('position_slider').value = self.currentPlayTime;
             TimelineService.setPositionPointer(self.currentPlayTime);
             self.jumpToTime = self.currentPlayTime;

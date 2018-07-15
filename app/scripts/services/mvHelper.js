@@ -273,21 +273,22 @@ angular.module('moveditorApp')
             this.newChunkAdded = function (newChunk, contentList, videoImageChunkList, audioChunkList) {
                 // create <video> if necessary
                 self.createVideoElementForChunk(newChunk, contentList);
-                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList);
+                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList, false);
             }
 
             this.chunkDeleted = function (deletedChunk, contentList, videoImageChunkList, audioChunkList) {
                 // if deleted chunk is of type video and no more active elements exists then remove its <video>
                 var content = contentList[deletedChunk.objectListId];
-                if (content != null) {
-                    if (content.type == "video" && content.activeElements == 0) {
+                if (content !== null) {
+                    contentList[deletedChunk.objectListId].active--;
+                    if (content.type === "video" && content.active === 0) {
                         document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
                     }
                 }
-                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList);
+                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList, false);
             }
 
-            this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList, maxRange = false) {
+            this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList, maxRange) {
                 var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
                 document.getElementById('position_slider').max = newCeil;
 

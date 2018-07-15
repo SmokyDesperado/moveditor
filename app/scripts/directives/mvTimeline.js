@@ -54,13 +54,12 @@ angular.module('moveditorApp')
 
                 $scope.deleteChunk = function () {
                     if (TimelineCtrl.focus.key !== null) {
-                        var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf($scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key]);
+                        var focussedChunk = $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key];
+                        var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf(focussedChunk);
                         if (index > -1) {
-                            ContentService.contentList[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].active--;
-                            // MvHelperService.chunkDeleted($scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key], ContentService.contentList, $scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
                             $scope.timelineService.timelineList[TimelineCtrl.focus.type].splice(index, 1);
+                            MvHelperService.chunkDeleted(focussedChunk, ContentService.contentList, $scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
                         }
-                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
                         TimelineCtrl.unsetFocusAll();
                         $scope.timelineService.calculateTimelineWidth();
                         $scope.timelineService.saveTimelineStep();
@@ -111,7 +110,7 @@ angular.module('moveditorApp')
                     if(TimelineCtrl.focus.key === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--' + listType + ' ng-scope') {
                         TimelineCtrl.deactivateShorten();
                         self.setTimelineObjectToPosition($event, timelineObjectKey, listType);
-                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
+                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
                     }
                 };
 
@@ -235,7 +234,7 @@ angular.module('moveditorApp')
 
                 $scope.dragEndShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
                     $scope.timelineService.saveTimelineStep();
                 };
 

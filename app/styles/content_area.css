@@ -60,6 +60,11 @@ content-area__menu--left {
     background: red;
 }
 
+.drag-clone {
+    border: dashed 3px #ffffff;
+    position: absolute;
+}
+
 .mv-material {
     background: lightgray;
 }
@@ -119,7 +124,7 @@ content-area__menu--left {
     right: 0;
     bottom: 0;
 
-    background: #ffffff;
+    background: #aaaaaa;
     border-radius: 5px;
 }
 

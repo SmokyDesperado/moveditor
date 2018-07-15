@@ -63,12 +63,9 @@ angular.module('moveditorApp')
                     $scope.panStart = function ($event) {
 
                         self.dragIndicator = document.createElement("div");
+                        angular.element(self.dragIndicator).addClass('drag-clone');
                         self.dragIndicator.style.width = "30px";
                         self.dragIndicator.style.height = "30px";
-                        self.dragIndicator.style.borderStyle = "dashed";
-                        self.dragIndicator.style.borderStyle = "3p";
-                        self.dragIndicator.style.position = "absolute";
-                        angular.element(self.dragIndicator).addClass('drag--clone');
                         document.body.appendChild(self.dragIndicator);
                         ContentService.contentDrag = true;
 

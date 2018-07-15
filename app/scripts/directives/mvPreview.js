@@ -61,7 +61,9 @@ angular.module('moveditorApp')
                                 break;
                             case 48: // 0 & num 0
                             case 60: // <
-                                mvPreviewService.jumpToPosition(0);
+                                if (!e.ctrlKey) {
+                                    mvPreviewService.jumpToPosition(0);
+                                }
                                 break;
                             case 108: // L
                                 $scope.loop = !$scope.loop;

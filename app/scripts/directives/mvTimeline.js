@@ -291,12 +291,14 @@ angular.module('moveditorApp')
                 $scope.undo = function() {
                     // console.log('undo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
                     $scope.timelineService.undoTimelineAction();
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
                     TimelineCtrl.unsetFocusAll();
                 };
 
                 $scope.redo = function () {
                     // console.log('redo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
                     $scope.timelineService.redoTimelineAction();
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
                     TimelineCtrl.unsetFocusAll();
                 };
 
@@ -307,7 +309,7 @@ angular.module('moveditorApp')
                 // ====================================================================================================
 
                 document.onkeyup = function(e) {
-                    // console.log("KEY UP: ", e.which);
+                    console.log("KEY UP: ", e.which);
                     switch (e.which) {
                         case 109: // num -
                         case 189: // -
@@ -318,6 +320,12 @@ angular.module('moveditorApp')
                         case 187: // +
                             $scope.zoomIn();
                             $scope.$apply();
+                            break;
+                        case 48:
+                            if (e.ctrlKey) {
+                                $scope.zoomReset();
+                                $scope.$apply();
+                            }
                             break;
                         case 8: // backspace
                         case 46: // del
@@ -330,6 +338,22 @@ angular.module('moveditorApp')
                             break;
                         case 77: // M
                             $scope.muteChunk();
+                            $scope.$apply();
+                            break;
+                        case 89: // Y
+                            if (e.ctrlKey) {
+                                $scope.redo();
+                            }
+                            $scope.$apply();
+                            break;
+                        case 90: // Z
+                            if (e.ctrlKey) {
+                                if (e.shiftKey) {
+                                    $scope.redo();
+                                } else {
+                                    $scope.undo();
+                                }
+                            }
                             $scope.$apply();
                             break;
                         case 37:

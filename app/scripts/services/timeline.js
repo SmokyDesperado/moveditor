@@ -240,8 +240,12 @@ angular.module('moveditorApp')
             return this.timelineList;
         };
 
+        this.getVideoTimelineList = function () {
+            return this.timelineList.video;
+        };
+
         this.getAudioTimelineList = function () {
-            return this.audioTimelineList;
+            return this.timelineList.audio;
         };
 
         this.setTimelineList = function (list) {

@@ -39,7 +39,7 @@ angular.module('moveditorApp')
                 
                 $scope.loop = false;
                 $scope.setLoop = function () {
-                    mvPreviewService.setLoopPlay(!$scope.loop);
+                    mvPreviewService.setLoopPlay($scope.loop);
                 }
 
                 $scope.pos = 0;

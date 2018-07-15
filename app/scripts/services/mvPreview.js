@@ -102,7 +102,7 @@ angular.module('moveditorApp')
             clearTimeout(self.timeUpdateStepTimeout);
 
             // pause active <video> and only let current media element be shown
-            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
+            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getVideoTimelineList(), TimelineService.getAudioTimelineList());
             MvHelperService.showCurrentVideoImage(currentChunkPair[0], ContentService.getContentList());
             var currentVideoElement = MvHelperService.getCurrentVideoElement(currentChunkPair[0], ContentService.getContentList());
             if (currentVideoElement != null) {
@@ -119,7 +119,7 @@ angular.module('moveditorApp')
             // console.log("jump to ", newPosition);
 
             // pause current active <video>
-            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
+            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getVideoTimelineList(), TimelineService.getAudioTimelineList());
             if (currentChunkPair[0] != null) {
                 var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
                 if (currentMedia != null) {
@@ -158,7 +158,7 @@ angular.module('moveditorApp')
             }
 
             // check what video should be active now and calculate its position
-            currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
+            currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getVideoTimelineList(), TimelineService.getAudioTimelineList());
             MvHelperService.showCurrentVideoImage(currentChunkPair[0], ContentService.getContentList());
             var currentVideoElement = MvHelperService.getCurrentVideoElement(currentChunkPair[0], ContentService.getContentList());
             if (currentVideoElement != null) {
@@ -216,7 +216,7 @@ angular.module('moveditorApp')
         self.previewPlayStep = function () {
 
             // when current chunk has changed, then pause previously active video
-            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getTimelineList(), TimelineService.getAudioTimelineList());
+            var currentChunkPair = MvHelperService.getCurrentChunkPair(self.currentPlayTime, TimelineService.getVideoTimelineList(), TimelineService.getAudioTimelineList());
             if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) {
                 var previousVideoImage = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
                 if (previousVideoImage != null) {
@@ -266,7 +266,7 @@ angular.module('moveditorApp')
 
             // check whether should stop playing or restart on loop if reached the end or positionB
             if (self.currentPlayTime === self.positionB || self.currentPlayTime >= document.getElementById('position_slider').max) {
-                if (self.loopPlay && self.positionA != self.positionB && document.getElementById('position_slider').max != 0) {
+                if (self.loopPlay === true && self.positionA != self.positionB && document.getElementById('position_slider').max != 0) {
                     self.jumpToPosition(self.positionA);
                 } else {
                     self.pause();

@@ -309,7 +309,6 @@ angular.module('moveditorApp')
                 // ====================================================================================================
 
                 document.onkeyup = function(e) {
-                    console.log("KEY UP: ", e.which);
                     switch (e.which) {
                         case 109: // num -
                         case 189: // -

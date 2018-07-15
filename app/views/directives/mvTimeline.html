@@ -1,15 +1,16 @@
 <div class="timeline-area__wrapper">
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="swapWithPreviousObject()">swap <-- </button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="swapWithNextObject()">swap --> </button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="muteChunk(key)">mute</button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="deleteChunk(key)">delete</button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-class="{'timeline-area__menu-button--cut': isCutActive}" data-ng-click="activateCuttingMode()">cut</button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="zoomOut()">zoom out</button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="zoomReset()">zoom reset</button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="zoomIn()">zoom in</button>
-
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="undo()">undo</button>
-    <button class="timeline-area__menu__list__element timeline-area__menu-button" data-ng-click="redo()">redo</button>
+    <div class="timeline-menu__wrapper">
+        <button class="timeline-menu__element mv__button" data-ng-click="swapWithPreviousObject()">swap <-- </button>
+        <button class="timeline-menu__element mv__button" data-ng-click="swapWithNextObject()">swap --> </button>
+        <button class="timeline-menu__element mv__button" data-ng-click="muteChunk(key)">mute</button>
+        <button class="timeline-menu__element mv__button" data-ng-click="deleteChunk(key)">delete</button>
+        <button class="timeline-menu__element mv__button" data-ng-class="{'timeline-menu__element--cut': isCutActive}" data-ng-click="activateCuttingMode()">cut</button>
+        <button class="timeline-menu__element mv__button" data-ng-click="zoomOut()">zoom out</button>
+        <button class="timeline-menu__element mv__button" data-ng-click="zoomReset()">zoom reset</button>
+        <button class="timeline-menu__element mv__button" data-ng-click="zoomIn()">zoom in</button>
+        <button class="timeline-menu__element mv__button" data-ng-click="undo()">undo</button>
+        <button class="timeline-menu__element mv__button" data-ng-click="redo()">redo</button>
+    </div>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->

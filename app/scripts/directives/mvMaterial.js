@@ -70,6 +70,7 @@ angular.module('moveditorApp')
                         self.dragIndicator.style.position = "absolute";
                         angular.element(self.dragIndicator).addClass('drag--clone');
                         document.body.appendChild(self.dragIndicator);
+                        ContentService.contentDrag = true;
 
                         DragAndDropService.panMoveStarted($scope.contentObjectKey);
                     };
@@ -84,6 +85,7 @@ angular.module('moveditorApp')
                     $scope.panEnd = function ($event) {
                         angular.element(self.dragIndicator).remove();
                         self.dragIndicator = null;
+                        ContentService.contentDrag = false;
 
                         DragAndDropService.panMoveEnd($event, $scope.contentObjectKey);
                     };

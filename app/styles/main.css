@@ -91,3 +91,22 @@ body {
         border-bottom: 0;
     }
 }
+
+.mv__button {
+    padding: 5px 10px;
+    margin: 0 10px 0 0;
+    text-align: center;
+
+    background: #ffffff;
+    border-radius: 3px;
+    border: none;
+}
+
+.mv__button:active{
+    background: #aaaaaa;
+    color:  #ffffff;
+}
+
+.mv__button:focus {
+    outline: none;
+}

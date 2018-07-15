@@ -3,15 +3,15 @@
         <div class="content-area__menu-wrapper">
             <div class="content-area__menu--left">
                 <input id="url__input__field" class="content-area__menu__list__element" type="text" value="http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v" placeholder="enter URL...">
-                <button class="content-area__menu__list__element content-area__menu-button" data-ng-click="addContentMaterial()">add</button>
-                <button class="content-area__menu__list__element content-area__menu-button" data-ng-click="saveContentMaterial()">save</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="addContentMaterial()">add</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="saveContentMaterial()">save</button>
                 <div class="load-file__wrapper">
-                    <button class="content-area__menu__list__element content-area__menu-button" data-ng-click="loadContentMaterial()">load</button>
+                    <button class="content-area__menu__list__element mv__button" data-ng-click="loadContentMaterial()">load</button>
                     <input name="loadfile" class="load-file__input" type="file" on-read-file/>
                 </div>
             </div>
             <div class="content-area__menu--right">
-                <button class="content-area__menu__list__element content-area__menu-button" data-ng-click="sendStitching()">send</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="sendStitching()">send</button>
             </div>
         </div>
     </div>
@@ -24,9 +24,7 @@
         </div>
     </div>
 
-    <div id="content-trash" class="content-trash">
-        <div class="content-trash__icon">
-            trash
-        </div>
+    <div id="content-trash" class="content-trash" data-ng-show="contentService.contentDrag">
+        <img class="content-trash__icon" src="./images/trash_icon.png">
     </div>
 </div>

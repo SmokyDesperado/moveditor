@@ -1,27 +1,22 @@
 .timeline-area {
     height: 50vh;
-    background: lightgreen;
+    background: #222222;
 }
 
 #timelineDropArea {
     position: relative;
 }
 
-.timeline-area__menu__list__element {
-    width: 80px;
-    height: 20px;
-    padding: 5px 10px;
-    margin: 0 10px 0 0;
+.timeline-menu__element {
 
-    text-align: center;
-    background: white;
 }
 
-.timeline-area__menu-button {
-    height: 100%;
+.timeline-menu__wrapper {
+    padding: 10px;
+    background: #555555;
 }
 
-.timeline-area__menu-button--cut {
+.timeline-menu__element--cut {
     background: red;
     color: white;
 }
@@ -158,10 +153,6 @@
     border-right: 2px solid;
     border-left: 2px solid;
     border-color: green;
-}
-
-.timeline-menu__wrapper {
-    padding: 10px 20px;
 }
 
 .timeline-chunk--focus {

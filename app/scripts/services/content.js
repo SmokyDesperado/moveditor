@@ -14,6 +14,7 @@ angular.module('moveditorApp')
         function (MvHelperService, Content) {
             var self = this;
             this.contentList = {};
+            this.contentDrag = false;
 
             this.addContentObjectToList = function (name, type, length, MaterialURL, hash) {
 

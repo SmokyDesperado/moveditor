@@ -19,7 +19,6 @@ angular.module('moveditorApp')
             'video': []
         };
 
-        this.audioTimelineList = [];
         this.mouseHoverPosX = 0;
         this.timelineWidth = 1920;
         this.timelineWidthAddExtensionInSeconds = 30;
@@ -139,7 +138,7 @@ angular.module('moveditorApp')
             self.recalculateChunkPositions(timelineObject, self.getListTypeFromContentListObjectId(contentListObjectId));
             self.sortedAddingObjectToTimelineList(timelineObject, self.getListTypeFromContentListObjectId(contentListObjectId));
             self.calculateTimelineWidth();
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList, self.audioTimelineList);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList['video'], self.timelineList['audio']);
 
             self.saveTimelineStep();
         };

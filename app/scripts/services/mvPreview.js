@@ -132,8 +132,8 @@ angular.module('moveditorApp')
                 }
             }
 
-            if (currentChunkPair[0] != null) { // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
-                var currentMedia = ContentService.getContentList()[currentChunkPair[0].objectListId];
+            if (currentChunkPair[1] != null) { // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+                var currentMedia = ContentService.getContentList()[currentChunkPair[1].objectListId];
                 if (currentMedia != null) {
                     if (currentMedia.type === "audio") {
                         document.getElementById("audio_0").pause();
@@ -165,9 +165,9 @@ angular.module('moveditorApp')
                 currentVideoElement.currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
             }
 
-            var sourceIsSet = MvHelperService.setCurrentAudioSource(currentChunkPair[0], ContentService.getContentList()); // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+            var sourceIsSet = MvHelperService.setCurrentAudioSource(currentChunkPair[1], ContentService.getContentList()); // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
             if (sourceIsSet) {
-                document.getElementById("audio_0").currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
+                document.getElementById("audio_0").currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[1]) / 1000;
             }
 
             // if player is currently playing, then continue playing again
@@ -229,8 +229,8 @@ angular.module('moveditorApp')
                 }
             }
 
-            if (self.previousChunkPair[0] != currentChunkPair[0] && self.previousChunkPair[0] != null) { // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
-                var previousAudio = ContentService.getContentList()[self.previousChunkPair[0].objectListId];
+            if (self.previousChunkPair[1] != currentChunkPair[1] && self.previousChunkPair[1] != null) { // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+                var previousAudio = ContentService.getContentList()[self.previousChunkPair[1].objectListId];
                 if (previousAudio != null) {
                     if (previousAudio.type === "audio") {
                         document.getElementById("audio_0").pause();
@@ -251,14 +251,14 @@ angular.module('moveditorApp')
                 if (currentVideoElement.paused) {currentVideoElement.play();}
             }
 
-            var sourceIsSet = MvHelperService.setCurrentAudioSource(currentChunkPair[0], ContentService.getContentList()); // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
+            var sourceIsSet = MvHelperService.setCurrentAudioSource(currentChunkPair[1], ContentService.getContentList()); // TODO: correctly use currentChunkPair[1] when audio timeline is implemented
             if (sourceIsSet) {
                 var currentAudioElement = document.getElementById("audio_0");
 
-                if (self.previousChunkPair[0] != currentChunkPair[0]) {
-                    currentAudioElement.currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[0]) / 1000;
+                if (self.previousChunkPair[1] != currentChunkPair[1]) {
+                    currentAudioElement.currentTime = MvHelperService.calculateMediaOffsetTime(self.currentPlayTime, currentChunkPair[1]) / 1000;
                 }
-                currentAudioElement.muted = currentChunkPair[0].mute;
+                currentAudioElement.muted = currentChunkPair[1].mute;
                 if (currentAudioElement.paused) {currentAudioElement.play();}
             }
 

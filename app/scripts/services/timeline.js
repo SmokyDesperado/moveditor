@@ -30,6 +30,14 @@ angular.module('moveditorApp')
         this.pixelPerSeconds = 20;
         this.scales = [];
         this.scaleSteps = 10;
+        this.dropArea = null;
+
+        this.positionPointer = null;
+        this.rangePointerA = null;
+        this.rangePointerB = null;
+        this.playTime = 0;
+        this.timeA = 0;
+        this.timeB = 0;
 
         this.zoomIndexDefault = 4;
         this.zoomIndex = this.zoomIndexDefault;
@@ -84,6 +92,33 @@ angular.module('moveditorApp')
         this.setScrollLeft = function (left) {
             this.scrollLeft = left;
         };
+
+        this.setPositionPointer = function (time) {
+            self.playTime = Math.round((time / 1000) * 10) / 10;
+            var playTimeInPixel = self.playTime * self.pixelPerSeconds;
+            if (self.positionPointer != null) {
+                self.positionPointer[0].style.left = playTimeInPixel + "px";
+                //self.dropArea[0].scrollLeft = playTimeInPixel - $(document).width()/2;
+            }
+        }
+
+        this.setTimeA = function (time) {
+            self.timeA = Math.round((time / 1000) * 10) / 10;
+            var timeAInPixel = self.timeA * self.pixelPerSeconds;
+            if (self.rangePointerA != null) {
+                self.rangePointerA[0].style.left = timeAInPixel + "px";
+                //self.dropArea[0].scrollLeft = timeAInPixel - $(document).width()/2;
+            }
+        }
+
+        this.setTimeB = function (time) {
+            self.timeB = Math.round((time / 1000) * 10) / 10;
+            var timeBInPixel = self.timeB * self.pixelPerSeconds;
+            if (self.rangePointerB != null) {
+                self.rangePointerB[0].style.left = timeBInPixel + "px";
+                //self.dropArea[0].scrollLeft = timeBInPixel - $(document).width()/2;
+            }
+        }
 
 // =====================================================================================================================
 // getter
@@ -276,6 +311,9 @@ angular.module('moveditorApp')
             self.scaleSteps = self.zoomTable[self.zoomIndex].scaleSteps;
             this.scales = [];
             self.calculateTimelineWidth();
+            self.positionPointer[0].style.left = (self.playTime * self.pixelPerSeconds) + "px";
+            self.rangePointerA[0].style.left = (self.timeA * self.pixelPerSeconds) + "px";
+            self.rangePointerB[0].style.left = (self.timeB * self.pixelPerSeconds) + "px";
         }
 
         this.zoomOut = function () {
@@ -284,6 +322,9 @@ angular.module('moveditorApp')
             self.scaleSteps = self.zoomTable[self.zoomIndex].scaleSteps;
             this.scales = [];
             self.calculateTimelineWidth();
+            self.positionPointer[0].style.left = (self.playTime * self.pixelPerSeconds) + "px";
+            self.rangePointerA[0].style.left = (self.timeA * self.pixelPerSeconds) + "px";
+            self.rangePointerB[0].style.left = (self.timeB * self.pixelPerSeconds) + "px";
         }
 
         this.zoomReset = function () {
@@ -292,6 +333,9 @@ angular.module('moveditorApp')
             self.scaleSteps = self.zoomTable[self.zoomIndex].scaleSteps;
             this.scales = [];
             self.calculateTimelineWidth();
+            self.positionPointer[0].style.left = (self.playTime * self.pixelPerSeconds) + "px";
+            self.rangePointerA[0].style.left = (self.timeA * self.pixelPerSeconds) + "px";
+            self.rangePointerB[0].style.left = (self.timeB * self.pixelPerSeconds) + "px";
         }
 
         this.roundTime = function (time) {
@@ -350,8 +394,6 @@ angular.module('moveditorApp')
             );
             self.timelineList[listType][focusedChunkKey].end = positionInTime;
             self.sortedAddingObjectToTimelineList(newChunkAfterCut, listType);
-
-            MvHelperService.updatePreviewPlayerParameters(self.timelineList['video'], self.timelineList['audio'], true);
 
             self.saveTimelineStep();
         };

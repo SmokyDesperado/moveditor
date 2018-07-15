@@ -34,6 +34,11 @@ angular.module('moveditorApp')
                 this.dragFreeSpaceEnd = 1920;
                 this.dragShortenOffset = 5;
 
+                $scope.timelineService.dropArea = $element.find('#timelineDropArea');
+                $scope.timelineService.positionPointer = $element.find('#position_pointer');
+                $scope.timelineService.rangePointerA = $element.find('#range_pointer_a');
+                $scope.timelineService.rangePointerB = $element.find('#range_pointer_b');
+
                 $scope.click = function (param) {
                     console.log('clicked with param:', param);
                 };
@@ -52,6 +57,7 @@ angular.module('moveditorApp')
                         var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf($scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key]);
                         if (index > -1) {
                             ContentService.contentList[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].active--;
+                            // MvHelperService.chunkDeleted($scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key], ContentService.contentList, $scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
                             $scope.timelineService.timelineList[TimelineCtrl.focus.type].splice(index, 1);
                         }
                         MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
@@ -296,6 +302,53 @@ angular.module('moveditorApp')
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));
+
+                // ====================================================================================================
+                // short keys for controlling timeline
+                // ====================================================================================================
+
+                document.onkeyup = function(e) {
+                    console.log("KEY UP: ", e.which);
+                    switch (e.which) {
+                        case 109: // num -
+                        case 189: // -
+                            $scope.zoomOut();
+                            $scope.$apply();
+                            break;
+                        case 107: // num +
+                        case 187: // +
+                            $scope.zoomIn();
+                            $scope.$apply();
+                            break;
+                        case 8: // backspace
+                        case 46: // del
+                            $scope.deleteChunk();
+                            $scope.$apply();
+                            break;
+                        case 67: // C
+                            $scope.activateCuttingMode();
+                            $scope.$apply();
+                            break;
+                        case 77: // M
+                            $scope.muteChunk();
+                            $scope.$apply();
+                            break;
+                        case 37:
+                            if (e.ctrlKey) {
+                                $scope.swapWithPreviousObject();
+                                $scope.$apply();
+                            }
+                            break;
+                        case 39:
+                            if (e.ctrlKey) {
+                                 $scope.swapWithNextObject();
+                                 $scope.$apply();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                };
             }
         };
     }]);

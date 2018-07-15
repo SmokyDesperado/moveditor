@@ -5,7 +5,7 @@
         <!-- <canvas id="canvas_{{contentObjectKey}}"></canvas> -->
         <!--KEY: <br/>{{contentObjectKey}}-->
         <!-- {{ materialObject.name }}<br/> -->
-        <span data-ng-if="materialObject.type != 'image'">length: {{ materialObject.length }}</span><br/>
+        <span data-ng-if="materialObject.type != 'image'">length: {{ materialObject.length | number: 2 }}</span><br/>
         <!-- type: {{ materialObject.type }}<br/>  -->
         <!-- url: {{ materialObject.url }}<br/> -->
         active: {{ materialObject.active }}<br/>

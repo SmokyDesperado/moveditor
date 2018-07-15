@@ -72,8 +72,16 @@ angular.module('moveditorApp')
             });
             rangeSlider.setAttribute('disabled', true);
             rangeSlider.noUiSlider.on('update', function(value, handle, unencoded, tap, positions){
-                self.setPositionA(Math.round(unencoded[0]));
-                self.setPositionB(Math.round(unencoded[1]));
+                switch (handle) {
+                    case 0:
+                        self.setPositionA(Math.round(unencoded[0]));
+                        break;
+                    case 1:
+                        self.setPositionB(Math.round(unencoded[1]));
+                        break;
+                    default:
+                        break;
+                }
             });
         }
 
@@ -142,8 +150,9 @@ angular.module('moveditorApp')
             }
             
             // update time parameters
-            self.currentPlayTime = newPosition;
+            self.currentPlayTime = Math.max(0, Math.min(newPosition, MvHelperService.getTimelineDuration(TimelineService.getTimelineList(), TimelineService.getAudioTimelineList())));
             document.getElementById('position_slider').value = self.currentPlayTime;
+            TimelineService.setPositionPointer(self.currentPlayTime);
             self.jumpToTime = self.currentPlayTime;
             self.timeAtStart = new Date().getTime() - self.jumpToTime;
             self.timeAtPause = 0;
@@ -185,11 +194,13 @@ angular.module('moveditorApp')
         this.setPositionA = function (position) {
             // console.log("positionA: ", position);
             self.positionA = position;
+            TimelineService.setTimeA(position);
         }
 
         this.setPositionB = function (position) {
             // console.log("positionB: ", position);
             self.positionB = position;
+            TimelineService.setTimeB(position);
         }
 
         this.setVolume = function (vol) {
@@ -295,6 +306,7 @@ angular.module('moveditorApp')
             // increment current time and update time display
             self.currentPlayTime += self.timeStepInterval;
             document.getElementById('position_slider').value = self.currentPlayTime;
+            TimelineService.setPositionPointer(self.currentPlayTime);
             MvHelperService.updateTimeDisplay(self.currentPlayTime);
 
             // call previewPlayStep again, but with adjusted time amount to keep the loops precise

@@ -392,6 +392,7 @@ angular.module('moveditorApp')
                 self.timelineList[listType][focusedChunkKey].mute,
                 self.timelineList[listType][focusedChunkKey].name
             );
+            ContentService.contentList[self.timelineList[listType][focusedChunkKey].objectListId].active++;
             self.timelineList[listType][focusedChunkKey].end = positionInTime;
             self.sortedAddingObjectToTimelineList(newChunkAfterCut, listType);
 

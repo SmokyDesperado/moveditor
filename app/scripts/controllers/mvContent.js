@@ -59,11 +59,17 @@ angular.module('moveditorApp')
                 var contentList = ContentService.getContentList();
                 var timelineList = TimelineService.getTimelineList();
 
-                for(var i = 0; i < timelineList.length; i++) {
-                    AWSService.requestSegmentation(timelineList[i]);
-                }
+                // for(var i = 0; i < timelineList['video'].length; i++) {
+                //     AWSService.requestSegmentation(timelineList['video'][i]);
+                // }
+
+                AWSService.requestSegmentation(0);
 
                 // AWSService.receiveSqs();
+            };
+
+            this.receive = function () {
+                AWSService.receive10();
             };
         }
     ]);

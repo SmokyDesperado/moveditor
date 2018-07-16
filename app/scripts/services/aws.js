@@ -11,7 +11,8 @@ angular.module('moveditorApp')
     .service('AWSService', [
         'MvHelperService',
         'ContentService',
-        function (MvHelperService, ContentService) {
+        'TimelineService',
+        function (MvHelperService, ContentService, TimelineService) {
             var self = this;
             this.sqs = null;
             this.receiveTimeOut = null;
@@ -19,12 +20,19 @@ angular.module('moveditorApp')
             this.sendQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo";
             this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
 
+            this.index = 0;
+
             this.init = function () {
                 this.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
                 console.log('init:', this.sqs);
             };
 
-            this.requestSegmentation = function (chunk) {
+            this.requestSegmentation = function (index) {
+
+                self.index = index;
+                var chunk = TimelineService.timelineList['video'][index];
+
+                console.warn(chunk, index);
                 var contentList = ContentService.getContentList();
                 var segmentationId = String(MvHelperService.generateRandomHash(6));
                 var chunkUrl = contentList[chunk.objectListId].url;
@@ -49,7 +57,7 @@ angular.module('moveditorApp')
                 //   msg = { jobID: "123456", S3URL: "https://s3-eu-west-1.amazonaws.com/advwebbucketnew/videoplayback.mp4", onlyaudio:"true", encodingprofile: "default", requestEnqueueTime: + new Date() };​
 
                 this.sendSqs(msg);
-                this.receiveSqs(segmentationId);
+                this.receiveSqs(segmentationId, index);
 
                 //this.requestStitching(timelineList);
 
@@ -69,13 +77,13 @@ angular.module('moveditorApp')
                 //         "hide": false,
                 //         "url": "http://dash.fokus.fraunhofe.com/jhk/Manifest.mpd"
                 //       },
-                for (var i = 0; i < timelineList.length; i++) {
+                for (var i = 0; i < TimelineService.timelineList['video'].length; i++) {
                     //ToDo Han
 
                 }
 
                 var msg = { config: configStitching, requestEnqueueTime: + new Date() };
-                this.sendSqs(msg);
+                // this.sendSqs(msg);
             };
 
             this.sendSqs = function (msg){
@@ -94,7 +102,7 @@ angular.module('moveditorApp')
             };
 
             // modified from https://milesplit.wordpress.com/2013/11/07/using-sqs-with-node/
-            this.receiveSqs = function (segmentationID) {
+            this.receiveSqs = function (segmentationID, index) {
                 var sqsParams = {
                     QueueUrl: this.receiveQueueURL,
                     // MessageGroupId: 'wesealize2',
@@ -106,51 +114,50 @@ angular.module('moveditorApp')
 
                 this.sqs.receiveMessage(sqsParams, function(err, data) {
 
-                    if (1) {
-                        // If there are any messages to get
-                        if (data.Messages) {
-                            // console.log("data: ", data);
+                    // If there are any messages to get
+                    if (data.Messages) {
+                        // console.log("data: ", data);
 
-                            // Get the first message (should be the only one since we said to only get one above)
-                            if (data.Messages.length > 0) {
-                                var message = data.Messages[0];
+                        // Get the first message (should be the only one since we said to only get one above)
+                        if (data.Messages.length > 0) {
+                            var message = data.Messages[0];
 
-                                var body = JSON.parse(message.Body);
-                                if (body.resultS3URL != null) {
-                                    self.saveMpdUrlToContent(body.resultS3URL);  // whatever you wanna do
-                                    clearTimeout(self.receiveTimeOut);
-                                } else {
-                                    self.receiveTimeOut = setTimeout(self.receiveSqs(segmentationID), 3000);
-                                }
-                                // Clean up after yourself... delete this message from the queue, so it's not executed again
-                                if (body.jobID == segmentationID) {
-                                    self.removeFromQueue(message, body.progress);
-                                }
+                            var body = JSON.parse(message.Body);
+                            if (angular.isDefined(body.resultS3URL) && body.jobID === segmentationID) {
+                                self.saveMpdUrlToContent(body.resultS3URL);  // whatever you wanna do
+                                clearTimeout(self.receiveTimeOut);
                             } else {
                                 self.receiveTimeOut = setTimeout(self.receiveSqs(segmentationID), 3000);
                             }
-                        }
-                    } else {
-                        // If there are any messages to get
-                        if (data.Messages) {
-                            console.log("data: ", data);
-
-                            // Get the first message (should be the only one since we said to only get one above)
-                            if (data.Messages.length > 0) {
-                                var message = data.Messages[0];
-
-                                var body = JSON.parse(message.Body);
-                                if (body.resultS3URL != null) {
-                                    self.saveMpdUrlToContent(body.resultS3URL);  // whatever you wanna do
-                                } else {
-                                }
-                                // Clean up after yourself... delete this message from the queue, so it's not executed again
-                                if (body.jobID == segmentationID) {
-                                    self.removeFromQueue(message, body.progress);
-                                }
-                            } else {
+                            // Clean up after yourself... delete this message from the queue, so it's not executed again
+                            console.log("jobID: ", body.jobID);
+                            if (body.jobID === segmentationID) {
+                                self.removeFromQueue(message, body.jobID, body.progress, self.index);
                             }
+                        } else {
+                            self.receiveTimeOut = setTimeout(self.receiveSqs(segmentationID), 3000);
                         }
+                    }
+                });
+            };
+
+            this.receive10 = function () {
+                console.log("receive 10");
+
+                var sqsParams = {
+                    QueueUrl: this.receiveQueueURL,
+                    // MessageGroupId: 'wesealize2',
+                    MaxNumberOfMessages: 10,
+
+                    // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
+                    WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
+                };
+
+                this.sqs.receiveMessage(sqsParams, function(err, data) {
+
+                    // If there are any messages to get
+                    if (data.Messages) {
+                        console.log("data: ", data);
                     }
                 });
             };
@@ -159,12 +166,7 @@ angular.module('moveditorApp')
                 console.log("mpdUrl: ", mpdUrl);
             };
 
-            this.removeFromQueue = function(message, progress) {
-                if (progress != null) {
-                    console.log("progress: ", progress);
-                } else {
-                    console.log("finish");
-                }
+            this.removeFromQueue = function(message, jobID, progress) {
 
                 this.sqs.deleteMessage({
                     QueueUrl: this.receiveQueueURL,
@@ -173,6 +175,19 @@ angular.module('moveditorApp')
                     // If we errored, tell us that we did
                     err && console.log(err);
                 });
+
+                if (angular.isDefined(progress)) {
+                    console.log("ID: " + jobID + ", progress: " + progress);
+                } else {
+                    console.log("finish");
+
+                    if (TimelineService.timelineList['video'].length - 1 === self.index) {
+                        self.requestStitching(TimelineService.timelineList['video']);
+                    } else {
+                        var indexNext = self.index + 1;
+                        self.requestSegmentation(indexNext);
+                    }
+                }
             };
 
             this.init();

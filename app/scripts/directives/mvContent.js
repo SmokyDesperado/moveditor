@@ -68,6 +68,10 @@ angular.module('moveditorApp')
                     contentCtrl.sendStitching();
                 };
 
+                $scope.receive = function () {
+                    contentCtrl.receive();
+                };
+
                 $scope.contentTap = function () {
                     console.log('contentList', $scope.contentList);
                 };

@@ -98,7 +98,7 @@ angular.module('moveditorApp')
             var playTimeInPixel = self.playTime * self.pixelPerSeconds;
             if (self.positionPointer != null) {
                 self.positionPointer[0].style.left = playTimeInPixel + "px";
-                //self.dropArea[0].scrollLeft = playTimeInPixel - $(document).width()/2;
+                self.dropArea[0].scrollLeft = playTimeInPixel - $(document).width()/2;
             }
         }
 

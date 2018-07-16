@@ -309,18 +309,24 @@ angular.module('moveditorApp')
                 // ====================================================================================================
 
                 document.onkeyup = function(e) {
+                    // console.log("KEY UP: ", e.which);
                     switch (e.which) {
                         case 109: // num -
                         case 189: // -
-                            $scope.zoomOut();
-                            $scope.$apply();
+                            if (e.ctrlKey) {
+                                $scope.zoomOut();
+                                $scope.$apply();
+                            }
                             break;
                         case 107: // num +
                         case 187: // +
-                            $scope.zoomIn();
-                            $scope.$apply();
+                            if (e.ctrlKey) {
+                                $scope.zoomIn();
+                                $scope.$apply();
+                            }
                             break;
-                        case 48:
+                        case 48: // 0
+                        case 96: // num 0
                             if (e.ctrlKey) {
                                 $scope.zoomReset();
                                 $scope.$apply();
@@ -342,8 +348,8 @@ angular.module('moveditorApp')
                         case 89: // Y
                             if (e.ctrlKey) {
                                 $scope.redo();
+                                $scope.$apply();
                             }
-                            $scope.$apply();
                             break;
                         case 90: // Z
                             if (e.ctrlKey) {
@@ -352,19 +358,77 @@ angular.module('moveditorApp')
                                 } else {
                                     $scope.undo();
                                 }
-                            }
-                            $scope.$apply();
-                            break;
-                        case 37:
-                            if (e.ctrlKey) {
-                                $scope.swapWithPreviousObject();
                                 $scope.$apply();
                             }
                             break;
-                        case 39:
+                        case 37: // arrow left
                             if (e.ctrlKey) {
-                                 $scope.swapWithNextObject();
-                                 $scope.$apply();
+                                $scope.swapWithPreviousObject();
+                                $scope.$apply();
+                            } else if (e.altKey) {
+                                if (TimelineCtrl.focus.key === null) {
+                                    if ($scope.timelineService.timelineList['audio'].length > 0) {
+                                        TimelineCtrl.setFocus($scope.timelineService.timelineList['audio'].length - 1, 'audio');
+                                    }
+                                    if ($scope.timelineService.timelineList['video'].length > 0) {
+                                        TimelineCtrl.setFocus($scope.timelineService.timelineList['video'].length - 1, 'video');
+                                    }
+                                } else {
+                                    TimelineCtrl.setFocus(Math.max(0, TimelineCtrl.focus.key - 1), TimelineCtrl.focus.type);
+                                }
+                                $scope.$apply();
+                            }
+                            break;
+                        case 39: // arrow right
+                            if (e.ctrlKey) {
+                                $scope.swapWithNextObject();
+                                $scope.$apply();
+                            } else if (e.altKey) {
+                                if (TimelineCtrl.focus.key === null) {
+                                    if ($scope.timelineService.timelineList['audio'].length > 0) {
+                                        TimelineCtrl.setFocus(0, 'audio');
+                                    }
+                                    if ($scope.timelineService.timelineList['video'].length > 0) {
+                                        TimelineCtrl.setFocus(0, 'video');
+                                    }
+                                } else {
+                                    TimelineCtrl.setFocus(Math.min(TimelineCtrl.focus.key + 1, $scope.timelineService.timelineList[TimelineCtrl.focus.type].length - 1), TimelineCtrl.focus.type);
+                                }
+                                $scope.$apply();
+                            }
+                            break;
+                        case 40: // arrow down
+                            if (e.altKey) {
+                                if (TimelineCtrl.focus.key === null) {
+                                    if ($scope.timelineService.timelineList['audio'].length > 0) {
+                                        TimelineCtrl.setFocus(0, 'audio');
+                                    }
+                                    if ($scope.timelineService.timelineList['video'].length > 0) {
+                                        TimelineCtrl.setFocus(0, 'video');
+                                    }
+                                } else {
+                                    if ($scope.timelineService.timelineList['audio'].length > 0) {
+                                        TimelineCtrl.setFocus(Math.min(Math.max(0 ,TimelineCtrl.focus.key), $scope.timelineService.timelineList['audio'].length - 1), 'audio');
+                                    }
+                                }
+                                $scope.$apply();
+                            }
+                            break;
+                        case 38: // arrow up
+                            if (e.altKey) {
+                                if (TimelineCtrl.focus.key === null) {
+                                    if ($scope.timelineService.timelineList['video'].length > 0) {
+                                        TimelineCtrl.setFocus(0, 'video');
+                                    }
+                                    if ($scope.timelineService.timelineList['audio'].length > 0) {
+                                        TimelineCtrl.setFocus(0, 'audio');
+                                    }
+                                } else {
+                                    if ($scope.timelineService.timelineList['video'].length > 0) {
+                                        TimelineCtrl.setFocus(Math.min(Math.max(0 ,TimelineCtrl.focus.key), $scope.timelineService.timelineList['video'].length - 1), 'video');
+                                    }
+                                }
+                                $scope.$apply();
                             }
                             break;
                         default:

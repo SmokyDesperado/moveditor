@@ -12,7 +12,8 @@ angular.module('moveditorApp')
         'ContentService',
         'TimelineService',
         'MvHelperService',
-        function (ContentService, TimelineService, MvHelperService) {
+        'AWSService',
+        function (ContentService, TimelineService, MvHelperService, AWSService) {
 
             var self = this;
 
@@ -52,12 +53,26 @@ angular.module('moveditorApp')
             // ============================================================================
 
             this.sendStitching = function () {
-                // ToDo: HAN
-                var contentList = ContentService.getContentList();
+
                 var timelineList = TimelineService.getTimelineList();
-                console.log('send stitching');
-                console.log('contentList:', contentList);
-                console.log('timelineList:', timelineList);
+                if (timelineList['video'].length > 0) {
+                    if (!AWSService.isInProcess) {
+
+                        // reset all mpd urls
+                        var contentList = ContentService.getContentList();
+                        for (var i = 0; i < timelineList['video'].length - 1; i++) {
+                            contentList[timelineList['video'][i].objectListId].setMpd("");
+                        }
+
+                        console.log('send stitching');
+                        AWSService.requestSegmentation(0);
+                    }
+                }
             };
+
+            this.receive = function () {
+                AWSService.receive10();
+            };
+
         }
     ]);

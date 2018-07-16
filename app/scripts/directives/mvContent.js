@@ -68,6 +68,15 @@ angular.module('moveditorApp')
                     contentCtrl.sendStitching();
                 };
 
+                $scope.receive = function () {
+                    contentCtrl.receive();
+                };
+
+                $scope.openInNewTab = function (url) {
+                    var win = window.open(url, '_blank');
+                    win.focus();
+                }
+
                 $scope.contentTap = function () {
                     console.log('contentList', $scope.contentList);
                 };

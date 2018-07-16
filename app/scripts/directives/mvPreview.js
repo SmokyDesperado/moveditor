@@ -78,33 +78,39 @@ angular.module('moveditorApp')
                     document.onkeydown = function (e) {
                         // console.log("KEY DOWN: ", e.which);
                         switch (e.which) {
-                            case 37: // arrow left
+                            case 109: // num -
+                            case 189: // -
                                 if (!e.ctrlKey) {
                                     if (e.shiftKey) {
                                         mvPreviewService.jumpToPosition(mvPreviewService.currentPlayTime - 100);
                                     } else {
-                                        mvPreviewService.jumpToPosition(mvPreviewService.currentPlayTime - 500);
+                                        mvPreviewService.jumpToPosition(mvPreviewService.currentPlayTime - 1000);
                                     }
                                 }
                                 break;
-                            case 39: // arrow right
+                            case 107: // num +
+                            case 187: // +
                                 if (!e.ctrlKey) {
                                     if (e.shiftKey) {
                                         mvPreviewService.jumpToPosition(mvPreviewService.currentPlayTime + 100);
                                     } else {
-                                        mvPreviewService.jumpToPosition(mvPreviewService.currentPlayTime + 500);
+                                        mvPreviewService.jumpToPosition(mvPreviewService.currentPlayTime + 1000);
                                     }
                                 }
                                 break;
                             case 40: // arrow down
-                                $scope.vol = Math.max(0, $scope.vol - 0.05);
-                                mvPreviewService.setVolume($scope.vol);
-                                $scope.$apply();
+                                if (!e.altKey) {
+                                    $scope.vol = Math.max(0, $scope.vol - 0.05);
+                                    mvPreviewService.setVolume($scope.vol);
+                                    $scope.$apply();
+                                }
                                 break;
                             case 38: // arrow up
-                                $scope.vol = Math.min($scope.vol + 0.05, 1);
-                                mvPreviewService.setVolume($scope.vol);
-                                $scope.$apply();
+                                if (!e.altKey) {
+                                    $scope.vol = Math.min($scope.vol + 0.05, 1);
+                                    mvPreviewService.setVolume($scope.vol);
+                                    $scope.$apply();
+                                }
                                 break;
                             default:
                                 break;

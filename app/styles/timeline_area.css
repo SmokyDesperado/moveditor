@@ -188,8 +188,23 @@
     border: none;
 }
 
-.chunk-meta__chunk-values {
+.chunk-meta__table {
+    color: #ffffff;
     border-spacing: 0;
+}
+
+th.chunk-meta__chunk-values, th.chunk-meta__material-values{
+    width: 200px;
+}
+
+.chunk-meta__chunk-values, .chunk-meta__material-values {
+    width: 250px;
+}
+
+.chunk-meta__material-values--name input,
+.chunk-meta__chunk-values--name input,
+.chunk-meta__material-values--url input {
+    color: #000000;
 }
 
 .chunk-meta__chunk-values th{
@@ -198,36 +213,4 @@
 
 .chunk-meta__chunk-values td{
     width: 180px;
-}
-
-.chunk-meta__chunk-values--start {
-
-}
-
-.chunk-meta__chunk-values--end {
-
-}
-
-.chunk-meta__chunk-values--length {
-
-}
-
-.chunk-meta__material-values {
-
-}
-
-.chunk-meta__material-values--start {
-
-}
-
-.chunk-meta__material-values--end {
-
-}
-
-.chunk-meta__mute {
-
-}
-
-.chunk-meta__chunk-values--name {
-
 }

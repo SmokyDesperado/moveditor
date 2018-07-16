@@ -62,3 +62,113 @@
     color: #ffffff;
 }
 
+.preview-player__loop {
+    color: #555555;
+}
+
+.preview-player__loop--active {
+    color: #ffffff;
+}
+
+#loop_button {
+    visibility: hidden;
+}
+
+
+input[type=range]#position_slider {
+    -webkit-appearance: none;
+    margin: 18px 0;
+    width: 100%;
+}
+
+input[type=range]#position_slider:focus {
+    outline: none;
+}
+
+/* range slider track */
+
+input[type=range]#position_slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071a9;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+}
+
+input[type=range]#position_slider::-webkit-slider-thumb{
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -14px;
+}
+
+input[type=range]#position_slider:focus::-webkit-slider-runnable-track {
+    background: #367ebd;
+}
+
+input[type=range]#position_slider::-moz-range-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071a9;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+}
+
+/* range slider thumb */
+
+input[type=range]#position_slider::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+input[type=range]#position_slider::-ms-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    border-width: 16px 0;
+    color: transparent;
+}
+
+input[type=range]#position_slider::-ms-fill-lower {
+    background: #2a6495;
+    border: 0.2px solid #010101;
+    border-radius: 2.6px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]#position_slider::-ms-fill-upper {
+    background: #3071a9;
+    border: 0.2px solid #010101;
+    border-radius: 2.6px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]#position_slider::-ms-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 1px solid #000000;
+    height: 36px;
+    width: 16px;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+}
+

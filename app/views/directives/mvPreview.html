@@ -13,19 +13,22 @@
 	                	<div id="time_display"></div>
 	                </td>
 	                <td>
-	                    <input id="goToStart_button" type="button" value="<<" data-ng-click="goToStart()" onfocus="this.blur();"/>
+	                    <input id="goToStart_button" class="mv__button" type="button" value="<<" data-ng-click="goToStart()" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                    <input id="play_button" type="button" value="play" data-ng-click="play()" onfocus="this.blur();"/>
+	                    <input id="play_button" class="mv__button" type="button" value="play" data-ng-click="play()" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                    <input id="pause_button" type="button" value="pause" data-ng-click="pause()" onfocus="this.blur();"/>
+	                    <input id="pause_button" class="mv__button" type="button" value="pause" data-ng-click="pause()" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                	<input id="volume_slider" type="range" value="1" max="1" step="0.01" ng-model="vol" ng-change="setVolume(vol)" onfocus="this.blur();"/>
+	                	<input id="volume_slider" class="mv__button" type="range" value="1" max="1" step="0.01" ng-model="vol" ng-change="setVolume(vol)" onfocus="this.blur();"/>
 	                </td>
 	                <td>
-	                	<input id="loop_button" type="checkbox" ng-model="loop" data-ng-click="setLoop()" onfocus="this.blur();"/>
+						<label class="preview-player__loop" data-ng-class="{'preview-player__loop--active': loop}">Loop:
+							<span data-ng-if="loop">ON</span>
+							<span data-ng-if="!loop">OFF</span>
+							<input id="loop_button" type="checkbox" name="loop" ng-model="loop" data-ng-click="setLoop()" onfocus="this.blur();"/></label>
 	                </td>
 	            </tr>
 	        </tbody>

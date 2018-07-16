@@ -60,8 +60,10 @@
     display: inline-block;
     pointer-events: none;
     position: relative;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
 
-    background: red;
+    background: #55bbff;
     color: white;
 }
 
@@ -72,19 +74,17 @@
     top: 0;
 
     z-index: 100;
-    background: orange;
+    background: #ffff00;
 }
 
 .timeline-object__chunk-manipulator--start {
     left: -10px;
     border-right: solid 5px black;
-    opacity: 0.5;
 }
 
 .timeline-object__chunk-manipulator--end {
     right: -10px;
     border-left: solid 5px black;
-    opacity: 0.5;
 }
 
 .timeline-object__chunk-manipulator--start:hover {
@@ -156,8 +156,9 @@
 }
 
 .timeline-chunk--focus {
-    background: blue;
-    /*border: 2px solid blue;*/
+    outline: 10px solid;
+    outline-color: rgba(128, 255, 255, 0.75);
+
 }
 
 .timeline-chunk--mute {

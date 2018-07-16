@@ -47,7 +47,7 @@ angular.module('moveditorApp')
                             msg = { jobID: segmentationId, S3URL: chunkUrl, encodingprofile: "default", requestEnqueueTime: +new Date() };
                             break;
                         case 'image':
-                            msg = { jobID: segmentationId, S3URL: chunkUrl, loop: 5, encodingprofile: "default", requestEnqueueTime: +new Date() };
+                            msg = { jobID: segmentationId, S3URL: chunkUrl, loop: chunkLength, encodingprofile: "default", requestEnqueueTime: +new Date() };
                             break;
                         case 'audio':
                             msg = { jobID: segmentationId, S3URL: chunkUrl, onlyaudio: "true", encodingprofile: "default", requestEnqueueTime: +new Date() };
@@ -161,7 +161,7 @@ angular.module('moveditorApp')
                 });
 
                 if (angular.isDefined(progress)) {
-                    console.log("ID: " + jobID + ", progress: " + progress);
+                    console.log("received data for jobID: " + jobID + ", progress: " + progress);
                 } else {
                     console.log("finish");
                     self.finishedSegmentation();

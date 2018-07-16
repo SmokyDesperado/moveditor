@@ -12,7 +12,8 @@ angular.module('moveditorApp')
         'ContentService',
         'TimelineService',
         'MvHelperService',
-        function (ContentService, TimelineService, MvHelperService) {
+        'AWSService',
+        function (ContentService, TimelineService, MvHelperService, AWSService) {
 
             var self = this;
 
@@ -103,12 +104,17 @@ angular.module('moveditorApp')
             // ============================================================================
 
             this.sendStitching = function () {
-                // ToDo: HAN
+
+                console.log('send stitching');
+
                 var contentList = ContentService.getContentList();
                 var timelineList = TimelineService.getTimelineList();
-                console.log('send stitching');
-                console.log('contentList:', contentList);
-                console.log('timelineList:', timelineList);
+
+                for(var i = 0; i < timelineList.length; i++) {
+                    AWSService.requestSegmentation(timelineList[i]);
+                }
+
+                // AWSService.receiveSqs();
             };
 
             this.init();

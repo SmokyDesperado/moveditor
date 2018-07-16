@@ -17,6 +17,7 @@ angular.module('moveditorApp')
                 this.type = type;
                 this.length = length;
                 this.url = url;
+                this.mpd = "";
                 this.active = 0;
 
             }
@@ -41,6 +42,10 @@ angular.module('moveditorApp')
                 return this.url;
             };
 
+            Content.prototype.getMpd = function () {
+                return this.mpd;
+            };
+
             Content.prototype.getActive = function () {
                 return this.active;
             };
@@ -63,6 +68,10 @@ angular.module('moveditorApp')
 
             Content.prototype.setUrl = function (url) {
                 this.url = url;
+            };
+
+            Content.prototype.setMpd = function (url) {
+                this.mpd = mpd;
             };
 
             Content.prototype.setActive = function (active) {

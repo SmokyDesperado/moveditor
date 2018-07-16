@@ -71,5 +71,6 @@ angular.module('moveditorApp')
             this.receive = function () {
                 AWSService.receive10();
             };
+            
         }
     ]);

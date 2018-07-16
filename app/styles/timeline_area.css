@@ -204,7 +204,9 @@ th.chunk-meta__chunk-values, th.chunk-meta__material-values{
 .chunk-meta__material-values--name input,
 .chunk-meta__chunk-values--name input,
 .chunk-meta__material-values--url input {
+    padding: 5px;
     color: #000000;
+    border-radius: 5px;
 }
 
 .chunk-meta__chunk-values th{

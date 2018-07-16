@@ -76,12 +76,12 @@ content-area__menu--left {
 
 .mv-material__content--video {
     width: 192px;
-    height: 108px;
+    height: 138px;
     margin: 20px;
 
     position: relative;
 
-    background: black;
+    background: #555555;
 
     text-align: center;
     color: white;
@@ -90,10 +90,34 @@ content-area__menu--left {
 .material_type_indicator {
     width: 40px;
     height: 40px;
+    pointer-events: none;
+
+    position: absolute;
+    left: calc(50% - 20px);
+    top: calc(50% - 50px);
 }
 
-.mv-material__content--video input {
-    color: black;
+.material_type_indicator--input {
+    width: calc(100% - 10px);
+    margin: 5px;
+    padding: 5px;
+    color: #000000;
+    border-radius: 5px;
+
+    position: absolute;
+    left: 0;
+    bottom: 30px;
+}
+
+.mv-material__meta-wrapper {
+    width: 100%;
+    height: 30px;
+    padding: 5px;
+    position: absolute;
+    bottom: 0;
+
+    display: flex;
+    justify-content: space-between;
 }
 
 .mv-material__attributes {

@@ -54,23 +54,17 @@ angular.module('moveditorApp')
 
             this.sendStitching = function () {
 
-                console.log('send stitching');
-
-                var contentList = ContentService.getContentList();
-                var timelineList = TimelineService.getTimelineList();
-
-                // for(var i = 0; i < timelineList['video'].length; i++) {
-                //     AWSService.requestSegmentation(timelineList['video'][i]);
-                // }
-
-                AWSService.requestSegmentation(0);
-
-                // AWSService.receiveSqs();
+                if (TimelineService.getTimelineList()['video'].length > 0) {
+                    if (!AWSService.isInProcess) {
+                        console.log('send stitching');
+                        AWSService.requestSegmentation(0);
+                    }
+                }
             };
 
             this.receive = function () {
                 AWSService.receive10();
             };
-            
+
         }
     ]);

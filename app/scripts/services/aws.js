@@ -21,6 +21,7 @@ angular.module('moveditorApp')
             this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
 
             this.index = 0;
+            this.isInProcess = false;
 
             this.init = function () {
                 this.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
@@ -30,6 +31,7 @@ angular.module('moveditorApp')
             this.requestSegmentation = function (index) {
 
                 self.index = index;
+                this.isInProcess = true;
                 var chunk = TimelineService.timelineList['video'][index];
                 var contentList = ContentService.getContentList();
                 
@@ -81,6 +83,7 @@ angular.module('moveditorApp')
 
                 }
 
+                var configStitching = null;
                 var msg = { config: configStitching, requestEnqueueTime: + new Date() };
                 // this.sendSegmentation(msg);
             };
@@ -140,7 +143,7 @@ angular.module('moveditorApp')
 
             this.saveMpdUrlToContent = function (mpdUrl) {
                 console.log("save mpd: ", mpdUrl);
-                var chunk = TimelineService.timelineList['video'][index];
+                var chunk = TimelineService.timelineList['video'][self.index];
                 var contentList = ContentService.getContentList();
                 contentList[chunk.objectListId].setMpd(mpdUrl);
             };
@@ -161,6 +164,7 @@ angular.module('moveditorApp')
 
                     if (TimelineService.timelineList['video'].length - 1 === self.index) {
                         self.requestStitching(TimelineService.timelineList['video']);
+                        this.isInProcess = false; // TODO: should later be moved to receiveStitching when everything is realy finished
                     } else {
                         var indexNext = self.index + 1;
                         self.requestSegmentation(indexNext);

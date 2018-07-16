@@ -72,6 +72,13 @@ angular.module('moveditorApp')
                     contentCtrl.receive();
                 };
 
+                $scope.purge = function () {
+                    console.log('purge queues and restart server');
+                    var purgeSend = null;
+                    var purgeReceive = null;
+                    var restartServer = null;
+                };
+
                 $scope.contentTap = function () {
                     console.log('contentList', $scope.contentList);
                 };

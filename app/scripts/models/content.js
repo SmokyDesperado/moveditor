@@ -70,7 +70,7 @@ angular.module('moveditorApp')
                 this.url = url;
             };
 
-            Content.prototype.setMpd = function (url) {
+            Content.prototype.setMpd = function (mpd) {
                 this.mpd = mpd;
             };
 

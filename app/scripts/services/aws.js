@@ -59,8 +59,7 @@ angular.module('moveditorApp')
                     this.sendSegmentation(msg);
                     this.receiveSegmentation(segmentationId);
                 } else {
-                    var indexNext = self.index + 1;
-                    self.requestSegmentation(indexNext);
+                    self.finishedSegmentation();
                 }
             };
 
@@ -78,8 +77,12 @@ angular.module('moveditorApp')
                 //         "hide": false,
                 //         "url": "http://dash.fokus.fraunhofe.com/jhk/Manifest.mpd"
                 //       },
-                for (var i = 0; i < TimelineService.timelineList['video'].length; i++) {
+                var contentList = ContentService.getContentList();
+                var timelineList = TimelineService.getTimelineList();
+                for (var i = 0; i < timelineList['video'].length; i++) {
                     //ToDo Han
+                    var chunk = TimelineService.timelineList['video'][i];
+                    var chunkMpd = contentList[chunk.objectListId].mpd;
 
                 }
 
@@ -161,16 +164,19 @@ angular.module('moveditorApp')
                     console.log("ID: " + jobID + ", progress: " + progress);
                 } else {
                     console.log("finish");
-
-                    if (TimelineService.timelineList['video'].length - 1 === self.index) {
-                        self.requestStitching(TimelineService.timelineList['video']);
-                        this.isInProcess = false; // TODO: should later be moved to receiveStitching when everything is realy finished
-                    } else {
-                        var indexNext = self.index + 1;
-                        self.requestSegmentation(indexNext);
-                    }
+                    self.finishedSegmentation();
                 }
             };
+
+            this.finishedSegmentation = function () {
+                if (TimelineService.timelineList['video'].length - 1 === self.index) {
+                    self.requestStitching(TimelineService.timelineList['video']);
+                    this.isInProcess = false; // TODO: should later be moved to receiveStitching when everything is realy finished
+                } else {
+                    var indexNext = self.index + 1;
+                    self.requestSegmentation(indexNext);
+                }
+            }
 
             this.receive10 = function () {
                 console.log("receive 10");

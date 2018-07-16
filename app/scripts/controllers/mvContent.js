@@ -54,8 +54,16 @@ angular.module('moveditorApp')
 
             this.sendStitching = function () {
 
-                if (TimelineService.getTimelineList()['video'].length > 0) {
+                var timelineList = TimelineService.getTimelineList();
+                if (timelineList['video'].length > 0) {
                     if (!AWSService.isInProcess) {
+
+                        // reset all mpd urls
+                        var contentList = ContentService.getContentList();
+                        for (var i = 0; i < timelineList['video'].length - 1; i++) {
+                            contentList[timelineList['video'][i].objectListId].setMpd("");
+                        }
+
                         console.log('send stitching');
                         AWSService.requestSegmentation(0);
                     }

@@ -64,8 +64,7 @@ angular.module('moveditorApp')
             };
 
             this.requestStitching = function (timelineList) {
-                var configIni = {"LOG_LEVEL":"info", "server":{"url":"http://localhost:9000","staticFolder":"adstitcher-srv/public/mpds","dashEndpoint":"/Users/fr/Documents/adstitcher-srv/public/mpds/"}};
-                var content = {"content":[]};
+                var configIni = {"LOG_LEVEL":"info", "server":{"url":"http://localhost:9000","staticFolder":"adstitcher-srv/public/mpds","dashEndpoint":"/Users/fr/Documents/adstitcher-srv/public/mpds/"}, "content":[]};
 
                 // add each item in timeline into stitching config;
                 //        {
@@ -77,18 +76,42 @@ angular.module('moveditorApp')
                 //         "hide": false,
                 //         "url": "http://dash.fokus.fraunhofe.com/jhk/Manifest.mpd"
                 //       },
+
                 var contentList = ContentService.getContentList();
                 var timelineList = TimelineService.getTimelineList();
+
                 for (var i = 0; i < timelineList['video'].length; i++) {
-                    //ToDo Han
                     var chunk = TimelineService.timelineList['video'][i];
                     var chunkMpd = contentList[chunk.objectListId].mpd;
+                    var chunkType = contentList[chunk.objectListId].type;
+                    var chunkBegin = chunk.start;
+                    var chunkEnd = 0;
+                    var chunkOffset = 0;
+                    var chunkMute = chunk.mute;
+                    var chunkHide = false;
 
-                }
+                    switch (chunkType) {
+                        case 'video':
+                            var mediaContent = {"type": "video", "begin": chunkBegin, "end": chunkEnd, "offset": chunkOffset, "mute": chunkMute, "hide": chunkHide, "url": chunkMpd};
+                            break;
+                        case 'image':
+                            var mediaContent = {"type": "image", "begin": chunkBegin, "end": chunkEnd, "offset": chunkOffset, "mute": chunkMute, "hide": chunkHide, "url": chunkMpd};
+                            break;
+                        default:
+                            break;
+                    };
 
-                var configStitching = null;
+                    console.log(mediaContent);
+                    console.log(JSON.parse(configIni.content), JSON.parse(configIni.content).type);
+                    configIni = JSON.parse(configIni.content).add(mediaContent);  //here is the error
+                    console.log("stitching content: ", configIni);
+                };
+
+                var configStitching = configIni;
                 var msg = { config: configStitching, requestEnqueueTime: + new Date() };
-                // this.sendSegmentation(msg);
+
+                this.sendStitchingConfig(msg);
+                this.receiveStitchingConfig(segmentationId);
             };
 
             this.sendSegmentation = function (msg){
@@ -193,6 +216,58 @@ angular.module('moveditorApp')
                 this.sqs.receiveMessage(sqsParams, function(err, data) {
                     if (data.Messages) {
                         console.log("data: ", data);
+                    }
+                });
+            };
+
+            this.sendStitchingConfig = function (msg) {
+                var sqsParams = {
+                    MessageBody: JSON.stringify(msg),
+                    QueueUrl: this.sendQueueURL,
+                    MessageGroupId: 'we3'
+                };
+                this.sqs.sendMessage(sqsParams, function(err, data) {
+                    if (err) {
+                        console.log('ERR', err);
+                    }
+                    console.log("send stitching config complete: ", data);
+                    console.log("--------------------------------------------------------------");
+                });
+            };
+
+            this.receiveStitchingConfig= function (segmentationID) {
+                var sqsParams = {
+                    QueueUrl: this.receiveQueueURL,
+                    // MessageGroupId: 'wesealize2',
+                    MaxNumberOfMessages: 1,
+
+                    // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
+                    // WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
+                };
+
+                this.sqs.receiveMessage(sqsParams, function(err, data) {
+
+                    if (data.Messages) {
+
+                         console.log("stitching result data: ", data);
+                        if (data.Messages.length > 0) {
+                            var message = data.Messages[0];
+
+                            var body = JSON.parse(message.Body);
+                            if (angular.isDefined(body.resultS3URL) && body.jobID === segmentationID) {
+                                self.saveMpdUrlToContent(body.resultS3URL);  // whatever you wanna do
+                                clearTimeout(self.receiveTimeOut);
+                            } else {
+                                self.receiveTimeOut = setTimeout(self.receiveSegmentation(segmentationID), 3000);
+                            }
+
+                            // Clean up after yourself... delete this message from the queue, so it's not executed again
+                            if (body.jobID === segmentationID) {
+                                self.removeFromQueue(message, body.jobID, body.progress, self.index);
+                            }
+                        } else {
+                            self.receiveTimeOut = setTimeout(self.receiveSegmentation(segmentationID), 3000);
+                        }
                     }
                 });
             };

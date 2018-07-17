@@ -136,8 +136,9 @@ content-area__menu--left {
     left: 0;
 }
 
-.content-area__menu-button {
-    height: 100%;
+#progress_bar {
+    width: 100px;
+    height: 20px;
 }
 
 .content-trash {

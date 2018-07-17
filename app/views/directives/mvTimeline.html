@@ -1,15 +1,43 @@
 <div class="timeline-area__wrapper">
     <div class="timeline-menu__wrapper">
-        <button class="timeline-menu__element mv__button" data-ng-click="swapWithPreviousObject()"><-- swap </button>
-        <button class="timeline-menu__element mv__button" data-ng-click="swapWithNextObject()">swap --> </button>
-        <button class="timeline-menu__element mv__button" data-ng-click="muteChunk(key)">mute</button>
-        <button class="timeline-menu__element mv__button" data-ng-click="deleteChunk(key)">delete</button>
-        <button class="timeline-menu__element mv__button" data-ng-class="{'timeline-menu__element--cut': isCutActive}" data-ng-click="activateCuttingMode()">cut</button>
-        <button class="timeline-menu__element mv__button" data-ng-click="zoomOut()">zoom out</button>
-        <button class="timeline-menu__element mv__button" data-ng-click="zoomReset()">zoom reset</button>
-        <button class="timeline-menu__element mv__button" data-ng-click="zoomIn()">zoom in</button>
-        <button class="timeline-menu__element mv__button" data-ng-click="undo()">undo</button>
-        <button class="timeline-menu__element mv__button" data-ng-click="redo()">redo</button>
+        <div class="timeline-menu timeline-menu--buttons">
+            <button class="menu-buttons mv__button" data-ng-click="swapWithPreviousObject()"><-- swap </button>
+            <button class="menu-buttons mv__button" data-ng-click="swapWithNextObject()">swap --> </button>
+            <button class="menu-buttons mv__button" data-ng-click="muteChunk(key)">mute</button>
+            <button class="menu-buttons mv__button" data-ng-click="deleteChunk(key)">delete</button>
+            <button class="menu-buttons mv__button" data-ng-class="{'menu-buttons--cut': isCutActive}" data-ng-click="activateCuttingMode()">cut</button>
+            <button class="menu-buttons mv__button" data-ng-click="zoomOut()">zoom out</button>
+            <button class="menu-buttons mv__button" data-ng-click="zoomReset()">zoom reset</button>
+            <button class="menu-buttons mv__button" data-ng-click="zoomIn()">zoom in</button>
+            <button class="menu-buttons mv__button" data-ng-click="undo()">undo</button>
+            <button class="menu-buttons mv__button" data-ng-click="redo()">redo</button>
+        </div>
+
+        <div class="timeline-menu timeline-menu--meta">
+            <div class="chunk-meta__wrapper" data-ng-if="TimelineCtrl.focus.key !== null">
+                <table class="chunk-meta__table">
+                    <tr>
+                        <th class="chunk-meta__chunk-values">chunk values</th>
+                        <td class="chunk-meta__chunk-values chunk-meta__chunk-values--name">name: <br/><input class="chunk-meta__name-input" ng-model="timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].name"/></td>
+                        <td class="chunk-meta__chunk-values chunk-meta__chunk-values--start">start: <br/>{{ timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].start | number: 2 }} s</td>
+                        <td class="chunk-meta__chunk-values chunk-meta__chunk-values--end">end: <br/>{{ timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].end | number: 2 }} s</td>
+                        <td class="chunk-meta__chunk-values chunk-meta__chunk-values--length">chunk length: <br/>{{ timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].end -  timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].start | number: 2 }} s</td>
+                        <td class="chunk-meta__chunk-values chunk-meta__chunk-values--offset"><span data-ng-if="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type != 'image'">offset: <br/>{{ timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].offset | number: 2 }} s</span></td>
+                        <td class="chunk-meta__chunk-values chunk-meta__chunk-values--mute"><span data-ng-if="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type != 'image'">mute: <br/>{{ timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute }}</span></td>
+                    </tr>
+                    <tr>
+                        <th class="chunk-meta__material-values">material values</th>
+                        <td class="chunk-meta__material-values chunk-meta__material-values--name">name: <br/><input class="chunk-meta__name-input" ng-model="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].name" readonly=""/></td>
+                        <td class="chunk-meta__material-values chunk-meta__material-values--url">url: <br/><input type="text" value="{{ contentService.contentList[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].url }}" readonly=""></td>
+                        <td class="chunk-meta__material-values chunk-meta__material-values--type">type: <br/>{{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type }}</td>
+                        <td class="chunk-meta__material-values chunk-meta__material-values--length"><span data-ng-if="contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type != 'image'">original length: <br/>{{ contentService.getContentList()[timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].length | number: 2 }} s</span></td>
+                    </tr>
+                    <tr>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
     </div>
     <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
@@ -90,51 +118,5 @@
             </div>
         </div>
 
-    </div>
-
-    <div class="chunk-meta__wrapper" data-ng-if="TimelineCtrl.focus.key !== null && TimelineCtrl.focus.type === 'video'">
-        <table class="chunk-meta__table">
-            <tr>
-                <th class="chunk-meta__chunk-values">chunk values</th>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--name">name: <input class="chunk-meta__name-input" ng-model="timelineService.timelineList.video[TimelineCtrl.focus.key].name"/></td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--start">start: {{ timelineService.timelineList.video[TimelineCtrl.focus.key].start | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--end">end: {{ timelineService.timelineList.video[TimelineCtrl.focus.key].end | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--length">chunk length: {{ timelineService.timelineList.video[TimelineCtrl.focus.key].end -  timelineService.timelineList.video[TimelineCtrl.focus.key].start | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--offset"><span data-ng-if="contentService.getContentList()[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].type != 'image'">offset: {{ timelineService.timelineList.video[TimelineCtrl.focus.key].offset | number: 2 }} s</span></td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--mute"><span data-ng-if="contentService.getContentList()[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].type != 'image'">mute: {{ timelineService.timelineList.video[TimelineCtrl.focus.key].mute }}</span></td>
-            </tr>
-            <tr>
-                <th class="chunk-meta__material-values">material values</th>
-                <td class="chunk-meta__material-values chunk-meta__material-values--name">name: <input class="chunk-meta__name-input" ng-model="contentService.getContentList()[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].name" readonly=""/></td>
-                <td class="chunk-meta__material-values chunk-meta__material-values--url">url: <input type="text" value="{{ contentService.contentList[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].url }}" readonly=""></td>
-                <td class="chunk-meta__material-values chunk-meta__material-values--type">type: {{ contentService.getContentList()[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].type }}</td>
-                <td class="chunk-meta__material-values chunk-meta__material-values--length"><span data-ng-if="contentService.getContentList()[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].type != 'image'">original length: {{ contentService.getContentList()[timelineService.timelineList.video[TimelineCtrl.focus.key].objectListId].length | number: 2 }} s</span></td>
-            </tr>
-            <tr>
-            </tr>
-        </table>
-    </div>
-
-    <div class="chunk-meta__wrapper" data-ng-if="TimelineCtrl.focus.key !== null && TimelineCtrl.focus.type === 'audio'">
-        <table class="chunk-meta__table">
-            <tr>
-                <th class="chunk-meta__chunk-values">chunk values</th>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--name">name: <input class="chunk-meta__name-input" ng-model="timelineService.timelineList.audio[TimelineCtrl.focus.key].name"/></td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--start">start: {{ timelineService.timelineList.audio[TimelineCtrl.focus.key].start | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--end">end: {{ timelineService.timelineList.audio[TimelineCtrl.focus.key].end | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--length">chunk length: {{ timelineService.timelineList.audio[TimelineCtrl.focus.key].end -  timelineService.timelineList.audio[TimelineCtrl.focus.key].start | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--offset">offset: {{ timelineService.timelineList.audio[TimelineCtrl.focus.key].offset | number: 2 }} s</td>
-                <td class="chunk-meta__chunk-values chunk-meta__chunk-values--mute">mute: {{ timelineService.timelineList.audio[TimelineCtrl.focus.key].mute }}</td>
-            </tr>
-            <tr>
-                <th class="chunk-meta__material-values">material values</th>
-                <td class="chunk-meta__material-values chunk-meta__material-values--name">name: <input class="chunk-meta__name-input" ng-model="contentService.getContentList()[timelineService.timelineList.audio[TimelineCtrl.focus.key].objectListId].name" readonly=""/></td>
-                <td class="chunk-meta__material-values chunk-meta__material-values--url">url: <input type="text" value="{{ contentService.contentList[timelineService.timelineList.audio[TimelineCtrl.focus.key].objectListId].url }}" readonly=""></td>
-                <td class="chunk-meta__material-values chunk-meta__material-values--type">type: {{ contentService.getContentList()[timelineService.timelineList.audio[TimelineCtrl.focus.key].objectListId].type }}</td>
-                <td class="chunk-meta__material-values chunk-meta__material-values--length">original length: {{ contentService.getContentList()[timelineService.timelineList.audio[TimelineCtrl.focus.key].objectListId].length | number: 2 }} s</td>
-            </tr>
-            <tr>
-            </tr>
-        </table>
     </div>
 </div>

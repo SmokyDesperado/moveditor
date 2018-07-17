@@ -1,19 +1,32 @@
 .timeline-area {
-    height: 50vh;
-    background: #222222;
+    position: absolute;
+    bottom: 0;
+}
+
+.timeline-area__wrapper {
+
 }
 
 #timelineDropArea {
     position: relative;
 }
 
-.timeline-menu__element {
+.timeline-menu__wrapper {
+    height: 252px;
+    background: #222222;
 
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
-.timeline-menu__wrapper {
-    padding: 10px;
-    background: #555555;
+.timeline-menu {
+    padding: 10px 20px;
+}
+
+.timeline-menu {
+    width: 50%;
+    display: inline-block;
 }
 
 .timeline-menu__element--cut {
@@ -196,10 +209,12 @@
 
 th.chunk-meta__chunk-values, th.chunk-meta__material-values{
     width: 200px;
+    height: 50px;
 }
 
 .chunk-meta__chunk-values, .chunk-meta__material-values {
     width: 250px;
+    height: 60px;
 }
 
 .chunk-meta__material-values--name input,

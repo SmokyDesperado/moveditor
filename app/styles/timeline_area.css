@@ -29,7 +29,7 @@
     display: inline-block;
 }
 
-.timeline-menu__element--cut {
+.menu-buttons--cut {
     background: red;
     color: white;
 }
@@ -63,7 +63,7 @@
 }
 
 .timeline-object__chunk--cut {
-    cursor: crosshair;
+    cursor: crosshair !important;
 }
 
 .timeline-object__chunk-content {

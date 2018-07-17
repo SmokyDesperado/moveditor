@@ -3,19 +3,19 @@
         <div class="content-area__menu-wrapper">
             <div class="content-area__menu--left">
                 <input id="url__input__field" class="content-area__menu__list__element" type="text" value="http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v" placeholder="enter URL...">
-                <button class="content-area__menu__list__element mv__button" data-ng-click="addContentMaterial()">add</button>
-                <button class="content-area__menu__list__element mv__button" data-ng-click="saveContentMaterial()">save</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="addContentMaterial()" onfocus="this.blur();">add</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="saveContentMaterial()" onfocus="this.blur();">save</button>
                 <div class="load-file__wrapper">
-                    <button class="content-area__menu__list__element mv__button" data-ng-click="loadContentMaterial()">load</button>
+                    <button class="content-area__menu__list__element mv__button" data-ng-click="loadContentMaterial()" onfocus="this.blur();">load</button>
                     <input name="loadfile" class="load-file__input" type="file" on-read-file/>
                 </div>
             </div>
             <div class="content-area__menu--right">
-                <button class="content-area__menu__list__element mv__button" data-ng-click="sendStitching()">send</button>
-                <button class="content-area__menu__list__element mv__button" data-ng-click="receive()">receive</button>
-                <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo?Action=PurgeQueue')">purge request</button>
-                <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo?Action=PurgeQueue')">purge result</button>
-                <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('http://ec2-18-195-215-80.eu-central-1.compute.amazonaws.com:8888/')">restart server</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="sendStitching()" onfocus="this.blur();">send</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="receive()" onfocus="this.blur();">receive</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo?Action=PurgeQueue')" onfocus="this.blur();">purge request</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo?Action=PurgeQueue')" onfocus="this.blur();">purge result</button>
+                <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('http://ec2-18-195-215-80.eu-central-1.compute.amazonaws.com:8888/')" onfocus="this.blur();">restart server</button>
                 <div id="progress_bar"></div>
             </div>
         </div>

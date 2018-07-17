@@ -2,13 +2,15 @@
     <div class="mv-material__content mv-material__content--video" hm-tap="hammerTap($event)"
          hm-doubletap="panDoubletap($event)" hm-panmove="hammerPanMove($event)" hm-panstart="panStart($event)"
          hm-panend="panEnd($event)">
-        <img class="material_type_indicator" ng-if="materialObject.type == 'video'" src="https://image.flaticon.com/icons/svg/148/148709.svg">
-        <img class="material_type_indicator" ng-if="materialObject.type == 'audio'" src="https://image.flaticon.com/icons/svg/148/148754.svg">
-        <img class="material_type_indicator" ng-if="materialObject.type == 'image'" src="https://image.flaticon.com/icons/svg/148/148711.svg">
-        <input class="material_type_indicator--input" ng-model="materialObject.name">
+        <span class="mv-material__meta mv-material__meta--active">*{{ materialObject.active }}</span>
         <div class="mv-material__meta-wrapper">
-            <span class="mv-material__meta mv-material__meta--length"><span data-ng-if="materialObject.type != 'image'">length: {{ materialObject.length | number: 2 }}</span></span>
-            <span class="mv-material__meta mv-material__meta--active">active: {{ materialObject.active }}</span>
+            <span class="mv-material__meta"><span class="mv-material__meta--length" data-ng-if="materialObject.type != 'image'">{{ materialObject.length | number: 2 }}</span></span>
+            <span class="mv-material__meta mv-material__meta--type">
+                <img class="material_type_indicator" ng-if="materialObject.type == 'video'" src="./images/video_icon.png">
+                <img class="material_type_indicator" ng-if="materialObject.type == 'audio'" src="./images/audio_icon.png">
+                <img class="material_type_indicator" ng-if="materialObject.type == 'image'" src="./images/image_icon.png">
+            </span>
         </div>
+        <input class="material_type_indicator--input" ng-model="materialObject.name">
     </div>
 </div>

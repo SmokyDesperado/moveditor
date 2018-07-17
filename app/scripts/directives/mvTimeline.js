@@ -39,6 +39,11 @@ angular.module('moveditorApp')
                 $scope.timelineService.rangePointerA = $element.find('#range_pointer_a');
                 $scope.timelineService.rangePointerB = $element.find('#range_pointer_b');
 
+                this.currentPosDisplay = $('.chunk-meta__name-input');
+                this.currentPosDisplay.on("keypress keydown keyup", function(e) {
+                    e.stopPropagation();
+                });
+
                 $scope.click = function (param) {
                     console.log('clicked with param:', param);
                 };

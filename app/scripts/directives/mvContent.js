@@ -43,6 +43,11 @@ angular.module('moveditorApp')
                     "https://jpgames.de/wp-content/uploads/2018/05/CI_NSwitch_HyruleWarriorsDefinitiveEdition_Link-Triforce_image950w.bmp-620x250.jpg?x37583"
                 ];
 
+                this.currentPosDisplay = $('#url__input__field');
+                this.currentPosDisplay.on("keypress keydown keyup", function(e) {
+                    e.stopPropagation();
+                });
+
                 $scope.addContentMaterial = function () {
                     var inputURLField = document.getElementById("url__input__field");
                     if(inputURLField.value != "") {
@@ -74,7 +79,7 @@ angular.module('moveditorApp')
 
                 $scope.openInNewTab = function (url) {
                     var win = window.open(url, '_blank');
-                    win.focus();
+                    // win.focus();
                 }
 
                 $scope.contentTap = function () {

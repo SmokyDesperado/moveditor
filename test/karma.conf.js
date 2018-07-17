@@ -36,6 +36,8 @@ module.exports = function (config) {
             'bower_components/aws-sdk/dist/aws-sdk.js',
             'bower_components/nouislider/distribute/nouislider.js',
             'bower_components/angularjs-nouislider/dist/angularjs-nouislider.js',
+            'bower_components/progressbar.js/dist/progressbar.js',
+            'bower_components/angular-progressbar/angular-progressbar.js',
             'bower_components/angular-mocks/angular-mocks.js',
             // endbower
             'app/scripts/**/*.js',

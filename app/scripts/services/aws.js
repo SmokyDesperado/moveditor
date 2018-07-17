@@ -22,6 +22,7 @@ angular.module('moveditorApp')
 
             this.index = 0;
             this.isInProcess = false;
+            this.progressBar = null;
 
             this.init = function () {
                 this.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
@@ -36,6 +37,28 @@ angular.module('moveditorApp')
                 var contentList = ContentService.getContentList();
                 
                 if (contentList[chunk.objectListId].mpd === "") {
+
+                    this.progressBar = document.getElementById('progress_bar');
+                    var svgElements = this.progressBar.getElementsByTagName("svg");
+                    while (svgElements[0]) {
+                        svgElements[0].parentNode.removeChild(svgElements[0]);
+                    }
+                    this.progressBar = new ProgressBar.Line('#progress_bar', {
+                        strokeWidth: 4,
+                        easing: 'easeInOut',
+                        duration: 1400,
+                        color: '#36b436',
+
+                        // See #custom-animations section
+                        // Built-in shape passes reference to itself and a custom attachment
+                        // object to step function
+                        from: { color: '#fffc4c' },
+                        to: { color: '#36b436' },
+                        step: function(state, line, attachment) {
+                            line.path.setAttribute('stroke', state.color);
+                        }
+                    });
+
                     var segmentationId = String(MvHelperService.generateRandomHash(6));
                     var chunkUrl = contentList[chunk.objectListId].url;
                     var chunkType = contentList[chunk.objectListId].type;
@@ -162,8 +185,10 @@ angular.module('moveditorApp')
 
                 if (angular.isDefined(progress)) {
                     console.log("received data for jobID: " + jobID + ", progress: " + progress);
+                    this.progressBar.animate(progress / 100);
                 } else {
                     console.log("finish");
+                    this.progressBar.animate(1.0);
                     self.finishedSegmentation();
                 }
             };

@@ -26,6 +26,11 @@ angular.module('moveditorApp')
 
                     this.dragIndicator = null;
 
+                    this.currentPosDisplay = $('.material_type_indicator--input');
+                    this.currentPosDisplay.on("keypress keydown keyup", function(e) {
+                        e.stopPropagation();
+                    });
+
                     // ##########################################################################################################
                     // Create thumbnail
                     // ##########################################################################################################

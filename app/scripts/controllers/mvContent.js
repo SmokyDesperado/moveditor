@@ -42,7 +42,7 @@ angular.module('moveditorApp')
                 // <a download="video_stitching_session.txt" href='data:application/octet-stream,...'></a>
                 tmpLink
                   .attr("download", "video_stitching_session.txt")
-                  .attr("href", "data:application/octet-stream," + JSONToSave)
+                  .attr("href", "data:application/octet-stream," + encodeURIComponent(JSONToSave))
                   .appendTo("body")
                   .get(0)
                   .click();

@@ -59,9 +59,8 @@ angular.module('moveditorApp')
                     if (!AWSService.isInProcess) {
 
                         // reset all mpd urls
-                        var contentList = ContentService.getContentList();
-                        for (var i = 0; i < timelineList['video'].length - 1; i++) {
-                            contentList[timelineList['video'][i].objectListId].setMpd("");
+                        for (var i = 0; i < timelineList['video'].length; i++) {
+                            ContentService.getContentList()[timelineList['video'][i].objectListId].mpd = "";
                         }
 
                         console.log('send stitching');

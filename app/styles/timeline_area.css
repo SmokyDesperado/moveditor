@@ -152,7 +152,7 @@
 
     border-right: 1px solid;
     border-left: 1px solid;
-    border-color: yellow;
+    border-color: #ff8800;
 }
 
 .range_pointer {
@@ -174,7 +174,7 @@
     background: transparent;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-top: 30px solid #ff0000;
+    border-top: 30px solid #ff8800;
 }
 
 .timeline-chunk--focus {

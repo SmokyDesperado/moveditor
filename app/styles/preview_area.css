@@ -57,7 +57,7 @@
     background: transparent;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-top: 10px solid #ff0000;
+    border-top: 10px solid #ff8800;
     box-shadow: none;
     border-bottom: none;
 }
@@ -129,7 +129,7 @@ input[type=range]#position_slider::-webkit-slider-runnable-track {
 input[type=range]#position_slider::-webkit-slider-thumb{
     height: 10px;
     width: 2px;
-    background: #ffffff;
+    background: #ff8800;
     cursor: pointer;
     -webkit-appearance: none;
     /*margin-top: -14px;*/
@@ -154,6 +154,6 @@ input[type=range]#position_slider::-moz-range-track {
 input[type=range]#position_slider::-moz-range-thumb {
     height: 10px;
     width: 16px;
-    background: #ffffff;
+    background: #ff8800;
     cursor: pointer;
 }

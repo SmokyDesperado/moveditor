@@ -192,7 +192,7 @@ angular.module('moveditorApp')
                 });
             };
 
-            this.receiveStitchingConfig= function (stitchingId) {
+            this.receiveStitchingConfig = function (stitchingId) {
                 var sqsParams = {
                     QueueUrl: self.receiveQueueURL,
                     // MessageGroupId: 'wesealize2',

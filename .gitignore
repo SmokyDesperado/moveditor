@@ -4,3 +4,8 @@
 /.sass-cache
 /bower_components
 /.idea
+
+*.pdf
+*.aux
+*.log
+*.gz

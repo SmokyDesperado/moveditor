@@ -42,7 +42,7 @@ angular.module('moveditorApp')
                 // <a download="video_stitching_session.txt" href='data:application/octet-stream,...'></a>
                 tmpLink
                   .attr("download", "video_stitching_session.txt")
-                  .attr("href", "data:application/octet-stream," + JSONToSave)
+                  .attr("href", "data:application/octet-stream," + encodeURIComponent(JSONToSave))
                   .appendTo("body")
                   .get(0)
                   .click();
@@ -59,9 +59,8 @@ angular.module('moveditorApp')
                     if (!AWSService.isInProcess) {
 
                         // reset all mpd urls
-                        var contentList = ContentService.getContentList();
-                        for (var i = 0; i < timelineList['video'].length - 1; i++) {
-                            contentList[timelineList['video'][i].objectListId].setMpd("");
+                        for (var i = 0; i < timelineList['video'].length; i++) {
+                            ContentService.getContentList()[timelineList['video'][i].objectListId].mpd = "";
                         }
 
                         console.log('send stitching');

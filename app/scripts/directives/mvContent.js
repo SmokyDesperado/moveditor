@@ -85,6 +85,12 @@ angular.module('moveditorApp')
                 $scope.contentTap = function () {
                     console.log('contentList', $scope.contentList);
                 };
+
+                $scope.progress = AWSService.progress;
+
+                $scope.makeProgress = function () {
+                    AWSService.makeProgress();
+                };
             }
         };
     }]);

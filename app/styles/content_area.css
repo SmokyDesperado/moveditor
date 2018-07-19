@@ -27,6 +27,15 @@ content-area__menu--left {
 
 }
 
+.content-area__menu__list__element--send-stitching {
+    width: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: transparent;
+}
+
 .content-area__menu__list__element#url__input__field {
     width: 200px;
     height: 100%;
@@ -35,7 +44,7 @@ content-area__menu--left {
 }
 
 .content-area__materials {
-    height: calc(100% - 40px);
+    height: calc(100% - 70px);
 }
 
 .content-area__materials__list {
@@ -198,4 +207,62 @@ input.load-file__input{
     height: 0;
     display: inline-block;
     visibility: hidden;
+}
+
+
+
+.stitching-progress {
+    width: 100px;
+    height: 30px;
+    display: inline-block;
+    position: relative;
+    vertical-align: bottom;
+    margin: 0 10px 0 0;
+}
+
+.stitching-progress__progress-indicator {
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    top: 0;
+    left: 0;
+}
+
+#progressBar {
+    width: 100px;
+    height: 30px;
+    vertical-align: bottom;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+progress {
+    border: 0;
+    background: #ffffff;
+    height: 30px;
+    border-radius: 3px;
+    vertical-align: bottom;
+}
+
+progress::-webkit-progress-bar {
+    border: 0;
+    background: #ffffff;
+    height: 30px;
+    border-radius: 3px;
+}
+
+progress::-webkit-progress-value {
+    border: 0;
+    background: #2dff6f;
+    height: 30px;
+    border-radius: 3px;
+}
+
+progress::-moz-progress-bar {
+    border: 0;
+    background: #ffffff;
+    height: 30px;
+    border-radius: 3px;
 }

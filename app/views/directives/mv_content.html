@@ -17,6 +17,11 @@
                 <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo?Action=PurgeQueue')" onfocus="this.blur();">purge result</button>
                 <button class="content-area__menu__list__element mv__button" data-ng-click="openInNewTab('http://ec2-18-195-215-80.eu-central-1.compute.amazonaws.com:8888/')" onfocus="this.blur();">restart server</button>
                 <div id="progress_bar"></div>
+
+                <div class="stitching-progress">
+                    <button class="content-area__menu__list__element content-area__menu__list__element--send-stitching mv__button" data-ng-click="sendStitching()" onfocus="this.blur();">send</button>
+                    <progress id="progressBar" class="stitching-progress__progress-bar" max="100" value="0"></progress>
+                </div>
             </div>
         </div>
     </div>

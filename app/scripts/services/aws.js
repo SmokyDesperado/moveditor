@@ -24,9 +24,27 @@ angular.module('moveditorApp')
             this.isInProcess = false;
             this.progressBar = null;
 
+            this.progress = {
+                progressBar: null,
+                done: 0,
+                total: 0
+            };
+
             this.init = function () {
                 this.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
                 console.log('init:', this.sqs);
+            };
+
+            this.makeProgress = function (progress) {
+                this.progress.progressBar = angular.element(document.getElementById('progressBar'));
+                this.progress.progressBar[0].value = progress;
+                if(progress > 100) {
+                    this.progress.progressBar[0].value = 100;
+                }
+
+                if(progress < 0) {
+                    this.progress.progressBar[0].value = 0;
+                }
             };
 
             this.requestSegmentation = function (index) {
@@ -186,9 +204,11 @@ angular.module('moveditorApp')
                 if (angular.isDefined(progress)) {
                     console.log("received data for jobID: " + jobID + ", progress: " + progress);
                     this.progressBar.animate(progress / 100);
+                    self.makeProgress(progress);
                 } else {
                     console.log("finish");
                     this.progressBar.animate(1.0);
+                    self.makeProgress(progress);
                     self.finishedSegmentation();
                 }
             };

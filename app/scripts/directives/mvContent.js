@@ -74,6 +74,10 @@ angular.module('moveditorApp')
                     contentCtrl.sendStitching();
                 };
 
+                $scope.abortStitching = function () {
+                    contentCtrl.abortStitching();
+                };
+
                 $scope.receive = function () {
                     contentCtrl.receive();
                 };

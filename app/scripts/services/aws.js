@@ -16,6 +16,7 @@ angular.module('moveditorApp')
             var self = this;
             this.sqs = null;
             this.receiveTimeOut = null;
+            this.waitForReceiveTime = 100;
 
             this.sendQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo";
             this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
@@ -121,13 +122,13 @@ angular.module('moveditorApp')
                                 } else if (angular.isDefined(body.progress)) {
                                     console.log("received data for jobID: " + body.jobID + ", progress: " + body.progress);
                                     self.makeProgress(body.progress);
-                                    self.receiveTimeOut = setTimeout(self.receiveSegmentation(segmentationID), 3000);
+                                    self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
                                 }
 
                                 self.removeFromQueue(message);
                             }
                         } else {
-                            self.receiveTimeOut = setTimeout(self.receiveSegmentation(segmentationID), 3000);
+                            self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
                         }
                     }
                 });
@@ -201,21 +202,18 @@ angular.module('moveditorApp')
 
                                 if (angular.isDefined(body.resultS3URL)) {
                                     console.log("received stitching response", body);
-                                    clearTimeout(self.receiveTimeOut);
-                                    self.makeProgress(0);
-                                    self.progress.progressButton[0].innerHTML = 'send';
-                                    self.isInProcess = false;
+                                    self.stopStitchingProcess();
 
                                 } else if (angular.isDefined(body.progress)) {
                                     console.log("received data for jobID: " + body.jobID + ", progress: " + body.progress);
                                     self.makeProgress(body.progress);
-                                    self.receiveTimeOut = setTimeout(self.receiveStitchingConfig(stitchingId), 3000);
+                                    self.receiveTimeOut = setTimeout(function () { self.receiveStitchingConfig(stitchingId); }, self.waitForReceiveTime);
                                 }
 
                                 self.removeFromQueue(message);
                             }
                         } else {
-                            self.receiveTimeOut = setTimeout(self.receiveStitchingConfig(stitchingId), 3000);
+                            self.receiveTimeOut = setTimeout(function () { self.receiveStitchingConfig(stitchingId); }, self.waitForReceiveTime);
                         }
                     }
                 });
@@ -252,6 +250,30 @@ angular.module('moveditorApp')
                 }
             };
 
+            this.makeProgress = function (progress) {
+                this.progress.progressBar = angular.element(document.getElementById('progressBar'));
+                this.progress.progressBar[0].value = progress;
+                if(progress > 100) {
+                    this.progress.progressBar[0].value = 100;
+                }
+
+                if(progress < 0) {
+                    this.progress.progressBar[0].value = 0;
+                }
+            };
+
+            this.makeTotalProgress = function (done, total) {
+                this.progress.progressButton = angular.element(document.getElementById('progressSendSQSButton'));
+                this.progress.progressButton[0].innerHTML = done + ' / ' + total;
+            };
+
+            this.stopStitchingProcess = function () {
+                clearTimeout(self.receiveTimeOut);
+                self.makeProgress(0);
+                self.progress.progressButton[0].innerHTML = 'send';
+                self.isInProcess = false;
+            };
+
             this.receive10 = function () {
                 console.log("receive 10");
 
@@ -268,23 +290,6 @@ angular.module('moveditorApp')
                         console.log("data: ", data);
                     }
                 });
-            };
-
-            this.makeProgress = function (progress) {
-                this.progress.progressBar = angular.element(document.getElementById('progressBar'));
-                this.progress.progressBar[0].value = progress;
-                if(progress > 100) {
-                    this.progress.progressBar[0].value = 100;
-                }
-
-                if(progress < 0) {
-                    this.progress.progressBar[0].value = 0;
-                }
-            };
-
-            this.makeTotalProgress = function (done, total) {
-                this.progress.progressButton = angular.element(document.getElementById('progressSendSQSButton'));
-                this.progress.progressButton[0].innerHTML = done + ' / ' + total;
             };
 
             self.init();

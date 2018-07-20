@@ -69,6 +69,10 @@ angular.module('moveditorApp')
                 }
             };
 
+            this.abortStitching = function () {
+                AWSService.stopStitchingProcess();
+            };
+
             this.receive = function () {
                 AWSService.receive10();
             };

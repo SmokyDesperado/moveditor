@@ -4,10 +4,10 @@
             <div class="content-area__menu--left">
                 <input id="url__input__field" class="content-area__menu__list__element" type="text" value="http://corrupt-system.de/assets/media/bigbugbunny/bbb_trailer.m4v" placeholder="enter URL...">
                 <button class="content-area__menu__list__element mv__button" data-ng-click="addContentMaterial()" onfocus="this.blur();">add</button>
-                <button class="content-area__menu__list__element mv__button" data-ng-click="saveContentMaterial()" onfocus="this.blur();">save</button>
+                <button id="save_button" class="content-area__menu__list__element mv__button" data-ng-click="saveContentMaterial()" onfocus="this.blur();">save</button>
                 <div class="load-file__wrapper">
                     <button class="content-area__menu__list__element mv__button" data-ng-click="loadContentMaterial()" onfocus="this.blur();">load</button>
-                    <input name="loadfile" class="load-file__input" type="file" on-read-file/>
+                    <input id="load_button" name="loadfile" class="load-file__input" type="file" on-read-file/>
                 </div>
             </div>
             <div class="content-area__menu--right">

@@ -314,7 +314,7 @@ angular.module('moveditorApp')
                 // ====================================================================================================
 
                 document.onkeyup = function(e) {
-                    // console.log("KEY UP: ", e.which);
+                    console.log("KEY UP: ", e.which);
                     switch (e.which) {
                         case 109: // num -
                         case 189: // -
@@ -434,6 +434,16 @@ angular.module('moveditorApp')
                                     }
                                 }
                                 $scope.$apply();
+                            }
+                            break;
+                        case 83: // S
+                            if (e.ctrlKey) {
+                                document.getElementById('save_button').click();
+                            }
+                            break;
+                        case 79: // O
+                            if (e.ctrlKey) {
+                                document.getElementById('load_button').click();
                             }
                             break;
                         default:

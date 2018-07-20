@@ -60,9 +60,13 @@ angular.module('moveditorApp')
                                 mvPreviewService.play();
                                 break;
                             case 48: // 0 & num 0
-                            case 60: // <
                                 if (!e.ctrlKey) {
                                     mvPreviewService.jumpToPosition(0);
+                                }
+                                break;
+                            case 60: // <
+                                if (!e.ctrlKey) {
+                                    mvPreviewService.jumpToPosition(Math.round(document.getElementById('preview_range_slider').noUiSlider.get()[0].replace('s', '') * 1000));
                                 }
                                 break;
                             case 108: // L

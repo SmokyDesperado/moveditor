@@ -126,11 +126,15 @@ angular.module('moveditorApp')
 
             this.getCurrentChunkPair = function (currentPlayTime, videoImageChunkList, audioChunkList) {
 
-                var currentChunk = [null, null]; // [video/image, audio]
+                var currentChunk = {
+                    video: null,
+                    audio: null
+                };
+
                 for (var i = 0; i < videoImageChunkList.length; i++) {
                     var c1 = videoImageChunkList[i];
                     if (c1.start * 1000 <= currentPlayTime && currentPlayTime < c1.end * 1000) {
-                        currentChunk[0] = c1;
+                        currentChunk.video = c1;
                         break;
                     }
                 }
@@ -138,7 +142,7 @@ angular.module('moveditorApp')
                 for (var i = 0; i < audioChunkList.length; i++) {
                     var c2 = audioChunkList[i];
                     if (c2.start * 1000 <= currentPlayTime && currentPlayTime < c2.end * 1000) {
-                        currentChunk[1] = c2;
+                        currentChunk.audio = c2;
                         break;
                     }
                 }
@@ -204,11 +208,6 @@ angular.module('moveditorApp')
                 if (currentChunk != null) {
                     var currentMedia = contentList[currentChunk.objectListId];
                     if (currentMedia != null) {
-
-                        // TODO: remove this if-statement later, when correctly using currentChunkPair[1]
-                        if (currentMedia.type === "video" || currentMedia.type === "image") {
-                            return false;
-                        }
 
                         var currentAudioElement = document.getElementById("audio_0");
                         if (currentMedia.url !== currentAudioElement.src) {

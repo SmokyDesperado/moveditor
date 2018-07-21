@@ -8,7 +8,7 @@
  * Service in the moveditorApp.
  */
 angular.module('moveditorApp')
-    .service('AWSService', [
+    .service('SQSService', [
         'MvHelperService',
         'ContentService',
         'TimelineService',
@@ -33,7 +33,7 @@ angular.module('moveditorApp')
 
             this.init = function () {
                 self.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
-                console.log('init:', self.sqs);
+                // console.log('init:', self.sqs);
             };
 
             // ====================================================================================================

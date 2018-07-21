@@ -8,10 +8,10 @@
  */
 angular.module('moveditorApp')
     .directive('mvContent', [
-        'AWSService',
+        'SQSService',
         'ContentService',
         'DragAndDropService',
-        function (AWSService, ContentService, DragAndDropService) {
+        function (SQSService, ContentService, DragAndDropService) {
         return {
             templateUrl: '/views/directives/mv_content.html',
             replace: true,
@@ -22,15 +22,8 @@ angular.module('moveditorApp')
             link: function ($scope, $element, $attrs, contentCtrl) {
 
                 $scope.contentService = ContentService;
-                $scope.progress = AWSService.progress;
+                $scope.progress = SQSService.progress;
                 DragAndDropService.setDropableTrash($element.find('#content-trash'));
-
-                // ====================================================================================================
-                // one drive -> https://1drv.ms/v/s!AsLQUku5IU5olQAMkS7fVnCtyJx8
-                //              eingeben und beim ersten redirect load abbrechen.
-                //              link danach 'redirect' durch 'download' ersetzen
-                // dropbox link -> 'www' durch 'dl'
-                // ====================================================================================================
 
                 var index = 1;
                 var tmpList = [
@@ -100,7 +93,7 @@ angular.module('moveditorApp')
                 };
 
                 $scope.makeProgress = function () {
-                    AWSService.makeProgress();
+                    SQSService.makeProgress();
                 };
             }
         };

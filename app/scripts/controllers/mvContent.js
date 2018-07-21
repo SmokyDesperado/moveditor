@@ -12,8 +12,8 @@ angular.module('moveditorApp')
         'ContentService',
         'TimelineService',
         'MvHelperService',
-        'AWSService',
-        function (ContentService, TimelineService, MvHelperService, AWSService) {
+        'SQSService',
+        function (ContentService, TimelineService, MvHelperService, SQSService) {
 
             var self = this;
 
@@ -56,7 +56,7 @@ angular.module('moveditorApp')
 
                 var timelineList = TimelineService.getTimelineList();
                 if (timelineList['video'].length > 0) {
-                    if (!AWSService.isInProcess) {
+                    if (!SQSService.isInProcess) {
 
                         // reset all mpd urls
                         for (var i = 0; i < timelineList['video'].length; i++) {
@@ -64,17 +64,17 @@ angular.module('moveditorApp')
                         }
 
                         console.log('send stitching');
-                        AWSService.requestSegmentation(0);
+                        SQSService.requestSegmentation(0);
                     }
                 }
             };
 
             this.abortStitching = function () {
-                AWSService.stopStitchingProcess();
+                SQSService.stopStitchingProcess();
             };
 
             this.receive = function () {
-                AWSService.receive10();
+                SQSService.receive10();
             };
 
         }

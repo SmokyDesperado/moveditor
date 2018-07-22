@@ -12,7 +12,7 @@ angular.module('moveditorApp')
     	function () {
 
             // ====================================================================================================
-            // prevent browser zoom via ctrl +/- or mouse wheel
+            // prevent browser zoom via ctrl +/-, mouse wheel, and alt+arrow left/right
             // https://stackoverflow.com/questions/27116221/prevent-zoom-cross-browser
             // ====================================================================================================
 

@@ -16,12 +16,18 @@ angular.module('moveditorApp')
         function (ContentService, TimelineService, MvHelperService, SQSService) {
 
             var self = this;
+            this.alreadyWarnedForAudioFiles = false;
 
             // ============================================================================
             // add content material
             // ============================================================================
 
             this.addContentMaterial = function (MaterialURL) {
+                if (MvHelperService.getURLMediaType(MaterialURL) === "audio" && !self.alreadyWarnedForAudioFiles) {
+                    alert("The current version of the Fraunhofer FOKUS backend does not support audio files yet. Nevertheless you can add and edit audio files with this app and save sessions for a later version.");
+                    self.alreadyWarnedForAudioFiles = true;
+                }
+
                 ContentService.addContentObjectToList("", MvHelperService.getURLMediaType(MaterialURL), 0, MaterialURL, null);
             };
 

@@ -53,7 +53,7 @@ angular.module('moveditorApp')
                             break;
                         case "audio":
                             var image = new Image();
-                            var source = "https://thumbs.gfycat.com/SatisfiedThankfulCurassow-max-1mb.gif";
+                            var source = "./images/audio.gif";
                             image.src = source;
                             image.className = "media-thumbnail";
                             container.appendChild(image);

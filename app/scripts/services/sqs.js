@@ -132,6 +132,8 @@ angular.module('moveditorApp')
                                 }
 
                                 self.removeFromQueue(message);
+                            } else {
+                                self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
                             }
                         } else {
                             self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
@@ -214,6 +216,8 @@ angular.module('moveditorApp')
                                 }
 
                                 self.removeFromQueue(message);
+                            } else {
+                                self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
                             }
                         } else {
                             self.receiveTimeOut = setTimeout(function () { self.receiveStitchingConfig(stitchingId); }, self.waitForReceiveTime);
@@ -274,6 +278,8 @@ angular.module('moveditorApp')
                 clearTimeout(self.receiveTimeOut);
                 self.makeProgress(0);
                 self.progress.progressButton[0].innerHTML = 'send';
+                self.timelineListCopy = null;
+                self.contentListCopy = null;
                 self.isInProcess = false;
             };
 

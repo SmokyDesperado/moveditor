@@ -71,6 +71,8 @@ angular.module('moveditorApp')
                         angular.element(self.dragIndicator).addClass('drag-clone');
                         self.dragIndicator.style.width = "30px";
                         self.dragIndicator.style.height = "30px";
+                        self.dragIndicator.style['left'] = ($event.center.x - self.dragIndicator.style.width.replace('px', '') / 2) + 'px';
+                        self.dragIndicator.style['top'] = ($event.center.y - self.dragIndicator.style.width.replace('px', '') / 2) + 'px';
                         document.body.appendChild(self.dragIndicator);
                         ContentService.contentDrag = true;
 

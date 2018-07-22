@@ -131,15 +131,15 @@ angular.module('moveditorApp')
             };
 
             // ====================================================================================================
-            // Functions to be called by timeline whenever a new chunk is added or deleted to signal preveiw player
+            // Functions to be called by timeline whenever a new chunk is added, deleted or moved to keep preveiw player consistent
             // ====================================================================================================
 
             /**
              * Create <video> if necessary and update preview player parameters.
              */
-            this.newChunkAdded = function (newChunk, contentList, videoImageChunkList, audioChunkList) {
+            this.newChunkAdded = function (newChunk, contentList, timelineList) {
                 self.createVideoElementForChunk(newChunk, contentList);
-                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList, false);
+                self.updatePreviewPlayerParameters(timelineList, false);
             }
 
             /**
@@ -164,8 +164,8 @@ angular.module('moveditorApp')
              * Update max value of preview player's position slider and range parameters according to updated timeline list.
              * @maxRange true: range goes from 0 to end of last chunk; false: keep range slider values 
              */
-            this.updatePreviewPlayerParameters = function (videoImageChunkList, audioChunkList, maxRange) {
-                var newCeil = Math.ceil(Math.max(self.getTimelineDuration(videoImageChunkList, audioChunkList)) / 100) * 100; // in ms
+            this.updatePreviewPlayerParameters = function (timelineList, maxRange) {
+                var newCeil = Math.ceil(Math.max(self.getTimelineDuration(timelineList)) / 100) * 100; // in ms
                 document.getElementById('position_slider').max = newCeil;
 
                 var rangeSlider = document.getElementById('preview_range_slider');
@@ -191,16 +191,16 @@ angular.module('moveditorApp')
                 // console.log("new position_slider and position_b max: " + newCeil / 1000 + "s");
             }
 
-            this.getTimelineDuration = function (videoImageChunkList, audioChunkList) {
+            this.getTimelineDuration = function (timelineList) {
 
                 var videoImageTimelineDuration = 0;
-                if (videoImageChunkList.length > 0) {
-                    videoImageTimelineDuration = videoImageChunkList[videoImageChunkList.length - 1].end * 1000;
+                if (timelineList['video'].length > 0) {
+                    videoImageTimelineDuration = timelineList['video'][timelineList['video'].length - 1].end * 1000;
                 }
 
                 var audioTimelineDuration = 0;
-                if (audioChunkList.length > 0) {
-                    audioTimelineDuration = audioChunkList[audioChunkList.length - 1].end * 1000;
+                if (timelineList['audio'].length > 0) {
+                    audioTimelineDuration = timelineList['audio'][timelineList['audio'].length - 1].end * 1000;
                 }
 
                 return Math.max(videoImageTimelineDuration, audioTimelineDuration);
@@ -210,7 +210,7 @@ angular.module('moveditorApp')
              * If deleted chunk is of type video and no more active elements exists then remove its <video>.
              * Afterwards update the preview player parameters.
              */
-            this.chunkDeleted = function (deletedChunk, contentList, videoImageChunkList, audioChunkList) {
+            this.chunkDeleted = function (deletedChunk, contentList, timelineList) {
                 var content = contentList[deletedChunk.objectListId];
                 if (content !== null) {
                     contentList[deletedChunk.objectListId].active--;
@@ -218,7 +218,7 @@ angular.module('moveditorApp')
                         document.getElementById('active_media').removeChild(document.getElementById("video_" + deletedChunk.objectListId));
                     }
                 }
-                self.updatePreviewPlayerParameters(videoImageChunkList, audioChunkList, false);
+                self.updatePreviewPlayerParameters(timelineList, false);
             }
 
             this.deleteAllVideoElements = function (activeMediaContainer) {
@@ -226,6 +226,111 @@ angular.module('moveditorApp')
                 while (videoElements[0]) {
                     videoElements[0].parentNode.removeChild(videoElements[0]);
                 }
+            }
+
+            this.calculateVideoAudioOffsetPosition = function (currentPlayTime, contentList, timelineList) {
+                var currentChunkPair = self.getCurrentChunkPair(currentPlayTime, timelineList);
+
+                self.showCurrentVideoImage(currentChunkPair.video, contentList);
+                var currentVideoElement = self.getCurrentVideoElement(currentChunkPair.video, contentList);
+                if (currentVideoElement != null) {
+                    currentVideoElement.currentTime = self.calculateMediaOffsetTime(currentPlayTime, currentChunkPair.video) / 1000;
+                }
+
+                var sourceIsSet = self.setCurrentAudioSource(currentChunkPair.audio, contentList);
+                if (sourceIsSet) {
+                    document.getElementById("audio_0").currentTime = self.calculateMediaOffsetTime(currentPlayTime, currentChunkPair.audio) / 1000;
+                }
+            }
+
+            /*
+             * @return currentChunk{video: chunk, audio: chunk}
+             */
+            this.getCurrentChunkPair = function (currentPlayTime, timelineList) {
+
+                var currentChunk = {
+                    video: null,
+                    audio: null
+                };
+                for (var i = 0; i < timelineList['video'].length; i++) {
+                    var c1 = timelineList['video'][i];
+                    if (c1.start * 1000 <= currentPlayTime && currentPlayTime < c1.end * 1000) {
+                        currentChunk.video = c1;
+                        break;
+                    }
+                }
+                for (var i = 0; i < timelineList['audio'].length; i++) {
+                    var c2 = timelineList['audio'][i];
+                    if (c2.start * 1000 <= currentPlayTime && currentPlayTime < c2.end * 1000) {
+                        currentChunk.audio = c2;
+                        break;
+                    }
+                }
+
+                return currentChunk;
+            }
+
+            this.showCurrentVideoImage = function (currentChunk, contentList) {
+
+                self.hideVideoImageElements();
+
+                if (currentChunk != null) {
+                    var currentMedia = contentList[currentChunk.objectListId];
+                    if (currentMedia != null) {
+                        if (currentMedia.type === "video") {
+                            document.getElementById("video_" + currentChunk.objectListId).style.zIndex = "0";
+                        } else if (currentMedia.type === "image") {
+                            var imageElement = document.getElementById("image_0");
+                            imageElement.src = currentMedia.url;
+                            imageElement.style.zIndex = "0";
+                        }
+                    }
+                }
+            }
+
+            this.hideVideoImageElements = function () {
+                var videoElements = document.getElementById('active_media').getElementsByTagName("video");
+                for (var i = 0; i < videoElements.length; i++) {
+                    videoElements[i].style.zIndex = "-1";
+                }
+                var imageElement = document.getElementById("image_0");
+                imageElement.style.zIndex = "-1";
+            }
+
+            this.getCurrentVideoElement = function (currentChunk, contentList) {
+                var currentVideoElement = null;
+                if (currentChunk != null) {
+                    var currentMedia = contentList[currentChunk.objectListId];
+                    if (currentMedia != null) {
+                        if (currentMedia.type === "video") {
+                            currentVideoElement = document.getElementById("video_" + currentChunk.objectListId);
+                        }
+                    }
+                }
+                return currentVideoElement;
+            }
+
+            /*
+             * @return true if audio source of given chunk is set correctly, otherwise false 
+             */
+            this.setCurrentAudioSource = function (currentChunk, contentList) {
+                var sourceIsSet = false;
+                if (currentChunk != null) {
+                    var currentMedia = contentList[currentChunk.objectListId];
+                    if (currentMedia != null) {
+
+                        var currentAudioElement = document.getElementById("audio_0");
+                        if (currentMedia.url !== currentAudioElement.src) {
+                            currentAudioElement.src = currentMedia.url;
+                        }
+                        sourceIsSet = true;
+                    }
+                }
+                return sourceIsSet;
+            }
+
+            this.calculateMediaOffsetTime = function (currentPlayTime, currentChunk) {
+                return currentChunk.offset * 1000 + (currentPlayTime - currentChunk.start * 1000);
             }
 
         }

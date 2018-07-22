@@ -63,7 +63,7 @@ angular.module('moveditorApp')
                         var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf(focussedChunk);
                         if (index > -1) {
                             $scope.timelineService.timelineList[TimelineCtrl.focus.type].splice(index, 1);
-                            MvHelperService.chunkDeleted(focussedChunk, ContentService.contentList, $scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio']);
+                            MvHelperService.chunkDeleted(focussedChunk, ContentService.contentList, $scope.timelineService.timelineList);
                         }
                         TimelineCtrl.unsetFocusAll();
                         $scope.timelineService.calculateTimelineWidth();
@@ -115,7 +115,9 @@ angular.module('moveditorApp')
                     if(TimelineCtrl.focus.key === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--' + listType + ' ng-scope') {
                         TimelineCtrl.deactivateShorten();
                         self.setTimelineObjectToPosition($event, timelineObjectKey, listType);
-                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
+                        MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
+
+                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
                     }
                 };
 
@@ -158,6 +160,7 @@ angular.module('moveditorApp')
                     var listType = self.getFocusTypeFromFocusKey();
                     if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key - 1])) {
                         $scope.timelineService.swapChunkWithPreviousObject(TimelineCtrl.focus.key, listType);
+                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
                         TimelineCtrl.focus.key--;
                     }
                 };
@@ -166,6 +169,7 @@ angular.module('moveditorApp')
                     var listType = self.getFocusTypeFromFocusKey();
                     if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key + 1])) {
                         $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus.key, listType);
+                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
                         TimelineCtrl.focus.key++;
                     }
                 };
@@ -239,7 +243,7 @@ angular.module('moveditorApp')
 
                 $scope.dragEndShortenEnd = function($event, timelineObjectKey) {
                     self.dragShorten = false;
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
                     $scope.timelineService.saveTimelineStep();
                 };
 
@@ -296,14 +300,16 @@ angular.module('moveditorApp')
                 $scope.undo = function() {
                     // console.log('undo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
                     $scope.timelineService.undoTimelineAction();
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
+                    MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
                     TimelineCtrl.unsetFocusAll();
                 };
 
                 $scope.redo = function () {
                     // console.log('redo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
                     $scope.timelineService.redoTimelineAction();
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList['video'], $scope.timelineService.timelineList['audio'], false);
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
+                    MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
                     TimelineCtrl.unsetFocusAll();
                 };
 

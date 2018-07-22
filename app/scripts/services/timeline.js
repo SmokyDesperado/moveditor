@@ -173,7 +173,7 @@ angular.module('moveditorApp')
             self.recalculateChunkPositions(timelineObject, self.getListTypeFromContentListObjectId(contentListObjectId));
             self.sortedAddingObjectToTimelineList(timelineObject, self.getListTypeFromContentListObjectId(contentListObjectId));
             self.calculateTimelineWidth();
-            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList['video'], self.timelineList['audio']);
+            MvHelperService.newChunkAdded(timelineObject, ContentService.getContentList(), self.timelineList);
 
             self.saveTimelineStep();
         };

@@ -39,7 +39,7 @@
         </div>
 
     </div>
-    <div id="timelineDropArea" class="dropable" hm-tap="tap($event)">
+    <div id="timelineDropArea" class="dropable">
         <div class="timeline-object__wrap" style="width: {{timelineService.timelineWidth}}px;">
             <!--timelineWidth: {{timelineService.timelineWidth}}-->
             <div class="timeline-object__chunk timeline-object__chunk--video"
@@ -58,15 +58,15 @@
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video' && TimelineCtrl.shorten == true"
-                     hm-panstart="dragStartShortenStart($event, key)"
+                     hm-panstart="dragShortenStart()"
                      hm-panmove="dragStartShortenMove($event, key, 'video')"
-                     hm-panend="dragStartShortenEnd($event, key)"></div>
+                     hm-panend="dragShortenEnd()"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'video' && TimelineCtrl.shorten == true"
-                     hm-panstart="dragEndShortenStart($event, key)"
+                     hm-panstart="dragShortenStart()"
                      hm-panmove="dragEndShortenMove($event, key, 'video')"
-                     hm-panend="dragEndShortenEnd($event, key)"></div>
+                     hm-panend="dragShortenEnd()"></div>
             </div>
 
             <div class="timeline-object__chunk timeline-object__chunk--audio"
@@ -85,15 +85,15 @@
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--start"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio' && TimelineCtrl.shorten == true"
-                     hm-panstart="dragStartShortenStart($event, key)"
+                     hm-panstart="dragShortenStart()"
                      hm-panmove="dragStartShortenMove($event, key, 'audio')"
-                     hm-panend="dragStartShortenEnd($event, key)"></div>
+                     hm-panend="dragShortenEnd()"></div>
 
                 <div class="timeline-object__chunk-manipulator timeline-object__chunk-manipulator--end"
                      data-ng-if="key == TimelineCtrl.focus.key && TimelineCtrl.focus.type == 'audio' && TimelineCtrl.shorten == true"
-                     hm-panstart="dragEndShortenStart($event, key)"
+                     hm-panstart="dragShortenStart()"
                      hm-panmove="dragEndShortenMove($event, key, 'audio')"
-                     hm-panend="dragEndShortenEnd($event, key)"></div>
+                     hm-panend="dragShortenEnd()"></div>
             </div>
         </div>
 

@@ -22,54 +22,30 @@ angular.module('moveditorApp')
             bindToController: true,
             controllerAs: 'TimelineCtrl',
             link: function ($scope, $element, $attrs, TimelineCtrl) {
-
-                $scope.timelineService = TimelineService;
-                $scope.contentService = ContentService;
-                $scope.isCutActive = false;
-
                 var self = this;
+
                 this.dragShorten = false;
                 this.dragOffset = 0;
                 this.dragFreeSpaceStart = 0;
                 this.dragFreeSpaceEnd = 1920;
                 this.dragShortenOffset = 5;
 
-                $scope.timelineService.dropArea = $element.find('#timelineDropArea');
-                $scope.timelineService.positionPointer = $element.find('#position_pointer');
-                $scope.timelineService.rangePointerA = $element.find('#range_pointer_a');
-                $scope.timelineService.rangePointerB = $element.find('#range_pointer_b');
-
                 this.currentPosDisplay = $('.chunk-meta__name-input');
                 this.currentPosDisplay.on("keypress keydown keyup", function(e) {
                     e.stopPropagation();
                 });
 
-                $scope.click = function (param) {
-                    console.log('clicked with param:', param);
-                };
+                $scope.timelineService = TimelineService;
+                $scope.contentService = ContentService;
+                $scope.isCutActive = false;
+                $scope.timelineService.dropArea = $element.find('#timelineDropArea');
+                $scope.timelineService.positionPointer = $element.find('#position_pointer');
+                $scope.timelineService.rangePointerA = $element.find('#range_pointer_a');
+                $scope.timelineService.rangePointerB = $element.find('#range_pointer_b');
 
-                $scope.muteChunk = function () {
-                    if (TimelineCtrl.focus.key !== null) {
-                        if (ContentService.getContentList()[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type != "image") {
-                            $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute;
-                            $scope.timelineService.saveTimelineStep();
-                        }
-                    }
-                };
-
-                $scope.deleteChunk = function () {
-                    if (TimelineCtrl.focus.key !== null) {
-                        var focussedChunk = $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key];
-                        var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf(focussedChunk);
-                        if (index > -1) {
-                            $scope.timelineService.timelineList[TimelineCtrl.focus.type].splice(index, 1);
-                            MvHelperService.chunkDeleted(focussedChunk, ContentService.contentList, $scope.timelineService.timelineList);
-                        }
-                        TimelineCtrl.unsetFocusAll();
-                        $scope.timelineService.calculateTimelineWidth();
-                        $scope.timelineService.saveTimelineStep();
-                    }
-                };
+                // ====================================================================================================
+                // zoomin functions
+                // ====================================================================================================
 
                 $scope.zoomIn = function () {
                     $scope.timelineService.zoomIn();
@@ -83,10 +59,25 @@ angular.module('moveditorApp')
                     $scope.timelineService.zoomReset();
                 };
 
-                $scope.tap = function($event) {
-                    TimelineCtrl.tap($event);
+                // ====================================================================================================
+                // redo / undo
+                // ====================================================================================================
+
+                $scope.undo = function() {
+                    $scope.timelineService.undoTimelineAction();
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
+                    MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
+                    TimelineCtrl.unsetFocusAll();
                 };
 
+                $scope.redo = function () {
+                    $scope.timelineService.redoTimelineAction();
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
+                    MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
+                    TimelineCtrl.unsetFocusAll();
+                };
+
+                // handling click on chunk: set focus, cut chunk or deactivate cut mode
                 $scope.chunkTap = function($event, key, listType) {
                     if(!$scope.isCutActive) {
                         TimelineCtrl.setFocus(key, listType);
@@ -102,6 +93,12 @@ angular.module('moveditorApp')
                     }
                 };
 
+                // ====================================================================================================
+                // drag chunk
+                // ====================================================================================================
+
+                // init variables before dragging chunk:
+                // when right element clicked, deactiivate shorten mode, set set focus in controller and init dragging limits
                 $scope.panStart = function ($event, timelineObjectKey, listType) {
                     if(angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--' + listType + ' ng-scope') {
                         self.dragShorten = false;
@@ -111,6 +108,8 @@ angular.module('moveditorApp')
                     }
                 };
 
+                // dragging chunk handler:
+                // set chunk position and updated preview player
                 $scope.hammerPanMove = function ($event, timelineObjectKey, listType) {
                     if(TimelineCtrl.focus.key === timelineObjectKey && !self.dragShorten && angular.element($event.target)[0].className === 'timeline-object__chunk timeline-object__chunk--' + listType + ' ng-scope') {
                         TimelineCtrl.deactivateShorten();
@@ -120,6 +119,19 @@ angular.module('moveditorApp')
                         MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
                     }
                 };
+
+                // post drag chunk functionalities
+                // set dragging offset to init value, calculate timeline width, activate shorten and save timeline state
+                $scope.panEnd = function ($event, timelineObjectKey) {
+                    if(TimelineCtrl.focus.key === timelineObjectKey && !self.dragShorten) {
+                        self.dragOffset = 0;
+                        $scope.timelineService.calculateTimelineWidth();
+                        TimelineCtrl.activateShorten();
+
+                        $scope.timelineService.saveTimelineStep();
+                    }
+                };
+
 
                 this.setTimelineObjectToPosition = function($event, timelineObjectKey, listType) {
                     var chunk = angular.element($event.target);
@@ -146,38 +158,7 @@ angular.module('moveditorApp')
                     $scope.timelineService.timelineList[listType][timelineObjectKey].end = self.quantizeDraggedTime($scope.timelineService.timelineList[listType][timelineObjectKey].start + chunkLength);
                 };
 
-                $scope.panEnd = function ($event, timelineObjectKey) {
-                    if(TimelineCtrl.focus.key === timelineObjectKey && !self.dragShorten) {
-                        self.dragOffset = 0;
-                        $scope.timelineService.calculateTimelineWidth();
-                        TimelineCtrl.activateShorten();
-
-                        $scope.timelineService.saveTimelineStep();
-                    }
-                };
-
-                $scope.swapWithPreviousObject = function () {
-                    var listType = self.getFocusTypeFromFocusKey();
-                    if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key - 1])) {
-                        $scope.timelineService.swapChunkWithPreviousObject(TimelineCtrl.focus.key, listType);
-                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
-                        TimelineCtrl.focus.key--;
-                    }
-                };
-
-                $scope.swapWithNextObject = function () {
-                    var listType = self.getFocusTypeFromFocusKey();
-                    if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key + 1])) {
-                        $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus.key, listType);
-                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
-                        TimelineCtrl.focus.key++;
-                    }
-                };
-
-                this.getFocusTypeFromFocusKey = function () {
-                    return (TimelineCtrl.focus.key !== null) ? TimelineCtrl.focus.type : null;
-                };
-
+                // inti drag limit variables (free space in timeline) for dragging chunk
                 this.initDragLimitValues = function ($event, timelineObjectKey, listType) {
                     // console.log(angular.element($event.target));
                     self.initDragOffset($event.center.x, angular.element($event.target)[0].offsetLeft);
@@ -197,56 +178,65 @@ angular.module('moveditorApp')
                     }
                 };
 
+                // drag offset is current mouse position in chunk
                 this.initDragOffset = function (mousePosition, offsetLeft) {
-                    // console.log('mousePosition', mousePosition, '- offsetLeft', offsetLeft, '=', mousePosition - offsetLeft);
                     this.dragOffset = mousePosition - offsetLeft;
                 };
 
-                this.quantizeDraggedTime = function (timevalue) {
-                    return Math.round(timevalue * $scope.timelineService.timelineQuantization) / $scope.timelineService.timelineQuantization;
+
+                // ====================================================================================================
+                // swap chunks
+                // ====================================================================================================
+
+                $scope.swapWithPreviousObject = function () {
+                    var listType = self.getFocusTypeFromFocusKey();
+                    if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key - 1])) {
+                        $scope.timelineService.swapChunkWithPreviousObject(TimelineCtrl.focus.key, listType);
+                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
+                        TimelineCtrl.focus.key--;
+                    }
                 };
 
-                this.dragTimelineWidthGrow = function() {
-
+                $scope.swapWithNextObject = function () {
+                    var listType = self.getFocusTypeFromFocusKey();
+                    if(listType !== null && TimelineCtrl.focus.key !== null && angular.isDefined($scope.timelineService.timelineList[listType][TimelineCtrl.focus.key + 1])) {
+                        $scope.timelineService.swapChunkWithNextObject(TimelineCtrl.focus.key, listType);
+                        MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
+                        TimelineCtrl.focus.key++;
+                    }
                 };
 
-                this.dragTimelineScroll = function() {
+                // ====================================================================================================
+                // drag chunk shorten modifier
+                // ====================================================================================================
 
-                };
-
-                $scope.dragStartShortenStart = function($event, timelineObjectKey) {
+                // init drag shorten variables
+                $scope.dragShortenStart = function() {
                     self.dragShorten = true;
                     DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
                 };
 
+                // save timeline state after shorten
+                $scope.dragShortenEnd = function() {
+                    self.dragShorten = false;
+                    $scope.timelineService.saveTimelineStep();
+                };
+
+                // handling drag shorten for chunk modifier from chunk start
                 $scope.dragStartShortenMove = function($event, timelineObjectKey, listType) {
                     if(self.dragShorten) {
                         self.dragStartShortenTimelineObject($event, timelineObjectKey, listType);
                     }
                 };
 
-                $scope.dragStartShortenEnd = function($event, timelineObjectKey) {
-                    self.dragShorten = false;
-                    $scope.timelineService.saveTimelineStep();
-                };
-
-                $scope.dragEndShortenStart = function($event, timelineObjectKey) {
-                    self.dragShorten = true;
-                    DragAndDropService.setDropableElement($element.find('#timelineDropArea'));
-                };
-
+                // handling drag shorten for chunk modifier from chunk end
                 $scope.dragEndShortenMove = function($event, timelineObjectKey, listType) {
                     if(self.dragShorten) {
                         self.setEndDragShortenObject($event, timelineObjectKey, listType);
                     }
                 };
 
-                $scope.dragEndShortenEnd = function($event, timelineObjectKey) {
-                    self.dragShorten = false;
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
-                    $scope.timelineService.saveTimelineStep();
-                };
-
+                // calculate chunk start position and time values within allowed limitation while shortening
                 this.dragStartShortenTimelineObject = function($event, timelineObjectKey, listType) {
                     var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
@@ -270,6 +260,7 @@ angular.module('moveditorApp')
                     $scope.timelineService.timelineList[listType][timelineObjectKey].offset = $scope.timelineService.roundTime(position - limitStart);
                 };
 
+                // calculate chunk end position and time values within allowed limitation while shortening
                 this.setEndDragShortenObject = function($event, timelineObjectKey, listType) {
                     var dragDistant = ((($event.center.x + DragAndDropService.dropableElement.scrollLeft) - self.dragShortenOffset));
 
@@ -293,24 +284,45 @@ angular.module('moveditorApp')
                     $scope.timelineService.timelineList[listType][timelineObjectKey].end = $scope.timelineService.roundTime(position);
                 };
 
+                // ====================================================================================================
+                // miscellaneous timeline functions
+                // ====================================================================================================
+
                 $scope.activateCuttingMode = function() {
                     $scope.isCutActive = !$scope.isCutActive;
                 };
 
-                $scope.undo = function() {
-                    // console.log('undo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
-                    $scope.timelineService.undoTimelineAction();
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
-                    MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
-                    TimelineCtrl.unsetFocusAll();
+                $scope.muteChunk = function () {
+                    if (TimelineCtrl.focus.key !== null) {
+                        if (ContentService.contentList[$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].objectListId].type !== 'image') {
+                            $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute = !$scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key].mute;
+                            $scope.timelineService.saveTimelineStep();
+                        }
+                    }
                 };
 
-                $scope.redo = function () {
-                    // console.log('redo', $scope.timelineService.savedStepsPointer, $scope.timelineService.savedSteps);
-                    $scope.timelineService.redoTimelineAction();
-                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
-                    MvHelperService.calculateVideoAudioOffsetPosition(document.getElementById('position_slider').value, $scope.contentService.contentList, $scope.timelineService.timelineList);
-                    TimelineCtrl.unsetFocusAll();
+                $scope.deleteChunk = function () {
+                    if (TimelineCtrl.focus.key !== null) {
+                        var focussedChunk = $scope.timelineService.timelineList[TimelineCtrl.focus.type][TimelineCtrl.focus.key];
+                        var index = $scope.timelineService.timelineList[TimelineCtrl.focus.type].indexOf(focussedChunk);
+                        if (index > -1) {
+                            $scope.timelineService.timelineList[TimelineCtrl.focus.type].splice(index, 1);
+                            MvHelperService.chunkDeleted(focussedChunk, ContentService.contentList, $scope.timelineService.timelineList);
+                        }
+                        TimelineCtrl.unsetFocusAll();
+                        $scope.timelineService.calculateTimelineWidth();
+                        $scope.timelineService.saveTimelineStep();
+                    }
+                };
+
+                // returns type of focused chunks or null if not
+                this.getFocusTypeFromFocusKey = function () {
+                    return (TimelineCtrl.focus.key !== null) ? TimelineCtrl.focus.type : null;
+                };
+
+                // quantization of time values to 100ms
+                this.quantizeDraggedTime = function (timevalue) {
+                    return Math.round(timevalue * $scope.timelineService.timelineQuantization) / $scope.timelineService.timelineQuantization;
                 };
 
                 TimelineCtrl.initTimelineElement($element.find('#timelineDropArea'));

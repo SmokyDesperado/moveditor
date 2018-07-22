@@ -23,6 +23,8 @@ angular.module('moveditorApp')
 
             this.index = 0;
             this.isInProcess = false;
+            this.timelineListCopy = null;
+            this.contentListCopy = null;
 
             this.progress = {
                 progressBar: null,
@@ -42,16 +44,20 @@ angular.module('moveditorApp')
 
             this.requestSegmentation = function (index) {
 
+                if (index === 0) {
+                    self.timelineListCopy = angular.copy(TimelineService.timelineList);
+                    self.contentListCopy = angular.copy(ContentService.getContentList());
+                }
+
                 self.index = index;
                 self.isInProcess = true;
-                var chunk = TimelineService.timelineList['video'][index];
-                var contentList = ContentService.getContentList();
-                self.makeTotalProgress(index, TimelineService.timelineList['video'].length);
+                var chunk = self.timelineListCopy['video'][index];
+                self.makeTotalProgress(index, self.timelineListCopy['video'].length);
                 
-                if (contentList[chunk.objectListId].mpd === "") {
+                if (self.contentListCopy[chunk.objectListId].mpd === "") {
                     var segmentationId = String(chunk.objectListId);
-                    var chunkUrl = contentList[chunk.objectListId].url;
-                    var chunkType = contentList[chunk.objectListId].type;
+                    var chunkUrl = self.contentListCopy[chunk.objectListId].url;
+                    var chunkType = self.contentListCopy[chunk.objectListId].type;
                     var chunkLength = chunk.end - chunk.start;
 
                     var msg = null;
@@ -138,7 +144,7 @@ angular.module('moveditorApp')
             // SQS STITCHING
             // ====================================================================================================
 
-            this.requestStitching = function (timelineList) {
+            this.requestStitching = function () {
                 var configStitching = {
                     "LOG_LEVEL": "info",
                     "server": {
@@ -149,12 +155,9 @@ angular.module('moveditorApp')
                     "content": []
                 };
 
-                var contentList = ContentService.getContentList();
-                var timelineList = TimelineService.getTimelineList();
-
-                for (var i = 0; i < timelineList['video'].length; i++) {
-                    var chunk = TimelineService.timelineList['video'][i];
-                    var mediaContent = {"type": contentList[chunk.objectListId].type, "begin": chunk.start, "end": chunk.end, "offset": chunk.offset, "mute": chunk.mute, "hide": false, "url": contentList[chunk.objectListId].mpd};
+                for (var i = 0; i < self.timelineListCopy['video'].length; i++) {
+                    var chunk = self.timelineListCopy['video'][i];
+                    var mediaContent = {"type": self.contentListCopy[chunk.objectListId].type, "begin": chunk.start, "end": chunk.end, "offset": chunk.offset, "mute": chunk.mute, "hide": false, "url": self.contentListCopy[chunk.objectListId].mpd};
                     configStitching.content.push(mediaContent);
                 };
 
@@ -234,16 +237,16 @@ angular.module('moveditorApp')
 
             this.saveMpdUrlToContent = function (mpdUrl) {
                 console.log("save mpd: ", mpdUrl);
-                var chunk = TimelineService.timelineList['video'][self.index];
-                ContentService.getContentList()[chunk.objectListId].setMpd(mpdUrl);
+                var chunk = self.timelineListCopy['video'][self.index];
+                self.contentListCopy[chunk.objectListId].setMpd(mpdUrl);
             };
 
             this.finishedSegmentation = function () {
-                self.makeTotalProgress((self.index + 1), TimelineService.timelineList['video'].length);
-                console.log("finished segmentation: " + (self.index + 1) + "/" + TimelineService.timelineList['video'].length);
-                if (TimelineService.timelineList['video'].length - 1 === self.index) {
+                self.makeTotalProgress((self.index + 1), self.timelineListCopy['video'].length);
+                console.log("finished segmentation: " + (self.index + 1) + "/" + self.timelineListCopy['video'].length);
+                if (self.timelineListCopy['video'].length - 1 === self.index) {
                     self.makeProgress(0);
-                    self.requestStitching(TimelineService.timelineList['video']);
+                    self.requestStitching();
                 } else {
                     var indexNext = self.index + 1;
                     self.requestSegmentation(indexNext);

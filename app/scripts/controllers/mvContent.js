@@ -27,7 +27,6 @@ angular.module('moveditorApp')
                     alert("The current version of the Fraunhofer FOKUS backend does not support audio files yet. Nevertheless you can add and edit audio files with this app and save sessions for a later version.");
                     self.alreadyWarnedForAudioFiles = true;
                 }
-
                 ContentService.addContentObjectToList("", MvHelperService.getURLMediaType(MaterialURL), 0, MaterialURL, null);
             };
 
@@ -38,14 +37,10 @@ angular.module('moveditorApp')
             this.saveContentMaterial = function () {
                 console.log("save session");
 
-                // object we want to save
                 var objectToSave = {contentArea: ContentService.getContentList(), timelineArea: TimelineService.getTimelineList()};
-                // convert to json string
                 var JSONToSave = angular.toJson(objectToSave);
-                // create a link DOM fragment
                 var tmpLink = $("<a/>");
 
-                // <a download="video_stitching_session.txt" href='data:application/octet-stream,...'></a>
                 tmpLink
                   .attr("download", "video_stitching_session.txt")
                   .attr("href", "data:application/octet-stream," + encodeURIComponent(JSONToSave))
@@ -63,12 +58,6 @@ angular.module('moveditorApp')
                 var timelineList = TimelineService.getTimelineList();
                 if (timelineList['video'].length > 0) {
                     if (!SQSService.isInProcess) {
-
-                        // reset all mpd urls
-                        for (var i = 0; i < timelineList['video'].length; i++) {
-                            ContentService.getContentList()[timelineList['video'][i].objectListId].mpd = "";
-                        }
-
                         console.log('send stitching');
                         SQSService.requestSegmentation(0);
                     }

@@ -46,22 +46,27 @@ or Math in Paper Title or Abstract.
 \end{abstract}
 
 \begin{IEEEkeywords}
-web UI, video and image stitching, .mpd, SQS
+web UI, video and image stitching, MPD, DASH, Amazon Simple Queue Service (SQS)
 \end{IEEEkeywords}
 
 \section{Introduction}
-\textbf{ToDo: Nate} \\
-- Fraunhofer FOKUS is part of the Fraunhofer society and is engaged in applied research and development in the field of Information and Communications Technology \\
-- one of the works include the development of a backend for video and image stitching \\
-- similar to a typical video editing program like windows movie maker but via web \\
-- idea: put together video and image urls and in the end return a stitched video .mpd file url \\
-- AWS' SQS serves as interface for communication \\
-- as of now: missing a proper UI for seamless interaction with the FH backend \\
-- in this work we implemented a web UI for that very purpose \\
-- agenda: section II. looks into related works and what makes this work special.
-sections III. and IV. deals with the architecture and implementation. here non-trivial steps are described and important decisions made while developing the UI are explained.
-section V. evaluates the approach taken and discusses its strong points but also its flaws.
-section VI. concludes this work. suggestions for future work are proposed
+With the recent progresses in cloud computing in the areas of cost-efficiency, scalability etc., more and more software applications are shifted from local computers to external servers.
+While in the past software like audio or graphics editor tools had to be installed locally due to high processing demands, nowadays mentioned applications can be provided over the internet.
+
+The Fraunhofer FOKUS \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer society and is concerned with applied research and development of applications in the field of Information and Communications Technology.
+Among the projects of FOKUS is the development of such a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker, but in this case over the internet.
+
+Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming) according to a given stitching configuration.
+Amazon's Simple Queue Service (SQS) serves as communication channel between frontend and service backend.
+
+As of now FOKUS has only implemented a stitching backend -- a proper user interface for seamless interaction with the backend is still missing.
+In this work we implemented a web UI\footnote{Code available at https://github.com/SmokyDesperado/moveditor} for that very purpose.
+
+In particular this inlcudes:
+\textbf{(II)} A glimpse into related work and what elevates this work.
+\textbf{(III)} and \textbf{(IV)} The Architecture and implementation, in which non-trivial steps are described and important decisions made while developing the UI are explained.
+\textbf{(V)} An evaluation of the approach taken for the implemented user interface as well as a discussion of its strong points but also its flaws.
+\textbf{(VI)} A conclusion to this work and suggestions for future.
 
 \section{Related Work}
 \textbf{ToDo: Han} \\

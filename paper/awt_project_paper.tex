@@ -46,41 +46,59 @@ or Math in Paper Title or Abstract.
 \end{abstract}
 
 \begin{IEEEkeywords}
-web UI, video and image stitching, DASH, SQS
+web UI, video and image stitching, .mpd, SQS
 \end{IEEEkeywords}
 
 \section{Introduction}
-Fraunhofer FOKUS something created a backend for video stitching...
+\textbf{ToDo: Nate} \\
+- Fraunhofer FOKUS is part of the Fraunhofer society and is engaged in applied research and development in the field of Information and Communications Technology \\
+- one of the works include the development of a backend for video and image stitching \\
+- similar to a typical video editing program like windows movie maker but via web \\
+- idea: put together video and image urls and in the end return a stitched video .mpd file url \\
+- AWS' SQS serves as interface for communication \\
+- as of now: missing a proper UI for seamless interaction with the FH backend \\
+- in this work we implemented a web UI for that very purpose \\
+- agenda: section II. looks into related works and what makes this work special.
+sections III. and IV. deals with the architecture and implementation. here non-trivial steps are described and important decisions made while developing the UI are explained.
+section V. evaluates the approach taken and discusses its strong points but also its flaws.
+section VI. concludes this work. suggestions for future work are proposed
 
 \section{Related Work}
+\textbf{ToDo: Han} \\
 List online/offline video stitching tools, differences and what makes our web app unique...
 
-\section{Architecture \& Design}
+\section{Architecture \& Used Technologies}
+\textbf{ToDo: Han} \\
 Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
 
-\section{Implementation}
+\section{Design \& Implementation}
 List some features etc. but this section will only focus on main aspects of our web ui implementation and why things were done that way...
 
 \subsection{General}
-save session via .txt export...
+UI primarily for Desktop, save session via .txt export...
 
 \subsection{Content}
+\textbf{ToDo: Minh} \\
 URL input for adding new contents from web/clouds...
 
 \subsection{Timeline Area}
+\textbf{ToDo: Minh} \\
 most controls using hammer JS...
 
 \subsection{Preview Player}
-z-index for better loading, playback-loop...
+\textbf{ToDo: Nate} \\
+z-index for better loading, playback-loop (parallel playing media while counting time) ...
 
 \subsection{SQS}
+\textbf{ToDo: Nate} \\
 \textit{Segmentation Request}.
 set timeout approach while polling only 1 message at a time...
 
 \textit{Stitching Request}.
 same approach as segmentation, doesn't work due to backend...
+
 \section{Discussion}
-SQS and FH backend are shit; a backend managing the request and providing an API would be better...
+SQS and FH backend are shit; a backend managing the request and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness...
 
 \section{Conclusion}
 webUI great, SQS and FH backend are shit...

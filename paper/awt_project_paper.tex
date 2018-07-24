@@ -3,7 +3,7 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+\usepackage{algorithm,algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -53,20 +53,20 @@ web UI, video and image stitching, MPD, DASH, Amazon Simple Queue Service (SQS)
 With the recent progresses in cloud computing in the areas of cost-efficiency, scalability etc., more and more software applications are shifted from local computers to external servers.
 While in the past software like audio or graphics editor tools had to be installed locally due to high processing demands, nowadays mentioned applications can be provided over the internet.
 
-The Fraunhofer FOKUS \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer society and is concerned with applied research and development of applications in the field of Information and Communications Technology.
-Among the projects of FOKUS is the development of such a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker, but in this case over the internet.
+The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology.
+Among the projects of FOKUS is the development of such a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet.
 
-Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming) according to a given stitching configuration.
-Amazon's Simple Queue Service (SQS) serves as communication channel between frontend and service backend.
+Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming\cite{Sodagar}) according to a given stitching configuration.
+Amazon's Simple Queue Service\footnote{http://aws.amazon.com/sqs/} (SQS) serves as communication channel between frontend and service backend.
 
-As of now FOKUS has only implemented a stitching backend -- a proper user interface for seamless interaction with the backend is still missing.
+As of now FOKUS has only implemented a stitching backend. A proper user interface for seamless interaction with the backend is still missing.
 In this work we implemented a web UI\footnote{Code available at https://github.com/SmokyDesperado/moveditor} for that very purpose.
 
 In particular this inlcudes:
 \textbf{(II)} A glimpse into related work and what elevates this work.
 \textbf{(III)} and \textbf{(IV)} The Architecture and implementation, in which non-trivial steps are described and important decisions made while developing the UI are explained.
-\textbf{(V)} An evaluation of the approach taken for the implemented user interface as well as a discussion of its strong points but also its flaws.
-\textbf{(VI)} A conclusion to this work and suggestions for future.
+\textbf{(V)} An evaluation of the approach taken for implementing the user interface as well as a discussion of its strong points but also its flaws.
+\textbf{(VI)} A conclusion to this work and suggestions for future work.
 
 \section{Related Work}
 \textbf{ToDo: Han} \\
@@ -84,15 +84,62 @@ UI primarily for Desktop, save session via .txt export...
 
 \subsection{Content}
 \textbf{ToDo: Minh} \\
-URL input for adding new contents from web/clouds...
+URL input for adding new contents from web/clouds, popup-preview content...
 
 \subsection{Timeline Area}
 \textbf{ToDo: Minh} \\
 most controls using hammer JS...
 
 \subsection{Preview Player}
-\textbf{ToDo: Nate} \\
-z-index for better loading, playback-loop (parallel playing media while counting time) ...
+The preview player emulates the stitching result of the service backend without actually sending the necessary requests.
+In doing so, imperfections in the stitching configurations can be detected and corrected via real-time feedback.
+The user is not impelled to wait for the actual stitching result, thus saving time.
+
+The implemented preview player supports all common controls of a usual browser media player.
+These include: a ``play/pause''-button, a ``time-position''-slider and a ``volume''-slider.
+On top of these, a ``restart''-button, a ``loop-play''-toggle and a ``play-in-range''-slider were added.
+Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI feel more like a native application.
+
+For audio and image preview playback it is sufficient to only have one HTML audio, respectively image, element and change its sources in real-time while playing.
+However, this method does not work for all video sources, e.g. cloud provider URLs generally take more time for the initial loading which leads to stuttering, especially right after swapping video sources.
+Therefore, per video chunk the implemented player creates one dedicated HTML video element with preloaded source.
+While playing, it then only manipulates the z-indexes of the video elements and stops or starts them accordingly (see Algorithm 1) resulting in a smoother playback and minimized buffering time.
+
+As optimization, whenever a new video chunk is added to the timeline area, the preview player is signalled to inspect whether there already exists an HTML video element referencing the same source.
+If there is none, then one will be created.
+Analogously, if a video chunk is removed from the timeline, then its corresponding HTML video element is deleted if there is no other chunk requiring the same source.
+\begin{algorithm}[H]
+\caption{Preview playback loop, simplified}
+	\begin{algorithmic}[1]
+		\STATE cc $\gets$ current chunk
+		\STATE pc $\gets$ previous chunk
+		\IF {cc $\ne$ pc $\AND$ (pc.type $=$ video $\OR$ pc.type $=$ audio)}
+		\STATE pcHTML $\gets$ corresponding HTML video/audio element
+		\STATE pause pcHTML
+		\ENDIF
+		\IF {time $=$ timeline-end $\OR$ time $=$ range-end}
+		\IF {loop play active}
+		\STATE go to range-start
+		\ELSE
+		\STATE pause player
+		\RETURN
+		\ENDIF
+		\ENDIF
+		\STATE bring current video/image to the front via z-index
+		\IF {cc.type $=$ video $\OR$ cc.type $=$ audio}
+		\STATE ccHTML $\gets$ corresponding HTML video/audio element
+		\STATE calculate ccHTML offset position
+		\STATE mute ccHTML if necessary
+		\STATE play ccHTML
+		\ENDIF
+		\STATE pc $\gets$ cc
+		\STATE time $\gets$ time counter + 100 ms
+		\STATE diff $\gets$ (real-time-passed - time)
+		\STATE repeat Algorithm 1 in (100 ms - diff)
+	\end{algorithmic}
+\end{algorithm}
+Due to the nature of Javascript, Algorithm 1 had to be seperated into two functions code-wise or else the parallel updated time counter would start one loop ahead of the preview player resulting in both units not being in sync.
+To keep the time counter even more precise, a self-adjustment calculation was introduced. By tracking the real-world time passed and matching that with the internal player time, it can be ensured that the preview playback loop is almost always repeated accurately every 100 milliseconds.
 
 \subsection{SQS}
 \textbf{ToDo: Nate} \\
@@ -103,12 +150,21 @@ set timeout approach while polling only 1 message at a time...
 same approach as segmentation, doesn't work due to backend...
 
 \section{Discussion}
-SQS and FH backend are shit; a backend managing the request and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness...
+SQS and FH backend are shit; a backend managing the request and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness... \\
+Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht
 
 \section{Conclusion}
 webUI great, SQS and FH backend are shit...
-
-\textit{Future Work}. open features and improvements...
+\\\\
+\textit{Future Work}. open features and improvements... \\
+- undo/redo auch für content \\
+- timeline delete: change position slider \\
+- timeline position- und range-slider als controls nutzen \\
+- whitelist check und url acceptance verbessern \\
+- chunk add time display als hover \\
+- sav-file correctness check \\
+- info page \\
+- SQS immer 10 ziehen \\
 
 \begin{thebibliography}{00}
 \bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
@@ -118,6 +174,7 @@ webUI great, SQS and FH backend are shit...
 \bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
 \bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
 \bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71
 \end{thebibliography}
 
 \end{document}

@@ -18,9 +18,6 @@ angular.module('moveditorApp')
             this.receiveTimeOut = null;
             this.waitForReceiveTime = 100;
 
-            this.sendQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo";
-            this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
-
             this.index = 0;
             this.isInProcess = false;
             this.timelineListCopy = null;
@@ -33,8 +30,15 @@ angular.module('moveditorApp')
                 total: 0
             };
 
+            this.sqsAccessKeyId = "AKIAIZ2BRMVVYB5IWGYQ";
+            this.sqsSecretAccessKey = "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";
+            this.sqsRegion = "eu-west-1";
+
+            this.sendQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo";
+            this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
+
             this.init = function () {
-                self.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
+                self.sqs = new AWS.SQS({"accessKeyId": self.sqsAccessKeyId, "secretAccessKey": self.sqsSecretAccessKey, "region": self.sqsRegion});
                 // console.log('init:', self.sqs);
             };
 

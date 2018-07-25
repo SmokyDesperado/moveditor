@@ -5,11 +5,43 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithm,algorithmic}
 \usepackage{graphicx}
+\usepackage{listings}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   % frame=single,
+   basicstyle=\small\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
 \begin{document}
 
 \title{User Interface for Video and Image Stitching}
@@ -77,7 +109,7 @@ List online/offline video stitching tools, differences and what makes our web ap
 Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
 
 \section{Design \& Implementation}
-List some features etc. but this section will only focus on main aspects of our web ui implementation and why things were done that way...
+List some features etc. but this section will only focus on main aspects of our web ui implementation and why things were done that way, bower (what?, why?, how?) + setup, ...
 
 \subsection{General}
 UI primarily for Desktop, save session via .txt export...
@@ -93,13 +125,17 @@ most controls using hammer JS...
 \subsection{Preview Player}
 The preview player emulates the stitching result of the service backend without actually sending the necessary requests.
 In doing so, imperfections in the stitching configurations can be detected and corrected via real-time feedback.
-The user is not impelled to wait for the actual stitching result, thus saving time.
-
+Users are not impelled to wait for the actual stitching result, thus saving them time.
+\\
+\subsubsection{Preview Player - Features}
 The implemented preview player supports all common controls of a usual browser media player.
 These include: a ``play/pause''-button, a ``time-position''-slider and a ``volume''-slider.
-On top of these, a ``restart''-button, a ``loop-play''-toggle and a ``play-in-range''-slider were added.
+On top of that, a ``restart''-button, a ``loop-play''-toggle and a ``play-in-range''-slider were added.
+For the latter the \textit{noUiSlider}\footnote{https://refreshless.com/nouislider/} library is utilized.
+Functionally, the ``play-in-range''-slider marks a time range in which the ``time-position''-slider is contraint.
 Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI feel more like a native application.
-
+\\
+\subsubsection{Preview Playback - Logic}
 For audio and image preview playback it is sufficient to only have one HTML audio, respectively image, element and change its sources in real-time while playing.
 However, this method does not work for all video sources, e.g. cloud provider URLs generally take more time for the initial loading which leads to stuttering, especially right after swapping video sources.
 Therefore, per video chunk the implemented player creates one dedicated HTML video element with preloaded source.
@@ -142,16 +178,124 @@ Due to the nature of Javascript, Algorithm 1 had to be seperated into two functi
 To keep the time counter even more precise, a self-adjustment calculation was introduced. By tracking the real-world time passed and matching that with the internal player time, it can be ensured that the preview playback loop is almost always repeated accurately every 100 milliseconds.
 
 \subsection{SQS}
-\textbf{ToDo: Nate} \\
-\textit{Segmentation Request}.
-set timeout approach while polling only 1 message at a time...
+Once the user is satisfied with the constructed timeline chunks, the whole stitching procedure can be initiated by pressing the ``stitching''-button.
+The stitching process consists of two phases: 1.) A segmentation phase and 2.) a stitching phase.
 
-\textit{Stitching Request}.
-same approach as segmentation, doesn't work due to backend...
+For communicating, the stitching backend operates over two seperate SQS queues.
+From the web client perspective, one queue is for sending requests, the other is needed for receiving results.
+Both are used for segmentation as well as for stitching requests.
+The request type is determined through the message body by the service backend.
+Further, each message body possesses a user defined \textit{jobID} which helps users to identify their messages in the queue for results.
+As with other libraries utilized in the developed user interface, functionalities of Amazon's SQS were made accessible by incorporating the official AWS SDK\footnote{https://github.com/aws/aws-sdk-js\#using-bower} for JavaScript via Bower.
+\begin{figure}[H]
+\begin{lstlisting}
+var sqs = new AWS.SQS({
+  "accessKeyId": sqsAccessKeyId,
+  "secretAccessKey": sqsSecretAccessKey,
+  "region": sqsRegion
+});
+\end{lstlisting}
+\caption{Setting up an SQS instance in AngularJS}
+\end{figure}
+At the beginning, the condition of the timeline and content area at process starting time are temporarily preserved.
+By working on those data, accidental user changes and edits in the meantime don't affect the stitching procedure.
+To avoid further problems, it is not possible to send another stitching request until the whole process is completed.
+\\
+\subsubsection{Segmentation Phase}
+In this context, segmentation means creating an MPD file based on an audio, image or video file, requiring only a public accessible resource URL.
+Theoretically, since segmentation is applied to files in full length and not single chunks, this step could be executed as soon as a source is added to the content area or when a content is added to the timeline.
+However, the user has to wait for the stitching process either way and not every resource might be used in the end which would then lead to spamming and wasting storage of the FOKUS backend.
+Also worth mentioning is that for segmenting images a length must be specified priorly which is only possible after actually working on the timeline.
+
+During phase 1, chunks in the timeline are fragmented in chronological order.
+A segmentation request message to a chunk is created and put on the request queue (see Fig. 2).
+\begin{figure}[H]
+\begin{lstlisting}
+var msg = {
+  jobID: segmentationId,
+  S3URL: chunkUrl,
+  encodingprofile: "default",
+  requestEnqueueTime: +new Date()
+};
+
+var params = {
+  MessageBody: JSON.stringify(msg),
+  QueueUrl: requestQueueURL,
+  MessageGroupId: 'myGroupId'
+};
+
+sqs.sendMessage(params, function(err, data) {
+  if (err) {
+    console.log('ERROR: ', err);
+  } else {
+    console.log("send request successfully");
+  }
+});
+\end{lstlisting}
+\caption{Example request for segmenting a video}
+\end{figure}
+After the segmentation request was send, a recursive receive via \textit{setTimeout()} is called every 100 milliseconds.
+The reason for this lies in the AWS SDK, which only allows the client to receive at most the 10 oldest messages on the result queue.
+This in turn means that if 10 or more messages of other users are occupying the queue first, then the client has to wait until those are removed by their target user.
+
+The implemented approach polls for merely one message at a time and only considers it, if the identified \textit{jobID} is targeting the user.
+In case one segmentation is done, the message contains an MPD URL, which is saved temporarily and the next chunks will be segmented, but only if their corresponding source URLs have not been segmented yet.
+Otherwise, a progress per chunk segmentation is shown and the next message is polled.
+Either way, that message is then removed from the queue by its proper recipient so that the next results in the FIFO queue can be received.
+\\
+\subsubsection{Stitching Phase}
+Are all chunks segmented successfully, the stitching phase starts.
+By sewing MPDs together according to a specified configuration, a new video MPD is generated.
+Except the message to be transmitted, sending and receiving a stitching request is analog to that of a segmentation request.
+\begin{figure}[H]
+\begin{lstlisting}
+var configStitching = {
+  "LOG_LEVEL": "info",
+  "server": {
+    "url": "http://localhost:8090",
+    "staticFolder": "adstitcher-srv/public/mpds",
+    "dashEndpoint": "/Users/fr/Documents/adstitcher-srv/public/mpds/"
+  },
+  "content": [
+    {
+      "type":"video",
+      "begin":0.5,
+      "end":5.5,
+      "offset":0,
+      "mute":false,
+      "hide":false,
+      "url":"https://s3.eu-central-1.amazonaws.com/wesualizesegment/exampleVideo1/Manifest.mpd"
+    },
+    {
+      "type":"video",
+      "begin":6.5,
+      "end":10.0,
+      "offset":3.5,
+      "mute":false,
+      "hide":false,
+      "url":"https://s3.eu-central-1.amazonaws.com/wesualizesegment/exampleVideo2/Manifest.mpd"
+    }
+  ]
+}
+
+var msg = {
+  jobID: stitchingId,
+  config: configStitching,
+  requestEnqueueTime: +new Date()
+};
+\end{lstlisting}
+\caption{Example message of a stitching request}
+\end{figure}
+While the segmentation works perfectly, the stitching request results in an error (\textit{errorCode 11: "something wrong with the dashEndpoint in the config. Please check the input config."}).
+Since there was no documentation of the stitching backend and because its developers were not always contactable, this issue could not be resolved at the moment.
 
 \section{Discussion}
-SQS and FH backend are shit; a backend managing the request and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness... \\
-Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht
+What works, what does not? Shortcoming?\\
+
+- SQS and FH backend are shit; a intermediary backend managing the request (msg timeouts etc...) and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness... \\
+- if client dies or abort receiving while not read all msg -$>$ other clients can not receive their msg from queue \\
+- SQS strategie wenn client stirbt: intermediary backend, create session savefile before sending process und notfalls von hier weitermachen \\
+Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht; same for SQS polling \\
 
 \section{Conclusion}
 webUI great, SQS and FH backend are shit...
@@ -167,13 +311,6 @@ webUI great, SQS and FH backend are shit...
 - SQS immer 10 ziehen \\
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
 \bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71
 \end{thebibliography}
 

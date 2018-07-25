@@ -77,13 +77,44 @@ List some features etc. but this section will only focus on main aspects of our 
 \subsection{General}
 UI primarily for Desktop, save session via .txt export...
 
+\newpage
+
 \subsection{Content}
 \textbf{ToDo: Minh} \\
-URL input for adding new contents from web/clouds...
+% % general\\
+The content area contains all the base videos, images and audios which are used in the app to stitch and create a new video. It is devided into two segments, the menu at the top and below the actual content area with all the materials. New content materials are loaded and added to the area via a public accessible URL. Meta information, like the thumbnail or content length, will be loaded and added to visible representation of the material. Content materials can be dragged and moved around to add them in the timeline or delete them. The user also has the possibility to save and load the current session and watch or hear the content material if the content of the material is unknown or forgotten. 
+
+% content object\\
+For displaying the materials in the content area the contentList object is used and binded to the view. This object is a simple JavaScript dictionary object which consist of a random generated contentId as key and an instance of the JavaScript class Content as value. The dictionary data type was chosen to eneabled the possibility of having direct access to the object of the contentList by only knowing the contentId. It is possible to pass the contentId of the materias from one service to another and only access the needed material properties right before using. 
+
+The instances of the Content class consist of a name, a type, a length, a url, a mpd and a active property. The name property is empty at the beginning and a user can change the name after the content materia is loaded. The url property is is the public accessible URL of the video, audio or image which is used to add the material. It is not possible to changed it afterwards. Each material URL is unique for the contentList. Dublicated material URLs will not be added to the contentList. As a result that only the URL is validated and not the content of the material, a duplicated content material can be added to the list by using the same content but with different URLs. \\
+\\
+== bild vom content material ==\\
+\\
+The meta information of the content material like type and the length are loaded after adding the content to the list via the HTML Audio/Video Events. For a better visualisation an image of the middle of the material video is added as a thmubnail while loading the meta information. The image itself is used for image typed content and for audio typed materials a pre defined image is used. Farther an icon on the lower right corner of the content also indicates the typed of the content material.
+
+The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.\\
+\\
+Lorem ipsum\\
+\\
+% ========\\
+% X - dictionary and reason\\
+% \\
+% O - add new content\\
+% O - loading meta info\\
+% O - URL input for adding new contents from web/clouds... \\
+% \\
+% O - drag and drop features\\
+% \\
+% O - saving and loading\\
+% \\
+% O - preview content\\
 
 \subsection{Timeline Area}
 \textbf{ToDo: Minh} \\
 most controls using hammer JS...
+
+\newpage
 
 \subsection{Preview Player}
 \textbf{ToDo: Nate} \\

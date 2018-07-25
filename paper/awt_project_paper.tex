@@ -87,7 +87,7 @@ The content area contains all the base videos, images and audios which are used 
 % content object\\
 For displaying the materials in the content area the contentList object is used and binded to the view. This object is a simple JavaScript dictionary object which consist of a random generated contentId as key and an instance of the JavaScript class Content as value. The dictionary data type was chosen to eneabled the possibility of having direct access to the object of the contentList by only knowing the contentId. It is possible to pass the contentId of the materias from one service to another and only access the needed material properties right before using. 
 
-The instances of the Content class consist of a name, a type, a length, a url, a mpd and a active property. The name property is empty at the beginning and a user can change the name after the content materia is loaded. The url property is is the public accessible URL of the video, audio or image which is used to add the material. It is not possible to changed it afterwards. Each material URL is unique for the contentList. Dublicated material URLs will not be added to the contentList. As a result that only the URL is validated and not the content of the material, a duplicated content material can be added to the list by using the same content but with different URLs. \\
+The instances of the Content class consist of a name, a type, a length, a url, a mpd and a active property. The name property is empty at the beginning and a user can change the name after the content materia is loaded. The url property is is the public accessible URL of the video, audio or image which is used to add the material. It is not possible to changed it afterwards. Each material URL is unique for the contentList. Dublicated material URLs will not be added to the contentList. As a result that only the URL is validated and not the content of the material, a duplicated content material can be added to the list by using the same content but with different URLs. New content is added to the contentList by adding a video, image or audio to a cloud or web service with a public accessible URL and the adding this url to the input field of the content area menu.\\
 \\
 == bild vom content material ==\\
 \\
@@ -100,9 +100,9 @@ Lorem ipsum\\
 % ========\\
 % X - dictionary and reason\\
 % \\
-% O - add new content\\
-% O - loading meta info\\
-% O - URL input for adding new contents from web/clouds... \\
+% X - add new content\\
+% X - loading meta info\\
+% X - URL input for adding new contents from web/clouds... \\
 % \\
 % O - drag and drop features\\
 % \\

@@ -15,8 +15,6 @@ angular.module('moveditorApp')
         function (MvHelperService, ContentService, TimelineService) {
             var self = this;
             this.sqs = null;
-            this.receiveTimeOut = null;
-            this.waitForReceiveTime = 100;
             this.requestType = {
               SEGMENTATION: 1,
               STITCHING: 2,
@@ -148,26 +146,30 @@ angular.module('moveditorApp')
             this.receiveMessage = function (jobID, type) {
                 var sqsParams = {
                     QueueUrl: self.receiveQueueURL,
-                    MaxNumberOfMessages: 1,
+                    MaxNumberOfMessages: 10,
                     // MessageGroupId: 'wesealize2',
                     // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
                     // WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
                 };
 
                 self.sqs.receiveMessage(sqsParams, function(err, data) {
+                    if (data.Messages.length > 0) {
 
-                    if (data.Messages) {
-                        if (data.Messages.length > 0) {
-                            var message = data.Messages[0];
+                        var done = false;
+                        for (var i = 0; i < data.Messages.length; i++) {
+                            var message = data.Messages[i];
                             var body = JSON.parse(message.Body);
 
                             if (body.jobID === jobID) {
 
-                                if (angular.isDefined(body.resultS3URL)) {
+                                if (angular.isDefined(body.progress)) {
+                                    console.log("received data for jobID: " + body.jobID + ", progress: " + body.progress);
+                                    self.makeProgress(body.progress);
+
+                                } else if (angular.isDefined(body.resultS3URL)) {
                                     if (type === self.requestType.SEGMENTATION) {
                                         console.log("received segmentation response", body);
                                         self.saveMpdUrlToContent(body.resultS3URL);
-                                        clearTimeout(self.receiveTimeOut);
                                         self.makeProgress(100);
                                         self.finishedSegmentation();
 
@@ -175,19 +177,17 @@ angular.module('moveditorApp')
                                         console.log("received stitching response", body);
                                         self.stopStitchingProcess();
                                     }
-                                } else if (angular.isDefined(body.progress)) {
-                                    console.log("received data for jobID: " + body.jobID + ", progress: " + body.progress);
-                                    self.makeProgress(body.progress);
-                                    self.receiveTimeOut = setTimeout(function () { self.receiveMessage(jobID, type); }, self.waitForReceiveTime);
+                                    done = true;
                                 }
-
                                 self.removeFromQueue(message);
-                            } else {
-                                self.receiveTimeOut = setTimeout(function () { self.receiveMessage(jobID, type); }, self.waitForReceiveTime);
                             }
-                        } else {
-                            self.receiveTimeOut = setTimeout(function () { self.receiveMessage(jobID, type); }, self.waitForReceiveTime);
                         }
+
+                        if (!done) {
+                            self.receiveMessage(jobID, type);
+                        }
+                    } else {
+                        self.receiveMessage(jobID, type);
                     }
                 });
             };
@@ -241,7 +241,6 @@ angular.module('moveditorApp')
             };
 
             this.stopStitchingProcess = function () {
-                clearTimeout(self.receiveTimeOut);
                 self.makeProgress(0);
                 self.progress.progressButton[0].innerHTML = 'stitching';
                 self.timelineListCopy = null;

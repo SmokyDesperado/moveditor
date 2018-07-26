@@ -234,22 +234,19 @@ sqs.sendMessage(params, function(err, data) {
 \end{lstlisting}
 \caption{Example request for segmenting a video}
 \end{figure}
-After the segmentation request was send, a recursive receive via \textit{setTimeout()} is called every 100 milliseconds.
+After the segmentation request was send, the result queue will be polled for via a recursive receiving function.
 The reason for this lies in the AWS SDK, which only allows the client to receive at most the 10 oldest messages on the result queue.
 This in turn means that if 10 or more messages of other users are occupying the queue first, then the client has to wait until those are removed by their target user.
 
-The implemented approach polls for merely one message at a time and only considers it, if the identified \textit{jobID} is targeting the user.
-In case one segmentation is done, the message contains an MPD URL, which is saved temporarily and the next chunks will be segmented, but only if their corresponding source URLs have not been segmented yet.
-Otherwise, a progress per chunk segmentation is shown and the next message is polled.
-Either way, that message is then removed from the queue by its proper recipient so that the next results in the FIFO queue can be received.
-
-In this prototype version of the UI, a ``purge\&restart''-button was implemented as a safety measure.
-Should any client abort the message receiving process so that the result queue won't make any progresses, this button will remove all messages on the queue and restart the FOKUS backend server.
+The implemented approach polls for the 10 messages at a time and only considers those targeting the user via identifying the \textit{jobID}.
+Are among those messages no result messages, a progress per chunk segmentation is shown and the next 10 are polled for.
+In case one segmentation is done, a message contains an MPD URL, which is saved temporarily and the next chunk will be segmented, but only if its corresponding source URL has not been segmented yet.
+Either way, those messages are then removed from the queue by its proper recipient so that the next results in the FIFO queue can be received.
 \\
 \subsubsection{Stitching Phase}
 Are all chunks segmented successfully, the stitching phase starts.
 By sewing MPDs together according to a specified configuration, a new video MPD is generated.
-Except the message to be transmitted, sending and receiving a stitching request is analog to that of a segmentation request.
+Except the message to be transmitted, sending and receiving a stitching request are analog to that of a segmentation request.
 \begin{figure}[H]
 \begin{lstlisting}
 var configStitching = {
@@ -290,16 +287,27 @@ var msg = {
 \caption{Example message of a stitching request}
 \end{figure}
 While the segmentation works perfectly, the stitching request results in an error (\textit{errorCode 11: "something wrong with the dashEndpoint in the config. Please check the input config."}).
-Since there was no documentation of the stitching backend and because its developers were not always contactable, this issue could not be resolved at the moment.
+Since there was no documentation of the stitching backend and because its developers were not always contactable, this issue could not be resolved in this work.
+\\
+\subsubsection{Problems when receiving messages}
+During tests it became apparent, that not every polling call resulted in the client receiving messages.
+Despite that, when only one client is polling for the FIFO result queue at a time, it works perfectly.
+As soon as more users attempt to receive messages, the whole process is slowed down massively.
+It may be that the concurrent pollings from different clients are interferring with each other so that the probability of not receiving any messages is increased a lot.
+This way, the FIFO queue can not make any or only very slow progresses.
+On the other hand it might also be that the SQS queues are deployed on budget servers that are not able to actually handle multiple requests simultaneously.
+
+Even worse, when many clients are polling for results, and some of these abort this process, then that might lead to stagnation of the result queue, whereby no active user can receive any more messages.
+
+In this prototype version of the UI, a ``purge\&restart''-button was implemented as a safety measure for now.
+This button will remove all messages on the queue and restart the FOKUS backend server, although this is no longterm solution to menttioned problems.
 
 \section{Discussion}
 What works, what does not? Shortcoming?\\
 
 - SQS and FH backend are shit; a intermediary backend managing the request (msg timeouts etc...) and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness... \\
-- if client dies or abort receiving while not read all msg -$>$ other clients can not receive their msg from queue \\
-- if no client dies while sending / receiving then should work perfectly for multiple parallel requests \\
-- SQS strategie wenn client stirbt: intermediary backend, create session savefile before sending process und notfalls von hier weitermachen \\
-Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht; same for SQS polling \\
+- server und queues nicht robust \\
+Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht\\
 
 \section{Conclusion}
 webUI great, SQS and FH backend are shit...
@@ -312,7 +320,7 @@ webUI great, SQS and FH backend are shit...
 - chunk add time display als hover \\
 - sav-file correctness check \\
 - info page \\
-- SQS immer 10 ziehen \\
+- SQS strategie wenn client stirbt: intermediary backend, create session savefile before sending process und notfalls von hier weitermachen \\
 
 \begin{thebibliography}{00}
 \bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71

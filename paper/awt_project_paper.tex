@@ -93,12 +93,12 @@ The instances of the Content class consist of a name, a type, a length, a url, a
 \\
 The meta information of the content material like type and the length are loaded after adding the content to the list via the HTML Audio/Video Events. For a better visualisation an image of the middle of the material video is added as a thmubnail while loading the meta information. The image itself is used for image typed content and for audio typed materials a pre defined image is used. Farther an icon on the lower right corner of the content also indicates the typed of the content material.
 
-The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.\\
-\\
-The drag and drop functionality to add content materials into the timeline is enabled through the AngularJS module AngularHammer(1) by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS (2) was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements.\\
-\\
-saving / loading\\
-\\
+The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.
+
+The drag and drop functionality to add content materials into the timeline is enabled through the AngularJS module AngularHammer(1) by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS (2) was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements.
+
+Another aspect of the content area menu is saving and loading working sessions. Saving can save the current state of the content and timeline area and loading wiill recreate the state of a saved working session from a file. Based on the used data structure of the app, the saving file is a .txt file containing one JSON object. The save process will collect all needed information of the different parts and create the saving file and loading will read the file and recreates saved state of the app. Because of the simplicity of the saved file and the absent of validation while loading, a use can manupulate the information and the state of the app.
+
 preview content\\
 \\
 (1) - https://github.com/RyanMullins/angular-hammer\\
@@ -113,7 +113,7 @@ preview content\\
 % \\
 % X - drag and drop features\\
 % \\
-% O - saving and loading\\
+% X - saving and loading\\
 % \\
 % O - preview content\\
 

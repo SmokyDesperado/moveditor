@@ -136,7 +136,7 @@ The drag and drop functionality to add content materials into the timeline is en
 
 Another aspect of the content area menu is saving and loading working sessions. Saving can save the current state of the content and timeline area and loading wiill recreate the state of a saved working session from a file. Based on the used data structure of the app, the saving file is a .txt file containing one JSON object. The save process will collect all needed information of the different parts and create the saving file and loading will read the file and recreates saved state of the app. Because of the simplicity of the saved file and the absent of validation while loading, a use can manupulate the information and the state of the app.
 
-preview content\\
+For checking the loaded content, the user can double click on the specific material. This opens up a pop up viewer / player showing image typed materials or playing video or audio typed materials. The double click is handled by AngularHammer and will create an overlay on the app. Normally the overlay is hided in the background and jumps to the foreground when activated. The dynamically created and added content of the overlay depends on the type, whether it is a audio player, a video player or just a image, of the material. By clicking outside the overlay content, the content will be pause (only for audio and video player), destroyed and the overlay will hide in the background again.\\
 \\
 (1) - https://github.com/RyanMullins/angular-hammer\\
 (2) - http://hammerjs.github.io/getting-started\\

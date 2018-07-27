@@ -164,7 +164,11 @@ most controls using hammer JS...
 The preview player emulates the stitching result of the service backend without actually sending the necessary requests.
 In doing so, imperfections in the stitching configurations can be detected and corrected via real-time feedback.
 Users are not impelled to wait for the actual stitching result, thus saving them time.
-\\
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.48]{preview_player.png}
+\caption{UI of Preview Player}
+\end{figure}
 \subsubsection{Preview Player - Features}
 The implemented preview player supports all common controls of a usual browser media player.
 These include: a ``play/pause''-button, a ``time-position''-slider and a ``volume''-slider.
@@ -349,16 +353,18 @@ Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwä
 
 \section{Conclusion}
 webUI great, SQS and FH backend are shit...
-\\\\
-\textit{Future Work}. open features and improvements... \\
-- undo/redo auch für content \\
-- timeline delete: change position slider \\
-- timeline position- und range-slider als controls nutzen \\
-- whitelist check und url acceptance verbessern \\
-- chunk add time display als hover \\
-- sav-file correctness check \\
-- info page \\
-- SQS strategie wenn client stirbt: intermediary backend, create session savefile before sending process und notfalls von hier weitermachen \\
+\\
+\subsubsection*{Future Work}
+While the implemented prototype provides many user interaction possibilities, there is still room for further valuable features and improvements.
+One of the most handy additions would be to control the preview player time and play-in-range positions by utilizing the currently only indicating position markers on the timeline.
+Also, the un-/redo features merely apply for timeline changes at the moment.
+When executed, ``active-element''-updates on content resources through adding and deleting chunks won't be taken into account.
+It is desired to monitor these changes and other operations done on the content area.
+Furthermore, dragging new chunks to the timeline, moving or shortening chunks would be more appealing if tooltips are displayed which show time stamps during these actions to increase the user experience.
+Although adding of new content resources works, the URL acceptance check and resource type whitelist matching algorithms would benefit from enhancements, too.
+Loading saved session files might need correctness checks in a future revision as well, so that this point can not be exploited, providing more robustness and consistency.
+
+Regarding the communication with SQS, it is suggested to implement a dedicated intermediary backend to take care of sending and receiving messages (as mentioned in \textbf{V. Discussion}). Otherwise, strategies must be devised, so that concurrently receiving clients won't result in a bottleneck.
 
 \begin{thebibliography}{00}
 \bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71

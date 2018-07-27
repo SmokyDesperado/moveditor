@@ -219,7 +219,7 @@ angular.module('moveditorApp')
             // ====================================================================================================
             // Preview play and time update step
             // Needed to seperate previewPlayStep() and timeUpdateStep() so that preview player does not 
-            // take a timeStepInterval of time before it starts playing.
+            // take a timeStepInterval of time before it actually starts playing.
             // ====================================================================================================
 
             /**
@@ -233,9 +233,9 @@ angular.module('moveditorApp')
                     var previousVideoImage = ContentService.getContentList()[self.previousChunkPair.video.objectListId];
                     if (previousVideoImage != null) {
                         if (previousVideoImage.type === "video") {
-                            var previousVideoImageElement = document.getElementById("video_" + self.previousChunkPair.video.objectListId);
-                            if (previousVideoImageElement != null) {
-                                previousVideoImageElement.pause();
+                            var previousVideoElement = document.getElementById("video_" + self.previousChunkPair.video.objectListId);
+                            if (previousVideoElement != null) {
+                                previousVideoElement.pause();
                             }
                         }
                     }
@@ -248,6 +248,16 @@ angular.module('moveditorApp')
                             document.getElementById("audio_0").pause();
                         }
                     }
+                }
+
+                // check whether player should stop or restart on loop if reached the end or positionB
+                if (self.currentPlayTime === self.positionB || self.currentPlayTime >= document.getElementById('position_slider').max) {
+                    if (self.loopPlay && self.positionA !== self.positionB && document.getElementById('position_slider').max !== 0) {
+                        self.jumpToPosition(self.positionA);
+                    } else {
+                        self.pause();
+                    }
+                    return;
                 }
 
                 // get current active video, image or audio and show/play these at correct offset position
@@ -272,16 +282,6 @@ angular.module('moveditorApp')
                 }
 
                 self.previousChunkPair = currentChunkPair;
-
-                // check whether player should stop or restart on loop if reached the end or positionB
-                if (self.currentPlayTime === self.positionB || self.currentPlayTime >= document.getElementById('position_slider').max) {
-                    if (self.loopPlay && self.positionA !== self.positionB && document.getElementById('position_slider').max !== 0) {
-                        self.jumpToPosition(self.positionA);
-                    } else {
-                        self.pause();
-                    }
-                    return;
-                }
 
                 // self-adjusting algorithm for more accuracy from https://www.sitepoint.com/creating-accurate-timers-in-javascript/
                 var realTime = new Date().getTime();

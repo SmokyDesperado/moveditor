@@ -220,6 +220,7 @@ angular.module('moveditorApp')
                 $scope.dragShortenEnd = function() {
                     self.dragShorten = false;
                     $scope.timelineService.saveTimelineStep();
+                    MvHelperService.updatePreviewPlayerParameters($scope.timelineService.timelineList, false);
                 };
 
                 // handling drag shorten for chunk modifier from chunk start

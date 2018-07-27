@@ -15,11 +15,10 @@ angular.module('moveditorApp')
         function (MvHelperService, ContentService, TimelineService) {
             var self = this;
             this.sqs = null;
-            this.receiveTimeOut = null;
-            this.waitForReceiveTime = 100;
-
-            this.sendQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo";
-            this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
+            this.requestType = {
+              SEGMENTATION: 1,
+              STITCHING: 2,
+            };
 
             this.index = 0;
             this.isInProcess = false;
@@ -33,13 +32,20 @@ angular.module('moveditorApp')
                 total: 0
             };
 
+            this.sqsAccessKeyId = "AKIAIZ2BRMVVYB5IWGYQ";
+            this.sqsSecretAccessKey = "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";
+            this.sqsRegion = "eu-west-1";
+
+            this.sendQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_requests.fifo";
+            this.receiveQueueURL = "https://sqs.eu-west-1.amazonaws.com/362232955499/transcode_results.fifo";
+
             this.init = function () {
-                self.sqs = new AWS.SQS({"accessKeyId":"AKIAIZ2BRMVVYB5IWGYQ", "secretAccessKey": "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", "region": "eu-west-1"});
+                self.sqs = new AWS.SQS({"accessKeyId": self.sqsAccessKeyId, "secretAccessKey": self.sqsSecretAccessKey, "region": self.sqsRegion});
                 // console.log('init:', self.sqs);
             };
 
             // ====================================================================================================
-            // SQS SEGMENTATION
+            // SQS SEGMENTATION & STITCHING
             // ====================================================================================================
 
             this.requestSegmentation = function (index) {
@@ -47,12 +53,12 @@ angular.module('moveditorApp')
                 if (index === 0) {
                     self.timelineListCopy = angular.copy(TimelineService.timelineList);
                     self.contentListCopy = angular.copy(ContentService.getContentList());
+                    self.isInProcess = true;
                 }
 
                 self.index = index;
-                self.isInProcess = true;
-                var chunk = self.timelineListCopy['video'][index];
                 self.makeTotalProgress(index, self.timelineListCopy['video'].length);
+                var chunk = self.timelineListCopy['video'][index];
                 
                 if (self.contentListCopy[chunk.objectListId].mpd === "") {
                     var segmentationId = String(chunk.objectListId);
@@ -76,75 +82,12 @@ angular.module('moveditorApp')
                     };
                     console.log("SQS segmentation message: ", msg);
 
-                    self.sendSegmentation(msg);
-                    self.receiveSegmentation(segmentationId);
+                    self.sendMessage(msg);
+                    self.receiveMessage(segmentationId, self.requestType.SEGMENTATION);
                 } else {
                     self.finishedSegmentation();
                 }
             };
-
-            this.sendSegmentation = function (msg){
-                var sqsParams = {
-                    MessageBody: JSON.stringify(msg),
-                    QueueUrl: self.sendQueueURL,
-                    MessageGroupId: 'we3'
-                };
-                self.sqs.sendMessage(sqsParams, function(err, data) {
-                    if (err) {
-                        console.log('ERR', err);
-                    }
-                    console.log("send segmentation request successfully");
-                    console.log("--------------------------------------------------------------");
-                });
-            };
-
-            // modified from https://milesplit.wordpress.com/2013/11/07/using-sqs-with-node/
-            this.receiveSegmentation = function (segmentationID) {
-                var sqsParams = {
-                    QueueUrl: self.receiveQueueURL,
-                    // MessageGroupId: 'wesealize2',
-                    MaxNumberOfMessages: 1,
-
-                    // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
-                    // WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
-                };
-
-                self.sqs.receiveMessage(sqsParams, function(err, data) {
-
-                    if (data.Messages) {
-                        if (data.Messages.length > 0) {
-                            var message = data.Messages[0];
-                            var body = JSON.parse(message.Body);
-
-                            if (body.jobID === segmentationID) {
-
-                                if (angular.isDefined(body.resultS3URL)) {
-                                    console.log("received segmentation response", body);
-                                    self.saveMpdUrlToContent(body.resultS3URL);
-                                    clearTimeout(self.receiveTimeOut);
-                                    self.makeProgress(100);
-                                    self.finishedSegmentation();
-
-                                } else if (angular.isDefined(body.progress)) {
-                                    console.log("received data for jobID: " + body.jobID + ", progress: " + body.progress);
-                                    self.makeProgress(body.progress);
-                                    self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
-                                }
-
-                                self.removeFromQueue(message);
-                            } else {
-                                self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
-                            }
-                        } else {
-                            self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
-                        }
-                    }
-                });
-            };
-
-            // ====================================================================================================
-            // SQS STITCHING
-            // ====================================================================================================
 
             this.requestStitching = function () {
                 var configStitching = {
@@ -159,7 +102,15 @@ angular.module('moveditorApp')
 
                 for (var i = 0; i < self.timelineListCopy['video'].length; i++) {
                     var chunk = self.timelineListCopy['video'][i];
-                    var mediaContent = {"type": self.contentListCopy[chunk.objectListId].type, "begin": chunk.start, "end": chunk.end, "offset": chunk.offset, "mute": chunk.mute, "hide": false, "url": self.contentListCopy[chunk.objectListId].mpd};
+                    var mediaContent = {
+                        "type": self.contentListCopy[chunk.objectListId].type,
+                        "begin": chunk.start,
+                        "end": chunk.end,
+                        "offset": chunk.offset,
+                        "mute": chunk.mute,
+                        "hide": false,
+                        "url": self.contentListCopy[chunk.objectListId].mpd
+                    };
                     configStitching.content.push(mediaContent);
                 };
 
@@ -167,61 +118,76 @@ angular.module('moveditorApp')
                 var msg = { jobID: stitchingId, config: configStitching, requestEnqueueTime: +new Date() };
                 console.log("SQS stitching message: ", msg);
 
-                self.sendStitchingConfig(msg);
-                self.receiveStitchingConfig(stitchingId);
+                self.sendMessage(msg);
+                self.receiveMessage(stitchingId, self.requestType.STITCHING);
             };
 
-            this.sendStitchingConfig = function (msg) {
+            // ====================================================================================================
+            // SQS send & receive
+            // ====================================================================================================
+
+            this.sendMessage = function (msg) {
                 var sqsParams = {
                     MessageBody: JSON.stringify(msg),
                     QueueUrl: self.sendQueueURL,
-                    MessageGroupId: 'we3'
+                    MessageGroupId: 'myGroupId'
                 };
                 self.sqs.sendMessage(sqsParams, function(err, data) {
                     if (err) {
                         console.log('ERR', err);
+                    } else {
+                        console.log("send request successfully");
+                        console.log("--------------------------------------------------------------");
                     }
-                    console.log("send stitching request successfully");
-                    console.log("--------------------------------------------------------------");
                 });
             };
 
-            this.receiveStitchingConfig = function (stitchingId) {
+            // modified from https://milesplit.wordpress.com/2013/11/07/using-sqs-with-node/
+            this.receiveMessage = function (jobID, type) {
                 var sqsParams = {
                     QueueUrl: self.receiveQueueURL,
+                    MaxNumberOfMessages: 10,
                     // MessageGroupId: 'wesealize2',
-                    MaxNumberOfMessages: 1,
-
                     // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
                     // WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
                 };
 
                 self.sqs.receiveMessage(sqsParams, function(err, data) {
+                    if (data.Messages.length > 0) {
 
-                    if (data.Messages) {
-                        if (data.Messages.length > 0) {
-                            var message = data.Messages[0];
+                        var done = false;
+                        for (var i = 0; i < data.Messages.length; i++) {
+                            var message = data.Messages[i];
                             var body = JSON.parse(message.Body);
 
-                            if (body.jobID === stitchingId) {
+                            if (body.jobID === jobID) {
 
-                                if (angular.isDefined(body.resultS3URL)) {
-                                    console.log("received stitching response", body);
-                                    self.stopStitchingProcess();
-
-                                } else if (angular.isDefined(body.progress)) {
+                                if (angular.isDefined(body.progress)) {
                                     console.log("received data for jobID: " + body.jobID + ", progress: " + body.progress);
                                     self.makeProgress(body.progress);
-                                    self.receiveTimeOut = setTimeout(function () { self.receiveStitchingConfig(stitchingId); }, self.waitForReceiveTime);
-                                }
 
+                                } else if (angular.isDefined(body.resultS3URL)) {
+                                    if (type === self.requestType.SEGMENTATION) {
+                                        console.log("received segmentation response", body);
+                                        self.saveMpdUrlToContent(body.resultS3URL);
+                                        self.makeProgress(100);
+                                        self.finishedSegmentation();
+
+                                    } else if (type === self.requestType.STITCHING) {
+                                        console.log("received stitching response", body);
+                                        self.stopStitchingProcess();
+                                    }
+                                    done = true;
+                                }
                                 self.removeFromQueue(message);
-                            } else {
-                                self.receiveTimeOut = setTimeout(function () { self.receiveSegmentation(segmentationID); }, self.waitForReceiveTime);
                             }
-                        } else {
-                            self.receiveTimeOut = setTimeout(function () { self.receiveStitchingConfig(stitchingId); }, self.waitForReceiveTime);
                         }
+
+                        if (!done) {
+                            self.receiveMessage(jobID, type);
+                        }
+                    } else {
+                        self.receiveMessage(jobID, type);
                     }
                 });
             };
@@ -275,22 +241,19 @@ angular.module('moveditorApp')
             };
 
             this.stopStitchingProcess = function () {
-                clearTimeout(self.receiveTimeOut);
                 self.makeProgress(0);
-                self.progress.progressButton[0].innerHTML = 'send';
+                self.progress.progressButton[0].innerHTML = 'stitching';
                 self.timelineListCopy = null;
                 self.contentListCopy = null;
                 self.isInProcess = false;
             };
 
             this.receive10 = function () {
-                console.log("receive 10");
+                console.log("receive 10 messages from queue");
 
                 var sqsParams = {
                     QueueUrl: self.receiveQueueURL,
                     MaxNumberOfMessages: 10,
-
-                    // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
                     WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
                 };
 

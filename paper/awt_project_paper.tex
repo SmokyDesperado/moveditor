@@ -117,11 +117,8 @@ UI primarily for Desktop, save session via .txt export...
 \newpage
 
 \subsection{Content}
-\textbf{ToDo: Minh} \\
-% % general\\
 The content area contains all the base videos, images and audios which are used in the app to stitch and create a new video. It is devided into two segments, the menu at the top and below the actual content area with all the materials. New content materials are loaded and added to the area by a public accessible URL. Meta information, like the thumbnail or content length, will be loaded and added to visible representation of the material. Content materials can be dragged and moved around to add them in the timeline or delete them. The user also has the possibility to save and load the current session and watch or hear the content material if the content of the material is unknown or forgotten.
 
-% content object\\
 For displaying the materials in the content area the contentList object is used and binded to the view. This object is a simple JavaScript dictionary object which consist of a random generated contentId as key and an instance of the JavaScript class Content as value. The dictionary data type was chosen to eneabled the possibility of having direct access to the object of the contentList by only knowing the contentId. It is possible to pass the contentId of the materias from one service to another and only access the needed material properties right before using.
 
 The instances of the Content class consist of a name, a type, a length, a url, a mpd and a active property. The name property is empty at the beginning and a user can change the name after the content materia is loaded. The url property is is the public accessible URL of the video, audio or image which is used to add the material. It is not possible to changed it afterwards. Each material URL is unique for the contentList. Dublicated material URLs will not be added to the contentList. As a result that only the URL is validated and not the content of the material, a duplicated content material can be added to the list by using the same content but with different URLs. New content is added to the contentList by adding a video, image or audio to a cloud or web service with a public accessible URL and the adding this url to the input field of the content area menu.\\
@@ -135,7 +132,6 @@ The active property of a material is used to keep track of amounts of the materi
 The drag and drop functionality to add content materials into the timeline or delete content is enabled through the AngularJS module AngularHammer(1) by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS (2) was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements. Dragging materials will create a drag indicator, showing and representing the active drag action. The indicator will disappear by dropping the material (mousekey up) and execute the specific action depending on the dropping mouse position.
 
 A trash icon is start to appear in the content area by dragging a material element around. When the user drops it in the trash and the mouse position is within the boundaries of the trash icon, then this action will remove the material from the content area (when active is 0). Showing and hiding the trash is activated by panStart and panEnd. Dropping the material into the timeline will add a chunk in the timeline area.
-%drag add to timeline
 
 Another aspect of the content area menu is saving and loading working sessions. Saving can save the current state of the content and timeline area and loading wiill recreate the state of a saved working session from a file. Based on the used data structure of the app, the saving file is a .txt file containing one JSON object. The save process will collect all needed information of the different parts and create the saving file and loading will read the file and recreates saved state of the app. Because of the simplicity of the saved file and the absent of validation while loading, a use can manupulate the information and the state of the app.
 
@@ -158,10 +154,38 @@ For checking the loaded content, the user can double click on the specific mater
 % O - preview content\\
 
 \subsection{Timeline Area}
-\textbf{ToDo: Minh} \\
-most controls using hammer JS...
+Mainly the user will be working in the timeline area to create and edit the stitching video. Unlike the content area, the timeline area is devieded into three segments, the timeline bar where the materials are added as chunks, a menu to execute serveral functionalities and an information area to view the chunk data. Added chunks of the timeline can be focused and edited by dragging or by interaction with the menu buttons. The information area will show meta more detailed information of focused chunks.
+
+Added material chunks in the timeline are stored in the timelineList array unlike the contentList dictionary object. Reason for that is to have a simple way to store the material chunks and to having a ordered data structure. Like the contentList object, the elements of the timelineList is used to generate a visual representation of the chunks. Due to the characteristic of overlap between video and audio content, the timeline is devided into two parts. Video and image chunks (no overlapping allowed) are positioned in one timeline part and audio chunks are positioned on a seperate timeline part and can be played at the same time like the video / image chunks. 
+
+scales and zoom (pixel per seconds)
+
+delete and focused
+
+timeline drag
+
+swap
+
+undo / redo
+\\
+% \\
+% ========\\
+% O - timeline object is array and reason\\
+% O - add to timeline\\
+% O - meta information\\
+% \\
+% O - timeline drag (chunk and shorten) and how limiter works (before and after \\
+% O optimization)\\
+% \\
+% O - swap and why not drag\\
+% \\
+% O - delete and interaction with active\\
+% \\
+% O - undo / redo and the temporally save object\\
+% \\
 
 \newpage
+
 
 \subsection{Preview Player}
 The preview player emulates the stitching result of the service backend without actually sending the necessary requests.

@@ -86,6 +86,8 @@
 
 #time_display {
     color: #ffffff;
+
+    font-weight: bold;
 }
 
 .preview-player__loop {

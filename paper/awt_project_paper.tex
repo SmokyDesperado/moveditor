@@ -163,11 +163,11 @@ most controls using hammer JS...
 \subsection{Preview Player}
 The preview player emulates the stitching result of the service backend without actually sending the necessary requests.
 In doing so, imperfections in the stitching configurations can be detected and corrected via real-time feedback.
-Users are not impelled to wait for the actual stitching result, thus saving them time.
+Users are not impelled to wait for the actual stitching response, thus saving them time.
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.48]{preview_player.png}
-\caption{UI of Preview Player}
+\includegraphics[scale=0.5]{preview_player.png}
+\caption{UI of Preview Player.}
 \end{figure}
 \subsubsection{Preview Player - Features}
 The implemented preview player supports all common controls of a usual browser media player.
@@ -227,7 +227,7 @@ For communicating, the stitching backend operates over two seperate SQS queues.
 From the web client perspective, one queue is for sending requests, the other is needed for receiving results.
 Both are used for segmentation as well as for stitching requests.
 The request type is determined through the message body by the service backend.
-Further, each message body possesses a user defined \textit{jobID} which helps users to identify their messages in the queue for results.
+Further, each message body possesses a user defined \textit{jobID} which helps users to identify their messages in the queue for responses.
 As with other libraries utilized in the developed user interface, functionalities of Amazon's SQS were made accessible by incorporating the official AWS SDK\footnote{https://github.com/aws/aws-sdk-js\#using-bower} for JavaScript via Bower.
 \begin{figure}[H]
 \begin{lstlisting}
@@ -237,20 +237,20 @@ var sqs = new AWS.SQS({
   "region": sqsRegion
 });
 \end{lstlisting}
-\caption{Setting up an SQS instance in AngularJS}
+\caption{Setting up an SQS instance in AngularJS.}
 \end{figure}
 At the beginning, the condition of the timeline and content area at process starting time are temporarily preserved.
 By working on those data, accidental user changes and edits in the meantime don't affect the stitching procedure.
 To avoid further problems, it is not possible to send another stitching request until the whole process is completed.
 \\
 \subsubsection{Segmentation Phase}
-In this context, segmentation means creating an MPD file based on an audio, image or video file, requiring only a public accessible resource URL.
-Theoretically, since segmentation is applied to files in full length and not single chunks, this step could be executed as soon as a source is added to the content area or when a content is added to the timeline.
+In this context, segmentation means creating an MPD file based on an audio, image or video file, requiring only a publicly accessible resource URL.
+Theoretically, since fragmentation is applied to files in full length and not single chunks, this step could be executed as soon as a source is added to the content area or when a content is added to the timeline.
 However, the user has to wait for the stitching process either way and not every resource might be used in the end which would then lead to spamming and wasting storage of the FOKUS backend.
 Also worth mentioning is that for segmenting images a length must be specified priorly which is only possible after actually working on the timeline.
 
 During phase 1, chunks in the timeline are fragmented in chronological order.
-A segmentation request message to a chunk is created and put on the request queue (see Fig. 2).
+A segmentation request message to a chunk is created and put on the request queue (see Fig. 2). While images need an extra \textit{loop} attribute compared to videos to indicate their length, audio files require an \textit{onlyaudio} attribute, although the fragmentation of latter are currently not supported by the backend.
 \begin{figure}[H]
 \begin{lstlisting}
 var msg = {
@@ -274,16 +274,23 @@ sqs.sendMessage(params, function(err, data) {
   }
 });
 \end{lstlisting}
-\caption{Example request for segmenting a video}
+\caption{Example request for segmenting a video.}
 \end{figure}
 After the segmentation request was send, the result queue will be polled for via a recursive receiving function.
 The reason for this lies in the AWS SDK, which only allows the client to receive at most the 10 oldest messages on the result queue.
-This in turn means that if 10 or more messages of other users are occupying the queue first, then the client has to wait until those are removed by their target user.
+This in turn means that if 10 or more messages of other users are occupying the queue first, then the client has to wait until those are removed by their target user. 
 
-The implemented approach polls for the 10 messages at a time and only considers those targeting the user via identifying the \textit{jobID}.
-Are among those messages no result messages, a progress per chunk segmentation is shown and the next 10 are polled for.
+The implemented approach polls for the maximum number of 10 messages at a time and only considers those targeting the user via identifying the \textit{jobID}.
+Are among those messages no result messages, a progress per chunk fragmentation is shown and the next 10 are polled for.
 In case one segmentation is done, a message contains an MPD URL, which is saved temporarily and the next chunk will be segmented, but only if its corresponding source URL has not been segmented yet.
-Either way, those messages are then removed from the queue by its proper recipient so that the next results in the FIFO queue can be received.
+Either way, those messages are then removed from the queue by its proper recipient so that the next responses in the FIFO queue can be received.
+
+By default, short polling is used in SQS.
+Long polling though yields several benefits and is enabled by setting the \textit{WaitTimeSeconds} parameter when receiving messages from a queue.
+The developed algorithm uses the maximum value of 20 seconds.
+This way, the probability of getting empty replies is disposed of by waiting until messages are available before responding to the client.
+Nevertheless, messages are still returned as soon as they become obtainable.
+Long polling further queries all Amazon SQS servers instead of a mere subset so that false empty responses are avoided, too.
 \\
 \subsubsection{Stitching Phase}
 Are all chunks segmented successfully, the stitching phase starts.
@@ -329,13 +336,13 @@ var msg = {
 \caption{Example message of a stitching request}
 \end{figure}
 While the segmentation works perfectly, the stitching request results in an error (\textit{errorCode 11: "something wrong with the dashEndpoint in the config. Please check the input config."}).
-Since there was no documentation of the stitching backend and because its developers were not always contactable, this issue could not be resolved in this work.
+Since the \textit{dashEndpoint} information was provided to us and there was no documentation of the stitching backend as well as the developers not always being contactable, this issue could not be resolved in this work.
 \\
 \subsubsection{Problems when receiving messages}
 During tests it became apparent, that not every polling call resulted in the client receiving messages.
 Despite that, when only one client is polling for the FIFO result queue at a time, it works perfectly.
-As soon as more users attempt to receive messages, the whole process is slowed down massively.
-It may be that the concurrent pollings from different clients are interferring with each other so that the probability of not receiving any messages is increased a lot.
+As soon as more users attempt to receive messages, the whole process is slowed down massively even though long polling is used.
+It may be that the concurrent pollings from different clients are interferring with each other so that the probability of not receiving any messages is increased greatly.
 This way, the FIFO queue can not make any or only very slow progresses.
 On the other hand it might also be that the SQS queues are deployed on budget servers that are not able to actually handle multiple requests simultaneously.
 
@@ -352,10 +359,22 @@ What works, what does not? Shortcoming?\\
 Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht\\
 
 \section{Conclusion}
-webUI great, SQS and FH backend are shit...
-\\
+In this work a prototype of a user interface offering many features and options for video and image stitching was implemented.
+Video, audio and image content resources can be added to the application by simply using a publicly accessible URL.
+On a timeline, chunks can be constructed to a new video by utilizing different editing possibilities.
+Real-time feedback is given via a dedicated preview player emulating the stitching results without doing actual video cutting or processing.
+By serializing whole working sessions, its state can be shared or recalled conveniently at a later time.
+One of the main purposes however, i.e. to make the UI interact with the existing stitching backend by Fraunhofer FOKUS, could be satisfied only partially.
+Having one sole client communicate with the provided FIFO queues is working perfectly fine.
+As soon as more users concurrently attempt to poll for answers on the result queue, that queue becomes a bottleneck even though a more beneficial long polling method is used.
+The reason for that might be in the implemented receiving algorithm or in the load handling capability of the server deploying the queues.
+Possible solutions involve approaches using an intermediary backend to take care of sending and receiving messages from the SQS queues.
+Another issue we encountered is that while the segmentation phase delivers the expected MPDs, the stitching phase results in an error.
+Since there was no documentation of the FOKUS backend and with its developers not always being contactable, this problem could not be resolved in our work as of now.
+In spite of mentioned deficiencies, the implemented prototype still qualifies as a fully functional user interface and forms the basis for the frontend of the existing stitching backend by Fraunhofer FOKUS.
+
 \subsubsection*{Future Work}
-While the implemented prototype provides many user interaction possibilities, there is still room for further valuable features and improvements.
+While the realized prototype provides many user interaction possibilities, there is still room for further valuable features and improvements.
 One of the most handy additions would be to control the preview player time and play-in-range positions by utilizing the currently only indicating position markers on the timeline.
 Also, the un-/redo features merely apply for timeline changes at the moment.
 When executed, ``active-element''-updates on content resources through adding and deleting chunks won't be taken into account.
@@ -364,7 +383,8 @@ Furthermore, dragging new chunks to the timeline, moving or shortening chunks wo
 Although adding of new content resources works, the URL acceptance check and resource type whitelist matching algorithms would benefit from enhancements, too.
 Loading saved session files might need correctness checks in a future revision as well, so that this point can not be exploited, providing more robustness and consistency.
 
-Regarding the communication with SQS, it is suggested to implement a dedicated intermediary backend to take care of sending and receiving messages (as mentioned in \textbf{V. Discussion}). Otherwise, strategies must be devised, so that concurrently receiving clients won't result in a bottleneck.
+Regarding the communication with SQS, besides fixing the stitching phase error, it is suggested to implement a dedicated intermediary backend to take care of sending and receiving messages (as mentioned in \textbf{V. Discussion}).
+Otherwise, strategies must be devised, so that concurrently receiving clients won't result in a bottleneck.
 
 \begin{thebibliography}{00}
 \bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71

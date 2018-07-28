@@ -100,6 +100,8 @@ body {
     background: #ffffff;
     border-radius: 3px;
     border: none;
+
+    font-weight: bold;
 }
 
 .mv__button:active{

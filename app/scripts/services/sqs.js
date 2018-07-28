@@ -149,10 +149,15 @@ angular.module('moveditorApp')
                     MaxNumberOfMessages: 10,
                     // MessageGroupId: 'wesealize2',
                     // VisibilityTimeout: 60, // seconds - how long we want a lock on this job
-                    // WaitTimeSeconds: 3 // seconds - how long should we wait for a message?
+                    WaitTimeSeconds: 20 // seconds - how long should we wait for a message?
                 };
 
                 self.sqs.receiveMessage(sqsParams, function(err, data) {
+                    if (err) {
+                        console.log('ERR', err);
+                        return;
+                    }
+
                     if (data.Messages.length > 0) {
 
                         var done = false;
@@ -258,6 +263,11 @@ angular.module('moveditorApp')
                 };
 
                 self.sqs.receiveMessage(sqsParams, function(err, data) {
+                    if (err) {
+                        console.log('ERR', err);
+                        return;
+                    }
+
                     if (data.Messages) {
                         console.log("data: ", data);
                     }

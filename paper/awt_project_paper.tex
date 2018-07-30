@@ -82,22 +82,22 @@ web UI, video and image stitching, MPD, DASH, Amazon Simple Queue Service (SQS)
 \end{IEEEkeywords}
 
 \section{Introduction}
-With the recent progresses in cloud computing in the areas of cost-efficiency, scalability etc., more and more software applications are shifted from local computers to external servers.
-While in the past software like audio or graphics editor tools had to be installed locally due to high processing demands, nowadays mentioned applications can be provided over the internet.
+With the recent advancements in cloud computing in the areas of cost-efficiency, flexibility, scalability etc., it is easier than ever for developers to provide on-demand software applications over the internet.
+They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructure maintenance issues, like under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
 
-The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology.
-Among the projects of FOKUS is the development of such a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet.
+The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology (ICT).
+Among the projects of FOKUS is the development of a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet relying on cloud computing solutions.
 
-Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming\cite{Sodagar}) according to a given stitching configuration.
+Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming \cite{Sodagar}) according to a given stitching configuration.
 Amazon's Simple Queue Service\footnote{http://aws.amazon.com/sqs/} (SQS) serves as communication channel between frontend and service backend.
+SQS - being a fast, reliable and scalable message queuing service - makes it simple and cost-effective to decouple the components of a cloud application since the user can offload the administrative burden of operating and scaling, while paying only for what is really needed \cite{VS}.
 
 As of now FOKUS has only implemented a stitching backend. A proper user interface for seamless interaction with the backend is still missing.
 In this work we implemented a web UI\footnote{Code available at https://github.com/SmokyDesperado/moveditor} for that very purpose.
-
 In particular this inlcudes:
 \textbf{(II)} A glimpse into related work and what elevates this work.
 \textbf{(III)} and \textbf{(IV)} The Architecture and implementation, in which non-trivial steps are described and important decisions made while developing the UI are explained.
-\textbf{(V)} An evaluation of the approach taken for implementing the user interface as well as a discussion of its strong points but also its flaws.
+\textbf{(V)} An evaluation of the approach that was taken for implementing the user interface as well as a discussion of its strong points but also its flaws.
 \textbf{(VI)} A conclusion to this work and suggestions for future work.
 
 \section{Related Work}
@@ -374,7 +374,7 @@ Since the \textit{dashEndpoint} information was provided to us and there was no 
 During tests it became apparent, that not every polling call resulted in the client receiving messages.
 Despite that, when only one client is polling for the FIFO result queue at a time, it works perfectly.
 As soon as more users attempt to receive messages, the whole process is slowed down massively even though long polling is used.
-It may be that the concurrent pollings from different clients are interferring with each other so that the probability of not receiving any messages is increased greatly.
+It might be that the concurrent pollings from different clients are interferring with each other so that the probability of receiving empty responses is increased rapidly.
 This way, the FIFO queue can not make any or only very slow progresses.
 On the other hand it might also be that the SQS queues are deployed on budget servers that are not able to actually handle multiple requests simultaneously.
 
@@ -384,11 +384,27 @@ In this prototype version of the UI, a ``purge\&restart''-button was implemented
 This button will remove all messages on the queue and restart the FOKUS backend server, although this is no longterm solution to menttioned problems.
 
 \section{Discussion}
-What works, what does not? Shortcoming?\\
+In itself, the implemented user interface works without causing any problems.
+The intuitive UI and the vast amount of implemented features, mostly inspired by professional video tools, offer a great variety of editing possibilities.
+Most work related to SQS however, is not impeccable.
+The stitching phase error aside, the approach that was taken to communicate with the FOKUS stitching backend still remains immature.
+Whenever two or more clients are simultaneously waiting for responses from the queue, it takes much longer until results are transmitted.
+First and foremost, it's due to Amazon only allowing to receive not more than 10 messages per query, favouring congestion of the result queue.
+Above all, concurrent polling by many clients on the same queue severely increases the probability of receiving empty responses for whatever reasons.
+Since this is the case, it makes sense to debate whether Amazon's Simple Queue Service is suited as interface between the implemented frontend and the existing backend.
+We believe that the already stated potential benefits of using SQS outweigh the problems we encountered during this work.
+Theoretically, if every long polling delivered non-empty responses, the implemented approach would work flawlessly because each client would quickly remove its own messages from the queue as soon as they are available.
 
-- SQS and FH backend are shit; a intermediary backend managing the request (msg timeouts etc...) and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness... \\
-- server und queues nicht robust \\
-Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht\\
+One possible solution to this might be a dedicated intermediary backend (IB) managing the sending of requests and receiving of results.
+Instead of direct interaction with the queues, each client will then have to use an API provided by the IB.
+The intermediary backend remembers clients sending requests via its API and forwards these requests to the SQS request queue.
+Then the IB alone extracts messages from the SQS result queue and forwards these messages to their actual targets.
+Messages that can not be forwarded immediately are stored so they can be send again later.
+After several retries and a timeout, that message will be deleted assuming its target client is either inactive or aborted the stitching process.
+This way, the SQS result queue only needs to handle one polling instance.
+On the downside, the intermediary backend would be required to cope with all the clients though.
+How exactly this new issue is to be resolved, can not be decided right now.
+Nevertheless, there should exist countless ways to implement such a backend.
 
 \section{Conclusion}
 In this work a prototype of a user interface offering many features and options for video and image stitching was implemented.
@@ -396,7 +412,7 @@ Video, audio and image content resources can be added to the application by simp
 On a timeline, chunks can be constructed to a new video by utilizing different editing possibilities.
 Real-time feedback is given via a dedicated preview player emulating the stitching results without doing actual video cutting or processing.
 By serializing whole working sessions, its state can be shared or recalled conveniently at a later time.
-One of the main purposes however, i.e. to make the UI interact with the existing stitching backend by Fraunhofer FOKUS, could be satisfied only partially.
+One of the main purposes though, i.e. to make the UI interact with the existing stitching backend by Fraunhofer FOKUS, could be satisfied only partially.
 Having one sole client communicate with the provided FIFO queues is working perfectly fine.
 As soon as more users concurrently attempt to poll for answers on the result queue, that queue becomes a bottleneck even though a more beneficial long polling method is used.
 The reason for that might be in the implemented receiving algorithm or in the load handling capability of the server deploying the queues.
@@ -412,14 +428,17 @@ Also, the un-/redo features merely apply for timeline changes at the moment.
 When executed, ``active-element''-updates on content resources through adding and deleting chunks won't be taken into account.
 It is desired to monitor these changes and other operations done on the content area.
 Furthermore, dragging new chunks to the timeline, moving or shortening chunks would be more appealing if tooltips are displayed which show time stamps during these actions to increase the user experience.
-Although adding of new content resources works, the URL acceptance check and resource type whitelist matching algorithms would benefit from enhancements, too.
+An option to set the quantization value in the timeline would be another useful feature, although very small values might need too much processing power.
+Moreover, the URL acceptance check and resource type whitelist matching algorithms would greatly benefit from enhancements, too.
 Loading saved session files might need correctness checks in a future revision as well, so that this point can not be exploited, providing more robustness and consistency.
 
 Regarding the communication with SQS, besides fixing the stitching phase error, it is suggested to implement a dedicated intermediary backend to take care of sending and receiving messages (as mentioned in \textbf{V. Discussion}).
 Otherwise, strategies must be devised, so that concurrently receiving clients won't result in a bottleneck.
 
 \begin{thebibliography}{00}
-\bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71
+\bibitem{Fox} Fox, A., et al. (2009). ``Above the clouds: A berkeley view of cloud computing''. \textit{Dept. Electrical Eng. and Comput. Sciences, University of California, Berkeley, Rep. UCB/EECS}, 28(13), 2009. % https://s3.amazonaws.com/academia.edu.documents/43018702/0c960525ae2cc30314000000.pdf?AWSAccessKeyId=AKIAIWOWYYGZ2Y53UL3A&Expires=1532948428&Signature=a4lBKw0YmZSz%2B2FVebs0r0Szrn8%3D&response-content-disposition=inline%3B%20filename%3DAbove_the_Clouds_A_Berkeley_View_of_Clou.pdf
+\bibitem{Sodagar} Sodagar, I. (2011). ``The mpeg-dash standard for multimedia streaming over the internet''. \textit{IEEE MultiMedia}, (4), 62-67.
+\bibitem{VS} Varia, J., \& Mathew, S. (2014). ``Overview of amazon web services''. \textit{Amazon Web Services}. % https://genome.nyumc.org/hpcf/w/images/9/9e/HPC_course.spring_2014.session_3.AWS_Overview.pdf
 \end{thebibliography}
 
 \end{document}

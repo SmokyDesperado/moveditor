@@ -111,10 +111,18 @@ Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
 \section{Design \& Implementation}
 List some features etc. but this section will only focus on main aspects of our web ui implementation and why things were done that way, bower (what?, why?, how?) + setup, ...
 
-\subsection{General}
-UI primarily for Desktop, save session via .txt export...
+This section will focus on the realisation of the project, what was done and the reasons behind. It will give a better view on the main implementation aspects of the app and not providing a detailed documentation about every single part.
 
-\newpage
+\subsection{General}
+The implementation of the app used various libraries. The main structure of is based on the AngularJS project scaffolding by Yeoman\footnote{http://yeoman.io/learning/}. This provide a ready to use AngularJS project, with directory structure, default templates and installs required components and components to boost the development process. 
+
+Node.js\footnote{https://nodejs.org/en/} is the main run-time enviroment for the development process and is used to create the server while developing. New modules to help the development can be installed via the package manager npm\footnote{https://www.npmjs.com/}. The used packages are saved in the file package.json and can be manage there, like changing the used package or the package version.
+
+Grunt\footnote{https://gruntjs.com/}, a task node runner module, is used for the actual development server configuration. It gives the possibility to define tasks and used them to creates custom development conditions and helper. Task can be defined in the required Gruntfile. While the predefined task serve a local server on port 9000 with live reload creates, will build concat, minify, uglify and do some other optimisation to the code and output it in a specified directory. This task is used for production deployment.
+
+For client sided libraries the Node module Bower\footnote{https://bower.io/} is used. Like the Node file package.json bower has it own package management file bower.json. There the used libraries for the app are listed and can be managed easily. 
+
+AngularJs is used as the main JavaScript framework and allows the implementation of single page application to create a native app like user experience. Furthermore the provided functionalities of AngularJS like ng-if, ng-repeat, ng-class attributes in the HTML template files and the two-way-binding (AngularJS handles the synchronisation of specified variables) reduce the manual binding between HTML and JavaScript files. The ability to creates reuseable modules, called directives, gives a big impact in reducing duplicated codes and improves the code management.
 
 \subsection{Content}
 The content area contains all the base videos, images and audios which are used in the app to stitch and create a new video. It is devided into two segments, the menu at the top and below the actual content area with all the materials. New content materials are loaded and added to the area by a public accessible URL. Meta information, like the thumbnail or content length, will be loaded and added to visible representation of the material. Content materials can be dragged and moved around to add them in the timeline or delete them. The user also has the possibility to save and load the current session and watch or hear the content material if the content of the material is unknown or forgotten.
@@ -129,7 +137,7 @@ The meta information of the content material, like type and the length, are load
 
 The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.
 
-The drag and drop functionality to add content materials into the timeline or delete content is enabled through the AngularJS module AngularHammer(1) by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS (2) was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements. Dragging materials will create a drag indicator, showing and representing the active drag action. The indicator will disappear by dropping the material (mousekey up) and execute the specific action depending on the dropping mouse position.
+The drag and drop functionality to add content materials into the timeline or delete content is enabled through the AngularJS module AngularHammer\footnote{https://github.com/RyanMullins/angular-hammer} by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS\footnote{http://hammerjs.github.io/getting-started} was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements. Dragging materials will create a drag indicator, showing and representing the active drag action. The indicator will disappear by dropping the material (mousekey up) and execute the specific action depending on the dropping mouse position.
 
 A trash icon is start to appear in the content area by dragging a material element around. When the user drops it in the trash and the mouse position is within the boundaries of the trash icon, then this action will remove the material from the content area (when active is 0). Showing and hiding the trash is activated by panStart and panEnd. Dropping the material into the timeline will add a chunk in the timeline area.
 
@@ -137,21 +145,6 @@ Another aspect of the content area menu is saving and loading working sessions. 
 
 For checking the loaded content, the user can double click on the specific material. This opens up a pop up viewer / player showing image typed materials or playing video or audio typed materials. The double click is handled by AngularHammer and will create an overlay on the app. Normally the overlay is hided in the background and jumps to the foreground when activated. The dynamically created and added content of the overlay depends on the type, whether it is a audio player, a video player or just a image, of the material. By clicking outside the overlay content, the content will be pause (only for audio and video player), destroyed and the overlay will hide in the background again.\\
 \\
-(1) - https://github.com/RyanMullins/angular-hammer\\
-(2) - http://hammerjs.github.io/getting-started\\
-\\
-% ========\\
-% X - dictionary and reason\\
-% \\
-% X - add new content\\
-% X - loading meta info\\
-% X - URL input for adding new contents from web/clouds... \\
-% \\
-% X - drag and drop features\\
-% \\
-% X - saving and loading\\
-% \\
-% O - preview content\\
 
 \subsection{Timeline Area}
 Mainly the user will be working in the timeline area to create and edit the stitching video. Unlike the content area, the timeline area is devieded into three segments, the timeline bar where the materials are added as chunks, a menu to execute serveral functionalities and an information area to view the chunk data. Added chunks of the timeline can be focused and edited by dragging or by interaction with the menu buttons. The information area will show meta more detailed information of focused chunks.
@@ -172,25 +165,7 @@ Originally it was planed to move chunks in the timeline and reordering the chunk
 
 Another timeline editing feature requiring chunk focus is the chunk cutting. This allows the user to cut one chunk by the specified time position into two seperate chunks, one ends and one starts by the cutted position. A modified chunk clone will be added in the timelineList after the the position of the cutted chunk. The clone and the cutted chunk values are then setted new. The chunk start of the cutted and the chunk end of the cloned chunks remain the same. The chunk end of the cutted and the chunk start of the cloned are set to the quantized cutting position. The offset of the clone musst then recalculated by the origingal offset adding the difference by the cut. 
 
-If the user make a wrong actions in the timeline, the undo button in the menu helps them to jump back in the execution of timeline actions. There are ten chronologically ordered states of the timeline stored in the savedSteps array. The states are JSON converted string of the timelineList pushed into savedSteps after certain (panEnd, swap etc.) timeline action. The JSON string convertion is needen, because by adding only the timelineList into the array will only reference to the timelineList. So each added state reference to the timelineList and will not contain the chronological state changes but the current state of timelineList. To keep savedSteps to ten states, adding a eleventh state will remove the first state of the array. Undo allows the user to jump back up to ten steps and the redo button will jump foreward up to the current state. The savedStepPointer tracks the current position in the chronological array while moving for- and backward.
-\\
-% \\
-% ========\\
-% X - timeline object is array and reason\\
-% X - add to timeline\\
-% X - meta information\\
-% \\
-% X - timeline drag (chunk and shorten) and how limiter works (before and after optimization)\\
-% \\
-% X - swap and why not drag\\
-% \\
-% X - delete and interaction with active\\
-% \\
-% X - undo / redo and the temporally save object\\
-% \\
-
-\newpage
-
+If the user make a wrong actions in the timeline, the undo button in the menu helps them to jump back in the execution of timeline actions. There are ten chronologically ordered states of the timeline stored in the savedSteps array. The states are JSON converted string of the timelineList pushed into savedSteps after certain (panEnd, swap etc.) timeline action. The JSON string convertion is needen, because by adding only the timelineList into the array will only reference to the timelineList. So each added state reference to the timelineList and will not contain the chronological state changes but the current state of timelineList. To keep savedSteps to ten states, adding a eleventh state will remove the first state of the array. Undo allows the user to jump back up to ten steps and the redo button will jump foreward up to the current state. The savedStepPointer tracks the current position in the chronological array while moving for- and backward. \\
 
 \subsection{Preview Player}
 The preview player emulates the stitching result of the service backend without actually sending the necessary requests.

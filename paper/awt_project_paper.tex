@@ -72,18 +72,27 @@ nhat.d.tran@campus.tu-berlin.de
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+Due to progresses and benefits of cloud computing in the recent years, it has become easier than ever for developers to deploy any kind of services over the internet.
+Using and flexibly provisioning of resources from a pool shared by third-party organizations for reasonable prices, developers are no longer troubled with IT-infrastructural maintenance issues.
+Fraunhofer FOKUS developed a backend for video and image stitching relying on such a cloud computing solution in forms of Amazon's Simple Queue Service (SQS).
+Utilizing that tool however has been rather difficult because a proper frontend is still missing.
+For that purpose, we implemented a corresponding web user interface.
+This work presents all relevant steps of its realization and explains the most important conceptual decisions that were made.
+While in itself, the implemented user interface works flawlessly, the communication with the stitching backend via SQS ran into problems.
+Because of an unforeseeable error and the developers of the FOKUS backend not always being contactable, the final stitching result is not available at the moment.
+Furthermore, whenever two or more clientS concurrently poll on the result queue, the overall process is decelerated greatly.
+The reason for that might either lie in the long polling algorithm, a possibly budget server deploying the queues or even AWS' own receiving function.
+An intermediary backend between the UI and the queues is proposed as one possible solution so that the queues only need to handle one requesting unit at a time.
+In spite of mentioned deficiencies, the implemented prototype still qualifies as a fully functional user interface and forms the basis for a frontend of the existing stitching backend by Fraunhofer FOKUS.
 \end{abstract}
 
 \begin{IEEEkeywords}
-web UI, video and image stitching, MPD, DASH, Amazon Simple Queue Service (SQS)
+web UI, video and image stitching, MPD, cloud computing, Amazon Simple Queue Service (SQS)
 \end{IEEEkeywords}
 
 \section{Introduction}
 With the recent advancements in cloud computing in the areas of cost-efficiency, flexibility, scalability etc., it is easier than ever for developers to provide on-demand software applications over the internet.
-They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructure maintenance issues, such as under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
+They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructural maintenance issues, such as under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
 
 The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology (ICT).
 Among the projects of FOKUS is the development of a service for video and image stitching, similar to well-known traditional software like Windows Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet relying on cloud computing solutions.
@@ -92,8 +101,8 @@ Using media URLs from any host or cloud provider, the backend creates an MPD fil
 Amazon's Simple Queue Service\footnote{http://aws.amazon.com/sqs/} (SQS) serves as communication channel between frontend and service backend.
 SQS - being a fast, reliable and scalable message queuing service - makes it simple and cost-effective to decouple the components of a cloud application since the user can offload the administrative burden of operating and scaling, while paying only for what is really needed \cite{VS}.
 
-As of now FOKUS has only implemented a stitching backend. A proper user interface for seamless interaction with the backend is still missing.
-In this work we implemented a web UI\footnote{Code available at https://github.com/SmokyDesperado/moveditor} for that very purpose.
+As of now FOKUS only provides a stitching backend. A proper user interface for seamless interaction with the backend is still missing.
+In this work we implemented corresponding a web UI\footnote{Code available at https://github.com/SmokyDesperado/moveditor} for that very purpose.
 In particular this inlcudes:
 \textbf{(II)} A glimpse into related work and what elevates this work.
 \textbf{(III)} and \textbf{(IV)} The Architecture and implementation, in which non-trivial steps are described and important decisions made while developing the UI are explained.
@@ -116,7 +125,7 @@ An online solution for video editing is \textit{Movie Maker Online}\footnote{htt
 This Editor has every editing functionalities that we need but it also does not support exporting the finished product as an MPD file.
 
 \section{Architecture \& Used Technologies}
-Firstly, Frauenhofer FOKUS provides an already existing stitching backend.
+Frauenhofer FOKUS provides an already existing stitching backend.
 Not much is known except that requests can only be forwarded to that backend via Amazon's Simple Queue Service.
 The only left component is the frontend we needed to implement.
 So the architecture we use is similar to a classic frontend-backend architecture, but modified due to the constraint of using SQS.
@@ -127,7 +136,7 @@ The workflow should be as follows:
 1.) Users upload media files (images, videos, audios) to any cloud service or host (e.g. Google Drive, Dropbox etc.) so that these files can be accessed through a publicly accessible URL.
 2.) This URL can then be added to the implemented user interface.
 3.) On the UI, users edit video, image and audio files and finish their work by sending requests to the back-end via the queues.
-4.) Firstly, all used media files will be segmented.
+4.) At first, all used media files will be segmented.
 5.) The requests are pushed to the request queue and then fetched by the FOKUS backend.
 6.) The backend creates corresponding MPDs and the results in form of URLs are put on the result queue by the backend for the user to obtain.
 7.) These MPD URLs are used to create a stitching configuration, which will again be forwarded to the backend via the queues.
@@ -335,7 +344,8 @@ However, the user has to wait for the stitching process either way and not every
 Also worth mentioning is that for segmenting images a length must be specified priorly which is only possible after actually working on the timeline.
 
 During phase 1, chunks in the timeline are fragmented in chronological order.
-A segmentation request message to a chunk is created and put on the request queue (see Fig. 2). While images need an extra \textit{loop} attribute compared to videos to indicate their length, audio files require an \textit{onlyaudio} attribute, although the fragmentation of latter are currently not supported by the backend.
+A segmentation request message to a chunk is created and put on the request queue (see figure \ref{fig:segmentation}).
+While images need an extra \textit{loop} attribute compared to videos to indicate their length, audio files require an \textit{onlyaudio} attribute, although the fragmentation of latter are currently not supported by the backend.
 \begin{figure}[H]
 \begin{lstlisting}
 var msg = {
@@ -360,6 +370,7 @@ sqs.sendMessage(params, function(err, data) {
 });
 \end{lstlisting}
 \caption{Example request for segmenting a video.}
+\label{fig:segmentation}
 \end{figure}
 After the segmentation request was send, the result queue will be polled for via a recursive receiving function.
 The reason for this lies in the AWS SDK, which only allows the client to receive at most the 10 oldest messages on the result queue.
@@ -472,7 +483,7 @@ The reason for that might be in the implemented receiving algorithm or in the lo
 Possible solutions involve approaches using an intermediary backend to take care of sending and receiving messages from the SQS queues.
 Another issue we encountered is that while the segmentation phase delivers the expected MPDs, the stitching phase results in an error.
 Since there was no documentation of the FOKUS backend and with its developers not always being contactable, this problem could not be resolved in our work as of now.
-In spite of mentioned deficiencies, the implemented prototype still qualifies as a fully functional user interface and forms the basis for the frontend of the existing stitching backend by Fraunhofer FOKUS.
+In spite of mentioned deficiencies, the implemented prototype still qualifies as a fully functional user interface and forms the basis for a frontend of the existing stitching backend by Fraunhofer FOKUS.
 
 \subsubsection*{Future Work}
 While the realized prototype provides many user interaction possibilities, there is still room for further valuable features and improvements.

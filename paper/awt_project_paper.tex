@@ -86,7 +86,7 @@ With the recent advancements in cloud computing in the areas of cost-efficiency,
 They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructure maintenance issues, such as under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
 
 The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology (ICT).
-Among the projects of FOKUS is the development of a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet relying on cloud computing solutions.
+Among the projects of FOKUS is the development of a service for video and image stitching, similar to well-known traditional software like Windows Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet relying on cloud computing solutions.
 
 Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming \cite{Sodagar}) according to a given stitching configuration.
 Amazon's Simple Queue Service\footnote{http://aws.amazon.com/sqs/} (SQS) serves as communication channel between frontend and service backend.
@@ -102,18 +102,18 @@ In particular this inlcudes:
 
 \section{Related Work}
 %List online/offline video stitching tools, differences and what makes our web app unique...
-There are various programs avaiabale to edit videos, images and audios into one file.
+There are various programs, on- and offline, available to edit videos, images and audios into one file.
 The majority of them are video editing tools.
 
-For example, Mircosoft Fotos \footnote{https://www.microsoft.com/de-de/p/microsoft-fotos/9wzdncrfjbh4}, the successor of Windows Movie Maker and one of the plainest video editing tools, is able to stitch videos, images and audios.
-This software can not overlap video and picture track with soundtrack.
+For example, \textit{Microsoft Fotos}\footnote{https://www.microsoft.com/de-de/p/microsoft-fotos/9wzdncrfjbh4}, the successor of Windows Movie Maker and one of the simplest video editing tools, is able to stitch videos, images and audios.
+Though, this software can not overlap the video and picture track with soundtrack.
 
-Adobe Premiere Pro \footnote{https://www.adobe.com/products/premiere.html} is the industry-leading video editing software. 
-It also supports the functions to adjust the length of different media files as well as stitch them together. 
-It is not possible to export a Adobe Premiere Pro project as a dash file.
+\textit{Adobe Premiere Pro}\footnote{https://www.adobe.com/products/premiere.html} is the industry-leading video editing software. 
+It also supports functions to adjust the length of different media files as well as to stitch them together.
+It is however not possible to export an Adobe Premiere Pro project as an MPD file for adaptive streaming.
 
-An online solution for video editing is Movie Maker Online\footnote{http://moviemakeronline.com/}. 
-This Editor has every editing functionalities that we need but it also do not support to export as a dash file.
+An online solution for video editing is \textit{Movie Maker Online}\footnote{http://moviemakeronline.com/}.
+This Editor has every editing functionalities that we need but it also does not support exporting the finished product as an MPD file.
 
 \section{Architecture \& Used Technologies}
 %Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...

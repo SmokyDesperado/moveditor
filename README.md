@@ -72,20 +72,14 @@ Run 'grunt build' to build and process some further optimation of the app.
 
 The app validates the added matrial links and checks if the media type is supported. Normal public accessible links of the material should work.
 
-**Suopported media types**
+**Garanteed supported media types**
 
 | images | video | audio |
 | :---: | :---: | :---: |
-| bmp | 3gp | mp3 |
-| gif | amv | flac |
-| jpg | flv | ogg |
-| png | m4v | wav |
-| webp | mp4 |  |
-|  | mkv |  |
-|  | mov |  |
-|  | ogv |  |
-|  | ogg |  |
-|  | webm |  |
+| jpg | m4v | mp3 |
+| png | mp4 |  |
+
+Other media type may be added to the whitelist, depending on whether the backend supports these types.
 
 Links of cloud services may need manual edit. 
 - **one drive** 

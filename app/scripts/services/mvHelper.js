@@ -46,9 +46,9 @@ angular.module('moveditorApp')
             // ====================================================================================================
 
             // accepted media extensions for specific media types
-            this.videoExtensionList = ["3gp", "amv", "flv", "m4v", "mp4", "mkv", "mov", "ogv", "ogg", "webm"];
-            this.imageExtensionList = ["bmp", "gif", "jpg", "png", "webp"];
-            this.audioExtensionList = ["mp3", "flac", "ogg", "wav"];
+            this.videoExtensionList = ["m4v", "mp4"];
+            this.imageExtensionList = ["jpg", "png"];
+            this.audioExtensionList = ["mp3"];
             this.cloudRegExList = [
                 /https:\/\/onedrive\.live\.com\/download\?resid=/,
                 /https:\/\/drive\.google\.com\/uc\?export=download\&id=/

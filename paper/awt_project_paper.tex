@@ -83,7 +83,7 @@ web UI, video and image stitching, MPD, DASH, Amazon Simple Queue Service (SQS)
 
 \section{Introduction}
 With the recent advancements in cloud computing in the areas of cost-efficiency, flexibility, scalability etc., it is easier than ever for developers to provide on-demand software applications over the internet.
-They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructure maintenance issues, like under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
+They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructure maintenance issues, such as under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
 
 The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology (ICT).
 Among the projects of FOKUS is the development of a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet relying on cloud computing solutions.
@@ -109,12 +109,13 @@ List online/offline video stitching tools, differences and what makes our web ap
 Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
 
 \section{Design \& Implementation}
-List some features etc. but this section will only focus on main aspects of our web ui implementation and why things were done that way, bower (what?, why?, how?) + setup, ...
-
-This section will focus on the realisation of the project, what was done and the reasons behind. It will give a better view on the main implementation aspects of the app and not providing a detailed documentation about every single part.
+This section mainly focusses on the implementation of the user interface for image and video stitching.
+The realization of major components is presented and important decisions will be explained to give a better understanding of this application.
 
 \subsection{General}
-The implementation of the app used various libraries. The main structure of is based on the AngularJS project scaffolding by Yeoman\footnote{http://yeoman.io/learning/}. This provide a ready to use AngularJS project, with directory structure, default templates and installs required components and components to boost the development process. 
+For the implementation of the user interface, various libraries were used.
+Its main structure is generated via AngularJS project scaffolding by Yeoman\footnote{http://yeoman.io/learning/}.
+In doing so, a ready-to-use AngularJS project is created with provided directory structure, default templates and pre-installed components required for running the application as well as packages to boost the development process.
 
 Node.js\footnote{https://nodejs.org/en/} is the main run-time enviroment for the development process and is used to create the server while developing. New modules to help the development can be installed via the package manager npm\footnote{https://www.npmjs.com/}. The used packages are saved in the file package.json and can be manage there, like changing the used package or the package version.
 
@@ -122,18 +123,38 @@ Grunt\footnote{https://gruntjs.com/}, a task node runner module, is used for the
 
 For client sided libraries the Node module Bower\footnote{https://bower.io/} is used. Like the Node file package.json bower has it own package management file bower.json. There the used libraries for the app are listed and can be managed easily. 
 
-AngularJs is used as the main JavaScript framework and allows the implementation of single page application to create a native app like user experience. Furthermore the provided functionalities of AngularJS like ng-if, ng-repeat, ng-class attributes in the HTML template files and the two-way-binding (AngularJS handles the synchronisation of specified variables) reduce the manual binding between HTML and JavaScript files. The ability to creates reuseable modules, called directives, gives a big impact in reducing duplicated codes and improves the code management.
+AngularJs is used as JavaScript framework and allows the implementation of single-page applications to create a user experience similar to desktop apps.
+Furthermore, its specific HTML attributes, like \textit{ng-if}, \textit{ng-repeat} or \textit{ng-class}, and its \textit{two-way-binding} principle eliminate the need for manual binding of variables and synchronization between HTML and JavaScript files.
+The ability of AngularJs to create reuseable modules, called directives, has a big impact on removing duplicate code, thus improving the overall code structure.
 
-\subsection{Content}
-The content area contains all the base videos, images and audios which are used in the app to stitch and create a new video. It is devided into two segments, the menu at the top and below the actual content area with all the materials. New content materials are loaded and added to the area by a public accessible URL. Meta information, like the thumbnail or content length, will be loaded and added to visible representation of the material. Content materials can be dragged and moved around to add them in the timeline or delete them. The user also has the possibility to save and load the current session and watch or hear the content material if the content of the material is unknown or forgotten.
+\subsection{Content Area}
+The content area contains all the video, image and audio resources that are used in the app to stitch and to create a new video.
+It is further divided into two components: A small menu and the actual pool of imported media.
+New media sources can be added to the pool using the input field of the content area menu with a publicly accessible URL from any cloud provider or host.
+Meta information, like thumbnails or file length, will be loaded and added asynchronously to the object representating the resource that we call content (material) from now on.
+Using the mouse, materials can be dragged around to add them to the timeline area or to delete them.
+By double-clicking, individual media resources can be previewed in a dedicated pop-up player.
+Also, buttons are provided on the menu to save the state of whole working sessions and to recall them at a later time.
 
-For displaying the materials in the content area the contentList object is used and binded to the view. This object is a simple JavaScript dictionary object which consist of a random generated contentId as key and an instance of the JavaScript class Content as value. The dictionary data type was chosen to eneabled the possibility of having direct access to the object of the contentList by only knowing the contentId. It is possible to pass the contentId of the materias from one service to another and only access the needed material properties right before using.
+For displaying material in the content area the \textit{contentList} object is used and bonded to the view.
+Each time that object is updated, the content area view will be refreshed as well.
+ContentList is a simple JavaScript dictionary object which consist of a random generated \textit{contentId} as key and an instance of the JavaScript class \textit{Content} as a value.
+The dictionary data type was chosen to enable fast and direct access to the objects of the contentList requiring only the contentId, which can then be passed throughout the application if needed elsewhere.
 
-The instances of the Content class consist of a name, a type, a length, a url, a mpd and a active property. The name property is empty at the beginning and a user can change the name after the content materia is loaded. The url property is is the public accessible URL of the video, audio or image which is used to add the material. It is not possible to changed it afterwards. Each material URL is unique for the contentList. Dublicated material URLs will not be added to the contentList. As a result that only the URL is validated and not the content of the material, a duplicated content material can be added to the list by using the same content but with different URLs. New content is added to the contentList by adding a video, image or audio to a cloud or web service with a public accessible URL and the adding this url to the input field of the content area menu.\\
-\\
-== bild vom content material ==\\
-\\
-The meta information of the content material, like type and the length, are loaded after adding the content to the list by the HTML Audio/Video Events. For a better visualisation an image of the middle of the material video is added as a thmubnail while loading the meta information. The image itself is used for image typed content and for audio typed materials a pre defined image is used. Farther an icon on the lower right corner of the content also indicates the typed of the content material.
+A Content object consist of a name, a type, a length, an url, an mpd and an active property.
+The name property is empty at the beginning and the user can change the name after the content material is loaded.
+The url property is the publicly accessible URL of the video, audio or image which is used to add a material and it is not possible to changed it afterwards.
+Each material URL serves as unique identifier in the contentList so that duplicated material URLs can not be added.
+As a result, a duplicated content material can still be added to the list by using by using different URLs of the same content.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.46]{content_area.png}
+\caption{Content area and menu bar.}
+\end{figure}
+The meta information of a material, like its type and length, are loaded after adding the content to the list by using HTML Audio/Video events.
+For better visualization, the middle frame of a video is used as thumbnail.
+The image itself is used for image content and for audio material a pre-defined gif is used.
+Further, an icon on the lower right corner of the content also indicates the type of a content material.
 
 The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.
 
@@ -174,7 +195,7 @@ Users are not impelled to wait for the actual stitching response, thus saving th
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{preview_player.png}
-\caption{UI of Preview Player.}
+\caption{Look and controls of preview player.}
 \end{figure}
 \subsubsection{Preview Player - Features}
 The implemented preview player supports all common controls of a usual browser media player.
@@ -182,7 +203,7 @@ These include: a ``play/pause''-button, a ``time-position''-slider and a ``volum
 On top of that, a ``restart''-button, a ``loop-play''-toggle and a ``play-in-range''-slider were added.
 For the latter the \textit{noUiSlider}\footnote{https://refreshless.com/nouislider/} library is utilized.
 Functionally, the ``play-in-range''-slider marks a time range in which the ``time-position''-slider is contraint.
-Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI feel more like a native application.
+Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI behave more like a desktop application.
 \\
 \subsubsection{Preview Playback - Logic}
 For audio and image preview playback it is sufficient to only have one HTML audio, respectively image, element and change its sources in real-time while playing.

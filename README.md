@@ -30,11 +30,6 @@ The app runs on a local server with live reloading when code is edited (except f
 
 **NOTES:** Each time new modules are installed you have to run 'npm install' and 'bower isntall'.
 
-## Build & development
-
-Run `grunt` for building and `grunt serve` for preview.
-Run 'grunt build' to build and process some further optimation of the app. 
-
 ## Notes
 
 ### Shortcuts

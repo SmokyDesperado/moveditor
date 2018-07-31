@@ -116,26 +116,25 @@ An online solution for video editing is \textit{Movie Maker Online}\footnote{htt
 This Editor has every editing functionalities that we need but it also does not support exporting the finished product as an MPD file.
 
 \section{Architecture \& Used Technologies}
-%Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
-The architecture we use is similar to the classic back-end architecture.
-We have a front-end that is executed on the client side.
-The JavaScript, HTML and CSS code runs in the user's browser and creates the user interface as a web app.
-Users edit video, image and audio files and finish their work by sending segmentation and stitching requests to the back-end.
-Frauenhofer FOKUS provides the back-end.
-The code of the back-end runs on an Amazon server.
-It receives receives segmentation and stitching requests from the web app and replies with MPD URLs.
+Firstly, Frauenhofer FOKUS provides an already existing stitching backend.
+Not much is known except that requests can only be forwarded to that backend via Amazon's Simple Queue Service.
+The only left component is the frontend we needed to implement.
+So the architecture we use is similar to a classic frontend-backend architecture, but modified due to the constraint of using SQS.
 
-Our web app uses the AngularJS framework.
-Video, image and audio files have to be stored online, for example cloud storage like Google Drive, Dropbox, oneDrive or Amazon S3.
-In order to access these media files in the app, the file URLs have to be public to ensure that the app can load the files.
+The frontend utilizes the AngularJS framework and communicates with the back-end via SQS by using the AWS SDK\footnote{https://aws.amazon.com/de/tools/} \textit{(Amazon Web Services Software Development Kit)}.
 
-The front-end communicates with the back-end via SQS by using AWS SDK \textit{(Amazon Web Services Software Development Kit)}.
-Every client side request will be pushed on the request queue.
-The back-end notices the request, processes the request and replies by pushing the result on the result queue.
-Results on the result queue will be processed by each listening client.
+The workflow should be as follows:
+1.) Users upload media files (images, videos, audios) to any cloud service or host (e.g. Google Drive, Dropbox etc.) so that these files can be accessed through a publicly accessible URL.
+2.) This URL can then be added to the implemented user interface.
+3.) On the UI, users edit video, image and audio files and finish their work by sending requests to the back-end via the queues.
+4.) Firstly, all used media files will be segmented.
+5.) The requests are pushed to the request queue and then fetched by the FOKUS backend.
+6.) The backend creates corresponding MPDs and the results in form of URLs are put on the result queue by the backend for the user to obtain.
+7.) These MPD URLs are used to create a stitching configuration, which will again be forwarded to the backend via the queues.
+8.) After that process is finished, the user gets the final stitching result.
 
 Figure \ref{fig:architecture} shows the architecture and the used technologies.
-It also points the workflow out.
+It also points out the workflow.
 
 \begin{figure}[H]
 	\centering
@@ -174,7 +173,7 @@ The ability of AngularJs to create reuseable modules, called directives, has a b
 \subsection{Content Area}
 The content area contains all the video, image and audio resources that are used in the app for stitching and creating new videos.
 It is further divided into two components: A small menu and the actual pool of imported media.
-New media sources can be added to the pool using the input field of the content area menu with a publicly accessible URL from any cloud provider or host\footnote{see wiki of GitHub repository}.
+New media sources can be added to the pool using the input field of the content area menu with a publicly accessible URL from any cloud provider or host\footnote{see README of GitHub repository}.
 Via HTML Audio/Video events, meta information (thumbnails, type or file length) will be loaded and added asynchronously to the object representating the resource that we call content (material) from now on.
 For a better distinction, the middle frame of each video is used as thumbnail.
 Moreover, an icon on the lower right corner of the content also indicates the type of a content material.
@@ -199,7 +198,7 @@ Last but not least, the mpd property is not editable by the user. It is used to 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.46]{content_area.png}
-\caption{Content area and menu bar.}
+\caption{Content area and menu bar with example resource materials.}
 \end{figure}
 The drag and drop functionality to add content materials to the timeline or delete content is enabled through the AngularJS module AngularHammer\footnote{https://github.com/RyanMullins/angular-hammer}.
 The JavaScript library to recognize touch, mouse and pointer events HAMMER.JS\footnote{http://hammerjs.github.io/getting-started} was made into a AngularJS module for a simple usage.
@@ -261,7 +260,7 @@ These include: a ``play/pause''-button, a ``time-position''-slider and a ``volum
 On top of that, a ``restart''-button, a ``loop-play''-toggle and a ``play-in-range''-slider were added.
 For the latter the \textit{noUiSlider}\footnote{https://refreshless.com/nouislider/} library is utilized.
 Functionally, the ``play-in-range''-slider marks a time range in which the ``time-position''-slider is contraint.
-Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI behave more like a desktop application.
+Almost all of the listed controls can be operated via shortkeys\footnote{see README of GitHub repository} making the web UI behave more like a desktop application.
 \\
 \subsubsection{Preview Playback - Logic}
 For audio and image preview playback it is sufficient to only have one HTML audio, respectively image, element and change its sources in real-time while playing.

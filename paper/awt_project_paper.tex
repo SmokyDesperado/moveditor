@@ -82,69 +82,148 @@ web UI, video and image stitching, MPD, DASH, Amazon Simple Queue Service (SQS)
 \end{IEEEkeywords}
 
 \section{Introduction}
-With the recent progresses in cloud computing in the areas of cost-efficiency, scalability etc., more and more software applications are shifted from local computers to external servers.
-While in the past software like audio or graphics editor tools had to be installed locally due to high processing demands, nowadays mentioned applications can be provided over the internet.
+With the recent advancements in cloud computing in the areas of cost-efficiency, flexibility, scalability etc., it is easier than ever for developers to provide on-demand software applications over the internet.
+They no longer require large sums to deploy their services as well as don't need to be troubled with infrastructure maintenance issues, such as under- or overprovisioning of resources, if an offered service exceeds or falls below expectations \cite{Fox}.
 
-The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology.
-Among the projects of FOKUS is the development of such a service for video and image stitching, similar to well-known traditional software like Window's Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet.
+The Fraunhofer FOKUS\footnote{https://www.fokus.fraunhofer.de/} \textit{(Fraunhofer Institute for Open Communication Systems)} is a research unit of the Fraunhofer Society\footnote{https://www.fraunhofer.de/} and is concerned with applied research and development of applications in the field of Information and Communications Technology (ICT).
+Among the projects of FOKUS is the development of a service for video and image stitching, similar to well-known traditional software like Windows Movie Maker\footnote{http://windows.microsoft.com/en-us/windows/get-movie-maker-download}, but in this case over the internet relying on cloud computing solutions.
 
-Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming\cite{Sodagar}) according to a given stitching configuration.
+Using media URLs from any host or cloud provider, the backend creates an MPD file (manifest file for adaptive media streaming \cite{Sodagar}) according to a given stitching configuration.
 Amazon's Simple Queue Service\footnote{http://aws.amazon.com/sqs/} (SQS) serves as communication channel between frontend and service backend.
+SQS - being a fast, reliable and scalable message queuing service - makes it simple and cost-effective to decouple the components of a cloud application since the user can offload the administrative burden of operating and scaling, while paying only for what is really needed \cite{VS}.
 
 As of now FOKUS has only implemented a stitching backend. A proper user interface for seamless interaction with the backend is still missing.
 In this work we implemented a web UI\footnote{Code available at https://github.com/SmokyDesperado/moveditor} for that very purpose.
-
 In particular this inlcudes:
 \textbf{(II)} A glimpse into related work and what elevates this work.
 \textbf{(III)} and \textbf{(IV)} The Architecture and implementation, in which non-trivial steps are described and important decisions made while developing the UI are explained.
-\textbf{(V)} An evaluation of the approach taken for implementing the user interface as well as a discussion of its strong points but also its flaws.
+\textbf{(V)} An evaluation of the approach that was taken for implementing the user interface as well as a discussion of its strong points but also its flaws.
 \textbf{(VI)} A conclusion to this work and suggestions for future work.
 
 \section{Related Work}
-\textbf{ToDo: Han} \\
-List online/offline video stitching tools, differences and what makes our web app unique...
+%List online/offline video stitching tools, differences and what makes our web app unique...
+There are various programs, on- and offline, available to edit videos, images and audios into one file.
+The majority of them are video editing tools.
+
+For example, \textit{Microsoft Fotos}\footnote{https://www.microsoft.com/de-de/p/microsoft-fotos/9wzdncrfjbh4}, the successor of Windows Movie Maker and one of the simplest video editing tools, is able to stitch videos, images and audios.
+Though, this software can not overlap the video and picture track with soundtrack.
+
+\textit{Adobe Premiere Pro}\footnote{https://www.adobe.com/products/premiere.html} is the industry-leading video editing software.
+It also supports functions to adjust the length of different media files as well as to stitch them together.
+It is however not possible to export an Adobe Premiere Pro project as an MPD file for adaptive streaming.
+
+An online solution for video editing is \textit{Movie Maker Online}\footnote{http://moviemakeronline.com/}.
+This Editor has every editing functionalities that we need but it also does not support exporting the finished product as an MPD file.
 
 \section{Architecture \& Used Technologies}
-\textbf{ToDo: Han} \\
-Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
+%Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
+The architecture we use is similar to the classic back-end architecture.
+We have a front-end that is executed on the client side.
+The JavaScript, HTML and CSS code runs in the user's browser and creates the user interface as a web app.
+Users edit video, image and audio files and finish their work by sending segmentation and stitching requests to the back-end.
+Frauenhofer FOKUS provides the back-end.
+The code of the back-end runs on an Amazon server.
+It receives receives segmentation and stitching requests from the web app and replies with MPD URLs.
+
+Our web app uses the AngularJS framework.
+Video, image and audio files have to be stored online, for example cloud storage like Google Drive, Dropbox, oneDrive or Amazon S3.
+In order to access these media files in the app, the file URLs have to be public to ensure that the app can load the files.
+
+The front-end communicates with the back-end via SQS by using AWS SDK \textit{(Amazon Web Services Software Development Kit)}.
+Every client side request will be pushed on the request queue.
+The back-end notices the request, processes the request and replies by pushing the result on the result queue.
+Results on the result queue will be processed by each listening client.
+
+Figure \ref{fig:architecture} shows the architecture and the used technologies.
+It also points the workflow out.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.27]{architecture.png}
+	\caption{Architecture and where which technologies are used.}
+	\label{fig:architecture}
+\end{figure}
 
 \section{Design \& Implementation}
-List some features etc. but this section will only focus on main aspects of our web ui implementation and why things were done that way, bower (what?, why?, how?) + setup, ...
-
-This section will focus on the realisation of the project, what was done and the reasons behind. It will give a better view on the main implementation aspects of the app and not providing a detailed documentation about every single part.
+This section mainly focusses on the implementation of the user interface for image and video stitching.
+The realization of major components is presented and important decisions will be explained to give a better understanding of this application.
 
 \subsection{General}
-The implementation of the app used various libraries. The main structure of is based on the AngularJS project scaffolding by Yeoman\footnote{http://yeoman.io/learning/}. This provide a ready to use AngularJS project, with directory structure, default templates and installs required components and components to boost the development process. 
+For the implementation of the user interface, various libraries were used.
+Its main structure is generated via AngularJS project scaffolding by Yeoman\footnote{http://yeoman.io/learning/}.
+In doing so, a ready-to-use AngularJS project is created with provided directory structure, default templates and pre-installed components required for running the application as well as packages to boost the development process.
 
-Node.js\footnote{https://nodejs.org/en/} is the main run-time enviroment for the development process and is used to create the server while developing. New modules to help the development can be installed via the package manager npm\footnote{https://www.npmjs.com/}. The used packages are saved in the file package.json and can be manage there, like changing the used package or the package version.
+Node.js\footnote{https://nodejs.org/en/} serves as the main run-time enviroment for the development process and is used to create the server while developing.
+New modules to help the development can be installed via the package manager npm\footnote{https://www.npmjs.com/}.
+The used packages are saved in the file \textit{package.json} and can be managed from there, e.g. changing the used packages or package versions.
 
-Grunt\footnote{https://gruntjs.com/}, a task node runner module, is used for the actual development server configuration. It gives the possibility to define tasks and used them to creates custom development conditions and helper. Task can be defined in the required Gruntfile. While the predefined task serve a local server on port 9000 with live reload creates, will build concat, minify, uglify and do some other optimisation to the code and output it in a specified directory. This task is used for production deployment.
+Grunt\footnote{https://gruntjs.com/}, a Node task runner module, is used for the actual development server configuration.
+It enables defining tasks and using them to create custom development conditions and helpers.
+Tasks can be defined in the required \textit{Gruntfile}.
+While the predefined \textit{serve} task creates a local server on port 9000 with live reload, the \textit{build} task does optimizations to the code (concat, minify, uglify etc.) and then outputs these in a specified directory.
+The latter is also used for production deployment.
 
-For client sided libraries the Node module Bower\footnote{https://bower.io/} is used. Like the Node file package.json bower has it own package management file bower.json. There the used libraries for the app are listed and can be managed easily. 
+For client sided libraries, that are utilized only in the application but not for the deployment, the Node module \textit{Bower}\footnote{https://bower.io/} is used.
+Like the Node file package.json, bower has it own package management file, called \textit{bower.json}.
+There the used libraries for the app are listed and can be managed easily.
 
-AngularJs is used as the main JavaScript framework and allows the implementation of single page application to create a native app like user experience. Furthermore the provided functionalities of AngularJS like ng-if, ng-repeat, ng-class attributes in the HTML template files and the two-way-binding (AngularJS handles the synchronisation of specified variables) reduce the manual binding between HTML and JavaScript files. The ability to creates reuseable modules, called directives, gives a big impact in reducing duplicated codes and improves the code management.
+AngularJs is used as JavaScript framework and allows the implementation of single-page web applications to create a user experience similar to desktop apps.
+Furthermore, its specific HTML attributes, like \textit{ng-if}, \textit{ng-repeat} or \textit{ng-class}, and its \textit{two-way-binding} principle eliminate the need for manual binding of variables and synchronization between HTML and JavaScript files.
+The ability of AngularJs to create reuseable modules, called directives, has a big impact on removing duplicate code, thus improving the overall code structure.
 
-\subsection{Content}
-The content area contains all the base videos, images and audios which are used in the app to stitch and create a new video. It is devided into two segments, the menu at the top and below the actual content area with all the materials. New content materials are loaded and added to the area by a public accessible URL. Meta information, like the thumbnail or content length, will be loaded and added to visible representation of the material. Content materials can be dragged and moved around to add them in the timeline or delete them. The user also has the possibility to save and load the current session and watch or hear the content material if the content of the material is unknown or forgotten.
+\subsection{Content Area}
+The content area contains all the video, image and audio resources that are used in the app for stitching and creating new videos.
+It is further divided into two components: A small menu and the actual pool of imported media.
+New media sources can be added to the pool using the input field of the content area menu with a publicly accessible URL from any cloud provider or host\footnote{see wiki of GitHub repository}.
+Via HTML Audio/Video events, meta information (thumbnails, type or file length) will be loaded and added asynchronously to the object representating the resource that we call content (material) from now on.
+For a better distinction, the middle frame of each video is used as thumbnail.
+Moreover, an icon on the lower right corner of the content also indicates the type of a content material.
+Using the mouse, materials can be dragged around to add them to the timeline area or to delete them.
+By double-clicking, individual content can be previewed in a dedicated pop-up player.
+Also, buttons are provided on the menu to save the state of whole working sessions and to recall them at a later time.
 
-For displaying the materials in the content area the contentList object is used and binded to the view. This object is a simple JavaScript dictionary object which consist of a random generated contentId as key and an instance of the JavaScript class Content as value. The dictionary data type was chosen to eneabled the possibility of having direct access to the object of the contentList by only knowing the contentId. It is possible to pass the contentId of the materias from one service to another and only access the needed material properties right before using.
+For displaying material in the content area the \textit{contentList} object is used and bonded to the view.
+Each time that object is updated, the content area view will be refreshed, too.
+ContentList is a simple JavaScript dictionary object which consist of a random generated \textit{contentId} as key and an instance of the JavaScript class \textit{Content} as a value.
+The dictionary data type was chosen to enable fast and direct access to the objects of the contentList requiring only the contentId, which can then be passed throughout the application if needed elsewhere.
 
-The instances of the Content class consist of a name, a type, a length, a url, a mpd and a active property. The name property is empty at the beginning and a user can change the name after the content materia is loaded. The url property is is the public accessible URL of the video, audio or image which is used to add the material. It is not possible to changed it afterwards. Each material URL is unique for the contentList. Dublicated material URLs will not be added to the contentList. As a result that only the URL is validated and not the content of the material, a duplicated content material can be added to the list by using the same content but with different URLs. New content is added to the contentList by adding a video, image or audio to a cloud or web service with a public accessible URL and the adding this url to the input field of the content area menu.\\
-\\
-== bild vom content material ==\\
-\\
-The meta information of the content material, like type and the length, are loaded after adding the content to the list by the HTML Audio/Video Events. For a better visualisation an image of the middle of the material video is added as a thmubnail while loading the meta information. The image itself is used for image typed content and for audio typed materials a pre defined image is used. Farther an icon on the lower right corner of the content also indicates the typed of the content material.
+A Content object consist of a name, a type, a length, an url, an mpd and an active property.
+The name property is empty at the beginning and the user can change the name after the content material is loaded.
+The url property is the publicly accessible URL of the video, audio or image that is used to add a material and can not be changed afterwards.
+Each material URL serves as unique identifier in the contentList so that duplicated material URLs can not be added.
+As a result, a duplicated content material can still be added to the list by using by using different URLs of the same content.
+The active property of a material is used to keep track of the amounts of that material referenced on the timeline.
+Each material added to the timeline increases the active counter and each one removed from the timeline decreases the counter.
+Unless the active property equals 0 it is not possible to delete the content material from the pool.
+Last but not least, the mpd property is not editable by the user. It is used to temporarily store the MPD URL after the segmentation process of the FOKUS backend and then used for the stitching request.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.46]{content_area.png}
+\caption{Content area and menu bar.}
+\end{figure}
+The drag and drop functionality to add content materials to the timeline or delete content is enabled through the AngularJS module AngularHammer\footnote{https://github.com/RyanMullins/angular-hammer}.
+The JavaScript library to recognize touch, mouse and pointer events HAMMER.JS\footnote{http://hammerjs.github.io/getting-started} was made into a AngularJS module for a simple usage.
+The three most important callbacks of this module were the \textit{panStart}, \textit{panMove} and \textit{panEnd} events.
+PanMove provides functionalities to recognise the mouse events and manipulates the DOM element while panStart and panEnd provide manupulation right before and after panMove is executed.
+This way, it was possible to initialize needed helper variables (i.e. activate attributes to react while moving) and saving the current app state after moving elements.
+Dragging materials will create a drag indicator, showing and representing the active drag action.
+The indicator will disappear once the material is dropped and will execute specific actions depending on the dropping area.
 
-The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.
+A trash can icon appears in the content area whenever a material element is dragged around.
+When the user drops a content into the bin, that material object is removed from the content area (provided its active property is 0).
+Showing and hiding the trash is activated using panStart and panEnd.
+Dropping the material into the timeline will create a new chunk on that area.
 
-The drag and drop functionality to add content materials into the timeline or delete content is enabled through the AngularJS module AngularHammer\footnote{https://github.com/RyanMullins/angular-hammer} by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS\footnote{http://hammerjs.github.io/getting-started} was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements. Dragging materials will create a drag indicator, showing and representing the active drag action. The indicator will disappear by dropping the material (mousekey up) and execute the specific action depending on the dropping mouse position.
+Another aspect of the content area menu is saving and loading working sessions.
+Saving serializes and exports the current state of the content and timeline area while loading will recreate a working session from a saved file.
+Based on the used data structure of the internal objects to be saved, the created simple text file contains one composed JSON object.
+Because of the simplicity of the saved file and the absent of validation for loading sessions, a user might be able to input invalid data for the content and timeline area.
 
-A trash icon is start to appear in the content area by dragging a material element around. When the user drops it in the trash and the mouse position is within the boundaries of the trash icon, then this action will remove the material from the content area (when active is 0). Showing and hiding the trash is activated by panStart and panEnd. Dropping the material into the timeline will add a chunk in the timeline area.
-
-Another aspect of the content area menu is saving and loading working sessions. Saving can save the current state of the content and timeline area and loading wiill recreate the state of a saved working session from a file. Based on the used data structure of the app, the saving file is a .txt file containing one JSON object. The save process will collect all needed information of the different parts and create the saving file and loading will read the file and recreates saved state of the app. Because of the simplicity of the saved file and the absent of validation while loading, a use can manupulate the information and the state of the app.
-
-For checking the loaded content, the user can double click on the specific material. This opens up a pop up viewer / player showing image typed materials or playing video or audio typed materials. The double click is handled by AngularHammer and will create an overlay on the app. Normally the overlay is hided in the background and jumps to the foreground when activated. The dynamically created and added content of the overlay depends on the type, whether it is a audio player, a video player or just a image, of the material. By clicking outside the overlay content, the content will be pause (only for audio and video player), destroyed and the overlay will hide in the background again.\\
-\\
+To preview individual contents, the user can double click on a specific material to open up a pop-up viewer/player showing images or playing videos and audios.
+The double click is handled by AngularHammer and will create an overlay on the app.
+Usually that overlay is hidden in the background but is brought to the front when needed.
+Dinamically the necessary HTML element is created depending on the content material type to be previewed.
+By clicking outside the overlay content, the content will be paused (only for audio and video player), destroyed and the overlay is hidden in the background again.
 
 \subsection{Timeline Area}
 Mainly the user will be working in the timeline area to create and edit the stitching video. Unlike the content area, the timeline area is devieded into three segments, the timeline bar where the materials are added as chunks, a menu to execute serveral functionalities and an information area to view the chunk data. Added chunks of the timeline can be focused and edited by dragging or by interaction with the menu buttons. The information area will show meta more detailed information of focused chunks.
@@ -174,7 +253,7 @@ Users are not impelled to wait for the actual stitching response, thus saving th
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{preview_player.png}
-\caption{UI of Preview Player.}
+\caption{Look and controls of preview player.}
 \end{figure}
 \subsubsection{Preview Player - Features}
 The implemented preview player supports all common controls of a usual browser media player.
@@ -182,7 +261,7 @@ These include: a ``play/pause''-button, a ``time-position''-slider and a ``volum
 On top of that, a ``restart''-button, a ``loop-play''-toggle and a ``play-in-range''-slider were added.
 For the latter the \textit{noUiSlider}\footnote{https://refreshless.com/nouislider/} library is utilized.
 Functionally, the ``play-in-range''-slider marks a time range in which the ``time-position''-slider is contraint.
-Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI feel more like a native application.
+Almost all of the listed controls can be operated via shortkeys\footnote{manual/wiki} making the web UI behave more like a desktop application.
 \\
 \subsubsection{Preview Playback - Logic}
 For audio and image preview playback it is sufficient to only have one HTML audio, respectively image, element and change its sources in real-time while playing.
@@ -349,7 +428,7 @@ Since the \textit{dashEndpoint} information was provided to us and there was no 
 During tests it became apparent, that not every polling call resulted in the client receiving messages.
 Despite that, when only one client is polling for the FIFO result queue at a time, it works perfectly.
 As soon as more users attempt to receive messages, the whole process is slowed down massively even though long polling is used.
-It may be that the concurrent pollings from different clients are interferring with each other so that the probability of not receiving any messages is increased greatly.
+It might be that the concurrent pollings from different clients are interferring with each other so that the probability of receiving empty responses is increased rapidly.
 This way, the FIFO queue can not make any or only very slow progresses.
 On the other hand it might also be that the SQS queues are deployed on budget servers that are not able to actually handle multiple requests simultaneously.
 
@@ -359,11 +438,27 @@ In this prototype version of the UI, a ``purge\&restart''-button was implemented
 This button will remove all messages on the queue and restart the FOKUS backend server, although this is no longterm solution to menttioned problems.
 
 \section{Discussion}
-What works, what does not? Shortcoming?\\
+In itself, the implemented user interface works without causing any problems.
+The intuitive UI and the vast amount of implemented features, mostly inspired by professional video tools, offer a great variety of editing possibilities.
+Most work related to SQS however, is not impeccable.
+The stitching phase error aside, the approach that was taken to communicate with the FOKUS stitching backend still remains immature.
+Whenever two or more clients are simultaneously waiting for responses from the queue, it takes much longer until results are transmitted.
+First and foremost, it's due to Amazon only allowing to receive not more than 10 messages per query, favouring congestion of the result queue.
+Above all, concurrent polling by many clients on the same queue severely increases the probability of receiving empty responses for whatever reasons.
+Since this is the case, it makes sense to debate whether Amazon's Simple Queue Service is suited as interface between the implemented frontend and the existing backend.
+We believe that the already stated potential benefits of using SQS outweigh the problems we encountered during this work.
+Theoretically, if every long polling delivered non-empty responses, the implemented approach would work flawlessly because each client would quickly remove its own messages from the queue as soon as they are available.
 
-- SQS and FH backend are shit; a intermediary backend managing the request (msg timeouts etc...) and providing an API would be better; suitability for use with regard to user-friendliness, performance, robustness... \\
-- server und queues nicht robust \\
-Shortcomings: quantization 100ms -$>$ video ende abgeschnitten, 10ms -$>$ schwächere cpu schaffen nicht\\
+One possible solution to this might be a dedicated intermediary backend (IB) managing the sending of requests and receiving of results.
+Instead of direct interaction with the queues, each client will then have to use an API provided by the IB.
+The intermediary backend remembers clients sending requests via its API and forwards these requests to the SQS request queue.
+Then the IB alone extracts messages from the SQS result queue and forwards these messages to their actual targets.
+Messages that can not be forwarded immediately are stored so they can be send again later.
+After several retries and a timeout, that message will be deleted assuming its target client is either inactive or aborted the stitching process.
+This way, the SQS result queue only needs to handle one polling instance.
+On the downside, the intermediary backend would be required to cope with all the clients though.
+How exactly this new issue is to be resolved, can not be decided right now.
+Nevertheless, there should exist countless ways to implement such a backend.
 
 \section{Conclusion}
 In this work a prototype of a user interface offering many features and options for video and image stitching was implemented.
@@ -371,7 +466,7 @@ Video, audio and image content resources can be added to the application by simp
 On a timeline, chunks can be constructed to a new video by utilizing different editing possibilities.
 Real-time feedback is given via a dedicated preview player emulating the stitching results without doing actual video cutting or processing.
 By serializing whole working sessions, its state can be shared or recalled conveniently at a later time.
-One of the main purposes however, i.e. to make the UI interact with the existing stitching backend by Fraunhofer FOKUS, could be satisfied only partially.
+One of the main purposes though, i.e. to make the UI interact with the existing stitching backend by Fraunhofer FOKUS, could be satisfied only partially.
 Having one sole client communicate with the provided FIFO queues is working perfectly fine.
 As soon as more users concurrently attempt to poll for answers on the result queue, that queue becomes a bottleneck even though a more beneficial long polling method is used.
 The reason for that might be in the implemented receiving algorithm or in the load handling capability of the server deploying the queues.
@@ -387,14 +482,17 @@ Also, the un-/redo features merely apply for timeline changes at the moment.
 When executed, ``active-element''-updates on content resources through adding and deleting chunks won't be taken into account.
 It is desired to monitor these changes and other operations done on the content area.
 Furthermore, dragging new chunks to the timeline, moving or shortening chunks would be more appealing if tooltips are displayed which show time stamps during these actions to increase the user experience.
-Although adding of new content resources works, the URL acceptance check and resource type whitelist matching algorithms would benefit from enhancements, too.
+An option to set the quantization value in the timeline would be another useful feature, although very small values might need too much processing power.
+Moreover, the URL acceptance check and resource type whitelist matching algorithms would greatly benefit from enhancements, too.
 Loading saved session files might need correctness checks in a future revision as well, so that this point can not be exploited, providing more robustness and consistency.
 
 Regarding the communication with SQS, besides fixing the stitching phase error, it is suggested to implement a dedicated intermediary backend to take care of sending and receiving messages (as mentioned in \textbf{V. Discussion}).
 Otherwise, strategies must be devised, so that concurrently receiving clients won't result in a bottleneck.
 
 \begin{thebibliography}{00}
-\bibitem{Sodagar} I. Sodagar, ``The MPEG-DASH Standard for Multimedia Streaming Over the Internet'', in IEEE MultiMedia, vol. 18, no. 4, pp. 62-67, Washington, D.C.: IEEE Computer Society, October 2011. doi:10.1109/MMUL.2011.71
+\bibitem{Fox} Fox, A., et al. (2009). ``Above the clouds: A berkeley view of cloud computing''. \textit{Dept. Electrical Eng. and Comput. Sciences, University of California, Berkeley, Rep. UCB/EECS}, 28(13), 2009. % https://s3.amazonaws.com/academia.edu.documents/43018702/0c960525ae2cc30314000000.pdf?AWSAccessKeyId=AKIAIWOWYYGZ2Y53UL3A&Expires=1532948428&Signature=a4lBKw0YmZSz%2B2FVebs0r0Szrn8%3D&response-content-disposition=inline%3B%20filename%3DAbove_the_Clouds_A_Berkeley_View_of_Clou.pdf
+\bibitem{Sodagar} Sodagar, I. (2011). ``The mpeg-dash standard for multimedia streaming over the internet''. \textit{IEEE MultiMedia}, (4), 62-67.
+\bibitem{VS} Varia, J., \& Mathew, S. (2014). ``Overview of amazon web services''. \textit{Amazon Web Services}. % https://genome.nyumc.org/hpcf/w/images/9/9e/HPC_course.spring_2014.session_3.AWS_Overview.pdf
 \end{thebibliography}
 
 \end{document}

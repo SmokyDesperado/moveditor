@@ -14,8 +14,7 @@
     "angular-touch": "^1.4.0",
     "AngularHammer": "ryanmullins-angular-hammer#^2.2.0",
     "aws-sdk": "aws-sdk-js#^2.253.1",
-    "angularjs-nouislider": "*",
-    "angular-progressbar": "^0.1.0"
+    "angularjs-nouislider": "*"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"

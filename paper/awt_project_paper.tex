@@ -145,55 +145,77 @@ For the implementation of the user interface, various libraries were used.
 Its main structure is generated via AngularJS project scaffolding by Yeoman\footnote{http://yeoman.io/learning/}.
 In doing so, a ready-to-use AngularJS project is created with provided directory structure, default templates and pre-installed components required for running the application as well as packages to boost the development process.
 
-Node.js\footnote{https://nodejs.org/en/} is the main run-time enviroment for the development process and is used to create the server while developing. New modules to help the development can be installed via the package manager npm\footnote{https://www.npmjs.com/}. The used packages are saved in the file package.json and can be manage there, like changing the used package or the package version.
+Node.js\footnote{https://nodejs.org/en/} serves as the main run-time enviroment for the development process and is used to create the server while developing.
+New modules to help the development can be installed via the package manager npm\footnote{https://www.npmjs.com/}.
+The used packages are saved in the file \textit{package.json} and can be managed from there, e.g. changing the used packages or package versions.
 
-Grunt\footnote{https://gruntjs.com/}, a task node runner module, is used for the actual development server configuration. It gives the possibility to define tasks and used them to creates custom development conditions and helper. Task can be defined in the required Gruntfile. While the predefined task serve a local server on port 9000 with live reload creates, will build concat, minify, uglify and do some other optimisation to the code and output it in a specified directory. This task is used for production deployment.
+Grunt\footnote{https://gruntjs.com/}, a Node task runner module, is used for the actual development server configuration.
+It enables defining tasks and using them to create custom development conditions and helpers.
+Tasks can be defined in the required \textit{Gruntfile}.
+While the predefined \textit{serve} task creates a local server on port 9000 with live reload, the \textit{build} task does optimizations to the code (concat, minify, uglify etc.) and then outputs these in a specified directory.
+The latter is also used for production deployment.
 
-For client sided libraries the Node module Bower\footnote{https://bower.io/} is used. Like the Node file package.json bower has it own package management file bower.json. There the used libraries for the app are listed and can be managed easily. 
+For client sided libraries, that are utilized only in the application but not for the deployment, the Node module \textit{Bower}\footnote{https://bower.io/} is used.
+Like the Node file package.json, bower has it own package management file, called \textit{bower.json}.
+There the used libraries for the app are listed and can be managed easily.
 
-AngularJs is used as JavaScript framework and allows the implementation of single-page applications to create a user experience similar to desktop apps.
+AngularJs is used as JavaScript framework and allows the implementation of single-page web applications to create a user experience similar to desktop apps.
 Furthermore, its specific HTML attributes, like \textit{ng-if}, \textit{ng-repeat} or \textit{ng-class}, and its \textit{two-way-binding} principle eliminate the need for manual binding of variables and synchronization between HTML and JavaScript files.
 The ability of AngularJs to create reuseable modules, called directives, has a big impact on removing duplicate code, thus improving the overall code structure.
 
 \subsection{Content Area}
-The content area contains all the video, image and audio resources that are used in the app to stitch and to create a new video.
+The content area contains all the video, image and audio resources that are used in the app for stitching and creating new videos.
 It is further divided into two components: A small menu and the actual pool of imported media.
-New media sources can be added to the pool using the input field of the content area menu with a publicly accessible URL from any cloud provider or host.
-Meta information, like thumbnails or file length, will be loaded and added asynchronously to the object representating the resource that we call content (material) from now on.
+New media sources can be added to the pool using the input field of the content area menu with a publicly accessible URL from any cloud provider or host\footnote{see wiki of GitHub repository}.
+Via HTML Audio/Video events, meta information (thumbnails, type or file length) will be loaded and added asynchronously to the object representating the resource that we call content (material) from now on.
+For a better distinction, the middle frame of each video is used as thumbnail.
+Moreover, an icon on the lower right corner of the content also indicates the type of a content material.
 Using the mouse, materials can be dragged around to add them to the timeline area or to delete them.
-By double-clicking, individual media resources can be previewed in a dedicated pop-up player.
+By double-clicking, individual content can be previewed in a dedicated pop-up player.
 Also, buttons are provided on the menu to save the state of whole working sessions and to recall them at a later time.
 
 For displaying material in the content area the \textit{contentList} object is used and bonded to the view.
-Each time that object is updated, the content area view will be refreshed as well.
+Each time that object is updated, the content area view will be refreshed, too.
 ContentList is a simple JavaScript dictionary object which consist of a random generated \textit{contentId} as key and an instance of the JavaScript class \textit{Content} as a value.
 The dictionary data type was chosen to enable fast and direct access to the objects of the contentList requiring only the contentId, which can then be passed throughout the application if needed elsewhere.
 
 A Content object consist of a name, a type, a length, an url, an mpd and an active property.
 The name property is empty at the beginning and the user can change the name after the content material is loaded.
-The url property is the publicly accessible URL of the video, audio or image which is used to add a material and it is not possible to changed it afterwards.
+The url property is the publicly accessible URL of the video, audio or image that is used to add a material and can not be changed afterwards.
 Each material URL serves as unique identifier in the contentList so that duplicated material URLs can not be added.
 As a result, a duplicated content material can still be added to the list by using by using different URLs of the same content.
+The active property of a material is used to keep track of the amounts of that material referenced on the timeline.
+Each material added to the timeline increases the active counter and each one removed from the timeline decreases the counter.
+Unless the active property equals 0 it is not possible to delete the content material from the pool.
+Last but not least, the mpd property is not editable by the user. It is used to temporarily store the MPD URL after the segmentation process of the FOKUS backend and then used for the stitching request.
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.46]{content_area.png}
 \caption{Content area and menu bar.}
 \end{figure}
-The meta information of a material, like its type and length, are loaded after adding the content to the list by using HTML Audio/Video events.
-For better visualization, the middle frame of a video is used as thumbnail.
-The image itself is used for image content and for audio material a pre-defined gif is used.
-Further, an icon on the lower right corner of the content also indicates the type of a content material.
+The drag and drop functionality to add content materials to the timeline or delete content is enabled through the AngularJS module AngularHammer\footnote{https://github.com/RyanMullins/angular-hammer}.
+The JavaScript library to recognize touch, mouse and pointer events HAMMER.JS\footnote{http://hammerjs.github.io/getting-started} was made into a AngularJS module for a simple usage.
+The three most important callbacks of this module were the \textit{panStart}, \textit{panMove} and \textit{panEnd} events.
+PanMove provides functionalities to recognise the mouse events and manipulates the DOM element while panStart and panEnd provide manupulation right before and after panMove is executed.
+This way, it was possible to initialize needed helper variables (i.e. activate attributes to react while moving) and saving the current app state after moving elements.
+Dragging materials will create a drag indicator, showing and representing the active drag action.
+The indicator will disappear once the material is dropped and will execute specific actions depending on the dropping area.
 
-The active property of a material is used to keep track of amounts of the material used in the timeline. Each material adding to the timeline increase the active counter and each remove from the timeline decrease the counter. Unless the active property equals 0 it is not possible to delete the content material. The last property the mpd property is not editable by the user. It is used to store the mpd URL after the segmentation process of the backend and then used for the stitching request.
+A trash can icon appears in the content area whenever a material element is dragged around.
+When the user drops a content into the bin, that material object is removed from the content area (provided its active property is 0).
+Showing and hiding the trash is activated using panStart and panEnd.
+Dropping the material into the timeline will create a new chunk on that area.
 
-The drag and drop functionality to add content materials into the timeline or delete content is enabled through the AngularJS module AngularHammer\footnote{https://github.com/RyanMullins/angular-hammer} by Ryan Mullins. The already existing touch, mouse and pointerEvents recognition JavaScript library HAMMER.JS\footnote{http://hammerjs.github.io/getting-started} was made into a AngularJS module for a simple usage. The three important features of this module were the panStart, panMove and panEnd events. PanMove provided functionalites to recognise the mouse events and manipulate the DOM element while panStart and panEnd provided manupulation right before and after panMove is executed. So it was possible to initialise needed helper variables (i.e. activate attributes to react while moving) or saving the current app state after moving elements. Dragging materials will create a drag indicator, showing and representing the active drag action. The indicator will disappear by dropping the material (mousekey up) and execute the specific action depending on the dropping mouse position.
+Another aspect of the content area menu is saving and loading working sessions.
+Saving serializes and exports the current state of the content and timeline area while loading will recreate a working session from a saved file.
+Based on the used data structure of the internal objects to be saved, the created simple text file contains one composed JSON object.
+Because of the simplicity of the saved file and the absent of validation for loading sessions, a user might be able to input invalid data for the content and timeline area.
 
-A trash icon is start to appear in the content area by dragging a material element around. When the user drops it in the trash and the mouse position is within the boundaries of the trash icon, then this action will remove the material from the content area (when active is 0). Showing and hiding the trash is activated by panStart and panEnd. Dropping the material into the timeline will add a chunk in the timeline area.
-
-Another aspect of the content area menu is saving and loading working sessions. Saving can save the current state of the content and timeline area and loading wiill recreate the state of a saved working session from a file. Based on the used data structure of the app, the saving file is a .txt file containing one JSON object. The save process will collect all needed information of the different parts and create the saving file and loading will read the file and recreates saved state of the app. Because of the simplicity of the saved file and the absent of validation while loading, a use can manupulate the information and the state of the app.
-
-For checking the loaded content, the user can double click on the specific material. This opens up a pop up viewer / player showing image typed materials or playing video or audio typed materials. The double click is handled by AngularHammer and will create an overlay on the app. Normally the overlay is hided in the background and jumps to the foreground when activated. The dynamically created and added content of the overlay depends on the type, whether it is a audio player, a video player or just a image, of the material. By clicking outside the overlay content, the content will be pause (only for audio and video player), destroyed and the overlay will hide in the background again.\\
-\\
+To preview individual contents, the user can double click on a specific material to open up a pop-up viewer/player showing images or playing videos and audios.
+The double click is handled by AngularHammer and will create an overlay on the app.
+Usually that overlay is hidden in the background but is brought to the front when needed.
+Dinamically the necessary HTML element is created depending on the content material type to be previewed.
+By clicking outside the overlay content, the content will be paused (only for audio and video player), destroyed and the overlay is hidden in the background again.
 
 \subsection{Timeline Area}
 Mainly the user will be working in the timeline area to create and edit the stitching video. Unlike the content area, the timeline area is devieded into three segments, the timeline bar where the materials are added as chunks, a menu to execute serveral functionalities and an information area to view the chunk data. Added chunks of the timeline can be focused and edited by dragging or by interaction with the menu buttons. The information area will show meta more detailed information of focused chunks.

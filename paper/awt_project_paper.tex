@@ -101,12 +101,40 @@ In particular this inlcudes:
 \textbf{(VI)} A conclusion to this work and suggestions for future work.
 
 \section{Related Work}
-\textbf{ToDo: Han} \\
-List online/offline video stitching tools, differences and what makes our web app unique...
+%List online/offline video stitching tools, differences and what makes our web app unique...
+There are various programs avaiabale to edit videos, images and audios into one file.
+The majority of them are video editing tools.
+
+For example, Mircosoft Fotos \footnote{https://www.microsoft.com/de-de/p/microsoft-fotos/9wzdncrfjbh4}, the successor of Windows Movie Maker and one of the plainest video editing tools, is able to stitch videos, images and audios.
+This software can not overlap video and picture track with soundtrack.
+
+Adobe Premiere Pro \footnote{https://www.adobe.com/products/premiere.html} is the industry-leading video editing software. 
+It also supports the functions to adjust the length of different media files as well as stitch them together. 
+It is not possible to export a Adobe Premiere Pro project as a dash file.
+
+An online solution for video editing is Movie Maker Online\footnote{http://moviemakeronline.com/}. 
+This Editor has every editing functionalities that we need but it also do not support to export as a dash file.
 
 \section{Architecture \& Used Technologies}
-\textbf{ToDo: Han} \\
-Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
+%Web UI communicates with FH backend via SQS; using AngularJS, AWS SDK, clouds...
+The architecture we used is similar to the classic back-end architecture.
+We have a front-end that is executed on the client side.
+The JavaScript, HTML and CSS code runs in the user's browser and creates the user interface as a web app.
+Users edit video, image and audio files and finish their work by sending segmentation and stitching requests to the back-end.
+Frauenhofer FOKUS provides the back-end.
+The code of the back-end runs on an Amazon server.
+It receives receives segmentation and stitching requests from the web app and replies with MPD URLs.
+
+Our web app uses the AngularJS framework.
+Video, image and audio files have to be stored online, for example cloud storage like Google Drive, Dropbox or even YouTube.
+In order to access these media files in the app, the file URLs have to be public to ensure that the app can load the files.
+
+The front-end communicates with the back-end via SQS by using AWS SDK \textit{(Amazon Web Services Software Development Kit)}.
+Every client side request will be pushed on the request queue.
+The back-end notices the request, processes the request and replies by pushing the result on the result queue.
+Results on the result queue will be processed by each listening client.
+
+\textbf{ToDO Han, diagramm von Cloud, Web App und Frauenhofer fokus}
 
 \section{Design \& Implementation}
 This section mainly focusses on the implementation of the user interface for image and video stitching.
